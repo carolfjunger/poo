@@ -1,9 +1,9 @@
 
 public class Carta {
 	Naipe naipe; 
-	ValoresCarta valor;
+	ValorCarta valor;
 	
-	public Carta(Naipe cNaipe, ValoresCarta cValor) throws Exception {
+	public Carta(Naipe cNaipe, ValorCarta cValor) {
 		naipe = cNaipe;
 		valor = cValor;
 	}

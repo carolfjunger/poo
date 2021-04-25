@@ -1,5 +1,5 @@
 
-public enum ValoresCarta {
+public enum ValorCarta {
  
 	DOIS(2), 
 	TRES(3), 
@@ -17,7 +17,7 @@ public enum ValoresCarta {
 	
 	private int valor;
 	
-	ValoresCarta(int cValor){
+	ValorCarta(int cValor){
 		this.valor = cValor;
 	}
 	
