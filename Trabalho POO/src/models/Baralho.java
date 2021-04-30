@@ -1,8 +1,9 @@
+package models;
 import java.util.List;
 import java.util.Random;
 import java.util.ArrayList;
 
-public class Baralho {
+class Baralho {
 	// Vetor dinamico para guardar cartas
 	private List<Carta> cartas = new ArrayList<Carta>();
 	
@@ -53,6 +54,13 @@ public class Baralho {
 	public Carta compraCarta() {
 		Carta c = this.getCarta(0);
 		this.cartas.remove(0);
+		
+		return c;
+	}
+	
+	// Olha a primeira carta da lista sem remove-la
+	protected Carta peekCarta() {
+		Carta c = this.getCarta(0);
 		
 		return c;
 	}

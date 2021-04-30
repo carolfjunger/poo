@@ -1,3 +1,4 @@
-public enum Naipe {
+package models;
+enum Naipe {
 	COPAS, ESPADAS, OUROS, PAUS
 }

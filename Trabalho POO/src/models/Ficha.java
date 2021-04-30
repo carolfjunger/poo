@@ -1,5 +1,7 @@
+package models;
 
-public enum Ficha {
+enum Ficha {
+	UM(1),
 	CINCO(5), 
 	DEZ(10), 
 	VINTE(20), 

@@ -1,5 +1,6 @@
+package models;
 
-public class Carta {
+class Carta {
 	Naipe naipe; 
 	ValorCarta valor;
 	

@@ -1,5 +1,6 @@
+package models;
 
-public enum ValorCarta {
+enum ValorCarta {
  
 	DOIS(2), 
 	TRES(3), 
