@@ -2,6 +2,8 @@ package models;
 import java.util.List;
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 class Baralho {
 	// Vetor dinamico para guardar cartas
@@ -19,28 +21,17 @@ class Baralho {
 		
 	// Embaralha o baralho, dando posicoes randomicas novas a todas as cartas
 	public void embaralha() {
-		List<Carta> embaralhadas = new ArrayList<Carta>();
-		Random rn = new Random();
-		
-		for (int i = 0; i < this.cartas.size(); i++) {
-			int tam = this.cartas.size();
-			int indice = rn.nextInt() % tam;
-			
-			Carta c = this.getCarta(indice);
-			this.cartas.remove(indice);
-			
-			embaralhadas.add(c);
-		}
-		
-		this.cartas = embaralhadas;
+		Collections.shuffle(this.cartas);
 	}
 	
 	// Utilitario: Adiciona um deck de cartas completo ao baralho
-	public void adicionaDeck(int num_decks) {
-		for (Naipe n : Naipe.values()) {
-			for (ValorCarta v : ValorCarta.values()) {
-				Carta c = new Carta(n, v);
-				this.adicionaCarta(c);
+	public void adicionaDeck(int numDecks) {
+		for (int i = 0; i < numDecks; i++) {
+			for (Naipe n : Naipe.values()) {
+				for (ValorCarta v : ValorCarta.values()) {
+					Carta c = new Carta(n, v);
+					this.adicionaCarta(c);
+				}
 			}
 		}
 	}

@@ -101,9 +101,7 @@ public class BaralhoTest {
 			
 		 baralho.adicionaDeck(1);
 		 
-		 if (baralho.getQtdCartas() != TAM_COMPLETO) {
-			 fail("O baralho esta com a quantidade incorreta de cartas.");
-		 }
+		 assertEquals(TAM_COMPLETO, baralho.getQtdCartas());
 		 
 		 for (int i = 0; i < baralho.getQtdCartas(); i++) {
 			 Carta c = baralho.getCarta(i);

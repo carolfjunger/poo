@@ -10,7 +10,12 @@ class Jogador {
 
 	Jogador(String id, HashMap<Ficha, Integer> fichas) {
 		this.id = id;
-		this.fichas = fichas;
+		// clonar o HashMap para evitar problemas de referencia
+		this.fichas = new HashMap<Ficha, Integer>(fichas);
+	}
+	
+	public String getID() {
+		return this.id;
 	}
 	
 	public int contaValores() {
@@ -23,10 +28,18 @@ class Jogador {
 		return total;
 	}
 	
+	public HashMap<Ficha, Integer> getFichas() {
+		return new HashMap<Ficha, Integer>(this.fichas);
+	}
+	
 	public void recebeFichas(HashMap<Ficha, Integer> fichas) {
 		for (Ficha f: fichas.keySet()) {
 			int valApostado = fichas.get(f);
-			int val = this.fichas.get(f);
+			
+			int val = 0;
+			if (this.fichas.containsKey(f)) {
+				val = this.fichas.get(f);
+			}
 			
 			// garantido ser >= 0
 			int dVal = val + valApostado;
@@ -35,7 +48,6 @@ class Jogador {
 	}
 	
 	public boolean apostaFichas(HashMap<Ficha, Integer> fichas) {
-		HashMap<Ficha, Integer> apostadas = new HashMap<Ficha, Integer>();
 		
 		// antes de retornar as fichas apostadas pelo jogador
 		// precisamos verificar que a pessoa tem uma quantidade de fichas

@@ -17,15 +17,16 @@ public class JogadorTest {
 	@Before
 	public void setUp() {
 		this.fichas = new HashMap<Ficha, Integer>();
-		this.jog = new Jogador("Teste", fichas);
 		
-		// Botar 500 fichas na pilha do jogador
+		// Botar $500 na pilha do jogador
 		fichas.put(Ficha.CEM, 2);
 		fichas.put(Ficha.CINQUENTA, 2);
 		fichas.put(Ficha.VINTE, 5);
 		fichas.put(Ficha.DEZ, 5);
 		fichas.put(Ficha.CINCO, 8);
 		fichas.put(Ficha.UM, 10);
+		
+		this.jog = new Jogador("Teste", fichas);
 	}
 
 	@Test

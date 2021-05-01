@@ -1,9 +1,10 @@
 package models;
 
-public enum Acao {
+public enum Comando {
+	DEAL,
 	STAND,
 	HIT,
 	DOUBLE,
 	SPLIT,
-	LEAVE,
+	SURRENDER,
 }
