@@ -10,42 +10,30 @@ import org.junit.Test;
 
 public class JogadorTest {
 	
-	private HashMap<Ficha, Integer> fichas;
+	private int fichas;
 	private Jogador jog;
 	private final int VAL_INICIAL = 500;
 
 	@Before
 	public void setUp() {
-		this.fichas = new HashMap<Ficha, Integer>();
-		
-		// Botar $500 na pilha do jogador
-		fichas.put(Ficha.CEM, 2);
-		fichas.put(Ficha.CINQUENTA, 2);
-		fichas.put(Ficha.VINTE, 5);
-		fichas.put(Ficha.DEZ, 5);
-		fichas.put(Ficha.CINCO, 8);
-		fichas.put(Ficha.UM, 10);
-		
+		this.fichas = 500;
 		this.jog = new Jogador("Teste", fichas);
 	}
 
 	@Test
-	public void testContaValores() {
-		int val = jog.contaValores();
+	public void testGetFichas() {
+		int val = jog.getFichas();
 		
 		assertEquals(this.VAL_INICIAL, val);
 	}
 	
 	@Test
 	public void testRecebeFicha() {
-		HashMap<Ficha, Integer> fichas = new HashMap<Ficha, Integer>();
-		// 602 fichas
-		fichas.put(Ficha.CEM, 1);
-		fichas.put(Ficha.UM, 2);
+		int fichas = 102;
 		
 		jog.recebeFichas(fichas);
 		
-		int val = jog.contaValores();
+		int val = jog.getFichas();
 		assertEquals(this.VAL_INICIAL + 102, val);
 	}
 	
@@ -113,32 +101,26 @@ public class JogadorTest {
 		assertEquals(1, mao.size());
 		
 		Carta c = mao.get(0);
-		assertEquals(prim.valor, c.valor);
-		assertEquals(prim.naipe, c.naipe);
+		assertEquals(prim.getValor(), c.getValor());
+		assertEquals(prim.getNaipe(), c.getNaipe());
 	}
 	
 	@Test
 	public void testApostaFicha() {	
 		// aposta que o jogador tem como cobrir
-		HashMap<Ficha, Integer> fichas = new HashMap<Ficha, Integer>();
-		// 102 fichas a serem apostadas
-		fichas.put(Ficha.CEM, 1);
-		fichas.put(Ficha.UM, 2);
+		int fichas = 102;
 		
-		int val = this.jog.contaValores();
+		int val = this.jog.getFichas();
 		assertEquals(this.VAL_INICIAL, val);
 		
 		boolean sucesso = this.jog.apostaFichas(fichas);
 		assertEquals(true, sucesso);
 		
 		// valor deveria ser igual a o valor inical subtraido das fichas
-		assertEquals(this.VAL_INICIAL - 102, this.jog.contaValores());
+		assertEquals(this.VAL_INICIAL - 102, this.jog.getFichas());
 		
 		// aposta que o jogador nao tem como cobrir
-		fichas = new HashMap<Ficha, Integer>();
-		
-		// CEM MIL FICHAS!
-		fichas.put(Ficha.CEM, 1000);
+		fichas = 1000000; // UM MILHAO!
 		
 		sucesso = this.jog.apostaFichas(fichas);
 		assertEquals(false, sucesso);

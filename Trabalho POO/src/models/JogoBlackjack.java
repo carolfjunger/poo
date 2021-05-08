@@ -6,25 +6,34 @@ import java.util.HashMap;
 
 public class JogoBlackjack {
 	private Baralho baralho = new Baralho(); // verificar oq saiu?
-	private HashMap<Ficha, Integer> fichasMesa; 
+	private int fichasMesa; 
 	private List<Jogador> jogadores = new ArrayList<Jogador>();
 	
 	private final int APOSTA_MIN = 20;
 	private int vez = 0;
 	private int qtdCartasUsadas = 0;
-	private HashMap<Jogador, HashMap<Ficha, Integer>> apostas;
+	private HashMap<Jogador, Integer> apostas;
 	
-	public JogoBlackjack() {}
+	private JogoBlackjack() {}
 		
 	// singleton
-//	private static JogoBlackjack instancia;
-//	public static JogoBlackjack getInstancia() {
-//		if (instancia == null) {
-//			instancia = new JogoBlackjack();
-//		}
-//		
-//		return instancia;
-//	}
+	private static JogoBlackjack instancia;
+	public static JogoBlackjack getInstancia() {
+		if (instancia == null) {
+			instancia = new JogoBlackjack();
+		}
+
+		return instancia;
+	}
+	
+	public void resetaJogo() {
+		this.vez = 0;
+		this.qtdCartasUsadas = 0;
+		this.apostas = null;
+		this.jogadores = new ArrayList<Jogador>();
+		this.fichasMesa = 0;
+		this.baralho = new Baralho();
+	}
 	
 	public void setJogadores(List<Jogador> jogadores) {
 		this.jogadores = jogadores;
@@ -38,18 +47,18 @@ public class JogoBlackjack {
 		return this.baralho;
 	}
 	
-	public HashMap<Jogador, HashMap<Ficha, Integer>> getApostas() {
+	public HashMap<Jogador, Integer> getApostas() {
 		if (this.apostas == null) {
 			return null;
 		}
-		return new HashMap<Jogador, HashMap<Ficha, Integer>>(this.apostas);
+		return new HashMap<Jogador, Integer>(this.apostas);
 	}
 	
 	public int getQtdJogadores() {
 		return this.jogadores.size();
 	}
 	
-	public HashMap<Ficha, Integer> getFichasMesa() {
+	public int getFichasMesa() {
 		return this.fichasMesa;
 	}
 
@@ -65,15 +74,7 @@ public class JogoBlackjack {
 			return false;
 		}
 		
-		HashMap<Ficha, Integer> fichas = new HashMap<Ficha, Integer>();
-		
-		// Botar 500 fichas na pilha do jogador
-		fichas.put(Ficha.CEM, 2);
-		fichas.put(Ficha.CINQUENTA, 2);
-		fichas.put(Ficha.VINTE, 5);
-		fichas.put(Ficha.DEZ, 5);
-		fichas.put(Ficha.CINCO, 8);
-		fichas.put(Ficha.UM, 10);
+		int fichas = 500;
 
 		for (Jogador j: this.jogadores) {
 			j.recebeFichas(fichas);
@@ -89,9 +90,9 @@ public class JogoBlackjack {
 		return true;
 	}
 	
-	public void colheApostaInicial(HashMap<Jogador, HashMap<Ficha, Integer>> apostas) {
+	public void colheApostaInicial(HashMap<Jogador, Integer> apostas) {
 		this.apostas = apostas;
-		this.fichasMesa = new HashMap<Ficha, Integer>();
+		this.fichasMesa = 0;
 		List<Jogador> aRemover = new ArrayList<Jogador>();
 		
 		for (Jogador j: apostas.keySet()) {
@@ -99,9 +100,9 @@ public class JogoBlackjack {
 				continue;
 			}
 			
-			HashMap<Ficha, Integer> fichasAposta = apostas.get(j);
+			int fichasAposta = apostas.get(j);
 			
-			if (Ficha.contaFichas(fichasAposta) < this.APOSTA_MIN) {
+			if (fichasAposta < this.APOSTA_MIN) {
 				aRemover.add(j);
 				continue;
 			}
@@ -111,22 +112,9 @@ public class JogoBlackjack {
 			boolean sucesso = j.apostaFichas(fichasAposta);
 			
 			if (sucesso) {
-				for (Ficha f: fichasAposta.keySet()) {
-					Integer qtdMesa = 0;
-					if (this.fichasMesa.containsKey(f)) {
-						qtdMesa = this.fichasMesa.get(f);
-					}
-					Integer qtdAposta = fichasAposta.get(f);
-					
-					if (qtdMesa == null) {
-						this.fichasMesa.put(f, qtdAposta);
-						continue;
-					}
-					
-					this.fichasMesa.put(f, qtdAposta + qtdMesa);
-				}
+				this.fichasMesa += fichasAposta;
 			} else {
-				apostas.remove(j);
+				this.apostas.remove(j);
 			}
 		}
 		
@@ -143,7 +131,7 @@ public class JogoBlackjack {
 		this.vez = 0;
 		for (Jogador j: this.apostas.keySet()) {
 			
-			if (j.contaValores() < APOSTA_MIN) {
+			if (j.getFichas() < APOSTA_MIN) {
 				this.jogadores.remove(j);
 				continue;
 			}
@@ -162,14 +150,14 @@ public class JogoBlackjack {
 	// Funcao vez simula a vez de um jogador
 	// Se o retorno for `BlackJack` ou `Fim de Turno`
 	// a funcao avaliarMesa deve ser chamada em seguida
-	public ResultadoVez vez(Jogador j, Comando c, HashMap<Ficha, Integer> apostaDouble) {
+	public ResultadoVez vez(Jogador j, Comando c, int apostaDouble) {
 		
 		if (j.getID() == "dealer") {
 			j.compraCarta(baralho, 0);
 			return ResultadoVez.OK;
 		}
 		
-		int qtd = Ficha.contaFichas( this.apostas.get(j) );
+		int qtd = this.apostas.get(j);
 		
 		if (vez < 0) {
 			return ResultadoVez.FIM_DE_TURNO;
@@ -191,26 +179,21 @@ public class JogoBlackjack {
 				j.compraCarta(this.baralho, 0);
 				break;
 			case DOUBLE:
-				if (qtd > j.contaValores()) {
+				if (qtd > j.getFichas()) {
 					return ResultadoVez.FALTAM_FICHAS;
 				}
 				j.apostaFichas(apostaDouble);
-				for (Ficha f: apostaDouble.keySet()) {
-					int qtdDouble = apostaDouble.get(f);
-					int qtdMesa = this.fichasMesa.get(f);
-					
-					this.fichasMesa.put(f, qtdMesa + qtdDouble);
-				}
+				this.fichasMesa += apostaDouble;
 				break;
 			case SPLIT:
 				// depois, tratar esse caso
 				break;
 			case SURRENDER:
-				HashMap<Ficha, Integer> fichas = Ficha.fichasAposta( qtd / 2);
-				int qtdMesa = Ficha.contaFichas(this.fichasMesa);
+				int fichas = qtd / 2;
+				int qtdMesa = this.fichasMesa;
 				int newQtdMesa = qtdMesa - (qtd / 2);
 				
-				this.fichasMesa = Ficha.fichasAposta(newQtdMesa);
+				this.fichasMesa = newQtdMesa;
 				j.recebeFichas(fichas);
 				
 				this.apostas.remove(j);
@@ -238,7 +221,6 @@ public class JogoBlackjack {
 	public void finalizaTurno() {
 		// alterar pra quando existir o split
 		List<Jogador> jogs = new ArrayList<Jogador>(this.apostas.keySet());
-		
 		List<Jogador> vencedores = new ArrayList<Jogador>();
 		
 		int maior = 0;
@@ -275,9 +257,9 @@ public class JogoBlackjack {
 			if (vDealer) {
 				j.recebeFichas( this.apostas.get(j) );
 			} else {
-				int qtdMesa = (int) Ficha.contaFichas(this.fichasMesa);
+				int qtdMesa = this.fichasMesa;
 				if (maior == 21) {
-					HashMap<Ficha, Integer> fichas = Ficha.fichasAposta( (int) (qtdMesa * 1.5));
+					int fichas = (int) (qtdMesa * 1.5);
 					j.recebeFichas(fichas);
 				} else {
 					j.recebeFichas(this.fichasMesa);

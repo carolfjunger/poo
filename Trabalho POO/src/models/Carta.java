@@ -1,8 +1,8 @@
 package models;
 
 class Carta {
-	Naipe naipe; 
-	ValorCarta valor;
+	private Naipe naipe; 
+	private ValorCarta valor;
 	boolean praBaixo;
 	
 	public Carta(Naipe cNaipe, ValorCarta cValor) {

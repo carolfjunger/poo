@@ -5,72 +5,38 @@ import java.util.ArrayList;
 
 class Jogador {
 	private String id;
-	private HashMap<Ficha, Integer> fichas;
+	private int fichas;
 	private List<List<Carta>> maos = new ArrayList<List<Carta>>();
 
-	Jogador(String id, HashMap<Ficha, Integer> fichas) {
+	Jogador(String id, int fichas) {
 		this.id = id;
-		// clonar o HashMap para evitar problemas de referencia
-		this.fichas = new HashMap<Ficha, Integer>(fichas);
+		this.fichas = fichas;
 	}
 	
 	public String getID() {
 		return this.id;
 	}
 	
-	public int contaValores() {
-		int total = 0;
-		
-		for (Ficha f: this.fichas.keySet()) {
-			total += this.fichas.get(f) * f.getValorFicha();
-		}
-		
-		return total;
+	public int getFichas() {
+		return this.fichas;
 	}
 	
-	public HashMap<Ficha, Integer> getFichas() {
-		return new HashMap<Ficha, Integer>(this.fichas);
+	public boolean recebeFichas(int fichas) {
+		if (fichas <= 0) {
+			return false;
+		}
+		
+		this.fichas += fichas;
+		return true;
 	}
 	
-	public void recebeFichas(HashMap<Ficha, Integer> fichas) {
-		for (Ficha f: fichas.keySet()) {
-			int valApostado = fichas.get(f);
-			
-			int val = 0;
-			if (this.fichas.containsKey(f)) {
-				val = this.fichas.get(f);
-			}
-			
-			// garantido ser >= 0
-			int dVal = val + valApostado;
-			this.fichas.put(f, dVal);
-		}
-	}
-	
-	public boolean apostaFichas(HashMap<Ficha, Integer> fichas) {
-		
-		// antes de retornar as fichas apostadas pelo jogador
-		// precisamos verificar que a pessoa tem uma quantidade de fichas
-		// maior ou igual ao valor apostado
-		for (Ficha f: fichas.keySet()) {
-			int valApostado = fichas.get(f);
-			int val = this.fichas.get(f);
-			
-			if (valApostado > val) {
-				return false;
-			}
+	public boolean apostaFichas(int fichas) {
+		if (this.fichas >= fichas) {
+			this.fichas -= fichas;
+			return true;
 		}
 		
-		for (Ficha f: fichas.keySet()) {
-			int valApostado = fichas.get(f);
-			int val = this.fichas.get(f);
-			
-			// garantido ser >= 0
-			int dVal = val - valApostado;
-			this.fichas.put(f, dVal);
-		}
-		
-		return true;		
+		return false;
 	}
 	
 	public void compraCarta(Baralho b, int mao) {

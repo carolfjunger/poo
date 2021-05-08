@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,16 +18,21 @@ public class JogoBlackjackTest {
 	private int QTD_DECKS = 5;
 
 	@Before
-	public void setUp() throws Exception {
-		HashMap<Ficha, Integer> f = new HashMap<Ficha, Integer>();
+	public void setUp() {
+		int f = 0;
 		this.j1 = new Jogador("teste1", f);
 		this.j2 = new Jogador("teste2", f);
 		List<Jogador> jogs = new ArrayList<Jogador>();
 		jogs.add(j1);
 		jogs.add(j2);
 		
-		this.jbl = new JogoBlackjack(); 
+		this.jbl = JogoBlackjack.getInstancia(); 
 		this.jbl.setJogadores(jogs);
+	}
+	
+	@After
+	public void tearDown() {
+		this.jbl.resetaJogo();
 	}
 	
 	@Test
@@ -46,7 +52,7 @@ public class JogoBlackjackTest {
 		assertEquals(0, this.jbl.getBaralho().getQtdCartas());
 		
 		// nenhuma ficha na mesa
-		assertEquals(null, this.jbl.getFichasMesa());
+		assertEquals(0, this.jbl.getFichasMesa());
 		
 		// nenhuma aposta foi feita
 		assertEquals(null, this.jbl.getApostas());
@@ -71,7 +77,7 @@ public class JogoBlackjackTest {
 		// todos os jogadores tem mao vazia
 		boolean hasDealer = false;
 		for (Jogador j: jogs) {
-			int qtdFichas = j.contaValores();
+			int qtdFichas = j.getFichas();
 			assertEquals(500, qtdFichas);
 			if (j.getID() == "dealer") {
 				hasDealer = true;
@@ -89,7 +95,7 @@ public class JogoBlackjackTest {
 		assertEquals(52 * this.QTD_DECKS, qtdCartas);
 		
 		// nenhuma ficha na mesa
-		assertEquals(null, this.jbl.getFichasMesa());
+		assertEquals(0, this.jbl.getFichasMesa());
 		
 		// nenhuma aposta foi feita
 		assertEquals(null, this.jbl.getApostas());
@@ -99,31 +105,29 @@ public class JogoBlackjackTest {
 	public void testColheApostas() {
 		this.jbl.inicializa(this.QTD_DECKS);
 		
-		HashMap<Jogador, HashMap<Ficha, Integer>> apostas = new HashMap<Jogador, HashMap<Ficha, Integer>>();
+		HashMap<Jogador, Integer> apostas = new HashMap<Jogador, Integer>();
 		
 		
-		HashMap<Ficha, Integer> aposta1 = new HashMap<Ficha, Integer>();
-		aposta1.put(Ficha.UM, 1);
-		
-		HashMap<Ficha, Integer> aposta2 = new HashMap<Ficha, Integer>();
-		aposta2.put(Ficha.VINTE, 1);
+		int aposta1 = 1;
+		int aposta2 = 20;
 		
 		apostas.put(this.j1, aposta1);
 		apostas.put(this.j2, aposta2);
 	
 		this.jbl.colheApostaInicial(apostas);
+		int f = this.jbl.getFichasMesa();
 		
-		HashMap<Ficha, Integer> f = this.jbl.getFichasMesa();
-		// 20 por jogador, sem contar o dealer
+		// 20 apostado pelo jogador j2, sem contar o dealer
 		final int VAL_RESTANTE = 500 - 20;
-		assertEquals(20, Ficha.contaFichas(f));
+		assertEquals(20, f);
 		
 		// aposta de menos que 20 deveria falhar
-		assertEquals(500, this.j1.contaValores());
+		assertEquals(500, this.j1.getFichas());
 		assertEquals(false, this.jbl.getApostas().keySet().contains(j1));
 		
 		// aposta >= 20 funciona
-		assertEquals(VAL_RESTANTE, this.j2.contaValores());
+		assertEquals(VAL_RESTANTE, this.j2.getFichas());
+		assertEquals(true, this.jbl.getApostas().keySet().contains(j2));
 	}
 	
 	@Test
@@ -131,12 +135,11 @@ public class JogoBlackjackTest {
 		// pre teste
 		this.jbl.inicializa(this.QTD_DECKS);
 		
-		HashMap<Jogador, HashMap<Ficha, Integer>> apostas = new HashMap<Jogador, HashMap<Ficha, Integer>>();
-		HashMap<Ficha, Integer> aposta1 = new HashMap<Ficha, Integer>();
-		aposta1.put(Ficha.VINTE, 1);
-		HashMap<Ficha, Integer> aposta2 = new HashMap<Ficha, Integer>();
-		aposta2.put(Ficha.VINTE, 1);
+		HashMap<Jogador, Integer> apostas = new HashMap<Jogador, Integer>();
+		int aposta1 = 20;
+		int aposta2 = 20;
 		
+		// gravar as apostas
 		apostas.put(this.j1, aposta1);
 		apostas.put(this.j2, aposta2);
 		
@@ -167,12 +170,11 @@ public class JogoBlackjackTest {
 		// pre teste
 		this.jbl.inicializa(this.QTD_DECKS);
 		
-		HashMap<Jogador, HashMap<Ficha, Integer>> apostas = new HashMap<Jogador, HashMap<Ficha, Integer>>();
-		HashMap<Ficha, Integer> aposta1 = new HashMap<Ficha, Integer>();
-		aposta1.put(Ficha.VINTE, 1);
-		HashMap<Ficha, Integer> aposta2 = new HashMap<Ficha, Integer>();
-		aposta2.put(Ficha.VINTE, 1);
+		HashMap<Jogador, Integer> apostas = new HashMap<Jogador, Integer>();
+		int aposta1 = 20;
+		int aposta2 = 20;
 		
+		// gravar apostas
 		apostas.put(this.j1, aposta1);
 		apostas.put(this.j2, aposta2);
 		
@@ -189,23 +191,22 @@ public class JogoBlackjackTest {
 		}
 		
 		// comando HIT compra uma carta
-		this.jbl.vez(this.j1, Comando.HIT, null);
+		this.jbl.vez(this.j1, Comando.HIT, 0);
 		assertEquals(3, this.j1.getMao(0).size());
 		
 		// dealer sempre compra uma carta
-		this.jbl.vez(dealer, null, null);
+		this.jbl.vez(dealer, null, 0);
 		assertEquals(3, this.j1.getMao(0).size());
 		
 		// double, a aposta na mesa deve ser incrementada
 		// e as fichas do jogador diminuidas
 		this.jbl.vez(this.j2, Comando.DOUBLE, aposta2);
-		assertEquals(this.j2.contaValores(), 460);
+		assertEquals(this.j2.getFichas(), 460);
 		
-		HashMap<Ficha, Integer> fMesa = this.jbl.getFichasMesa();
-		assertEquals( 60, Ficha.contaFichas(fMesa) );
+		assertEquals( 60, this.jbl.getFichasMesa() );
 		
 		// surrender, jogador sai da aposta e perde metade do que apostou
-		this.jbl.vez(this.j2, Comando.SURRENDER, null);
+		this.jbl.vez(this.j2, Comando.SURRENDER, 0);
 		assertEquals(false, this.jbl.getApostas().keySet().contains(this.j2));
 
 		// SPLIT -> N/A
@@ -216,12 +217,11 @@ public class JogoBlackjackTest {
 		// pre teste
 		this.jbl.inicializa(this.QTD_DECKS);
 		
-		HashMap<Jogador, HashMap<Ficha, Integer>> apostas = new HashMap<Jogador, HashMap<Ficha, Integer>>();
-		HashMap<Ficha, Integer> aposta1 = new HashMap<Ficha, Integer>();
-		aposta1.put(Ficha.VINTE, 1);
-		HashMap<Ficha, Integer> aposta2 = new HashMap<Ficha, Integer>();
-		aposta2.put(Ficha.VINTE, 1);
+		HashMap<Jogador, Integer> apostas = new HashMap<Jogador, Integer>();
+		int aposta1 = 20;
+		int aposta2 = 20;
 		
+		// gravar apostas
 		apostas.put(this.j1, aposta1);
 		apostas.put(this.j2, aposta2);
 		
