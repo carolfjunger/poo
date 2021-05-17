@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class JanelaInicial extends Janela {
@@ -29,7 +28,6 @@ public class JanelaInicial extends Janela {
         panel.add(button);
         panel.add(button2);
         this.getContentPane().add(panel);
-
 	}
 
 	@Override

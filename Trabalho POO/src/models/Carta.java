@@ -17,6 +17,31 @@ class Carta {
 		this.praBaixo = praBaixo;
 	}
 	
+	public String getNome() {
+		int val = this.valor.getValorCarta();
+		
+		if (val < 9) {
+			return Integer.toString(val);
+		}
+		
+		switch (this.valor) {
+		case DEZ:
+			return "t";
+		case VALETE:
+			return "j";
+		case DAMA:
+			return "q";
+		case REI:
+			return "k";
+		case AS:
+			return "a";	
+		}
+		
+		//funcao nao deveria chegar aqui
+		return null;
+	}
+	
+	
 	public boolean getPraBaixo()  {
 		return this.praBaixo;
 	}

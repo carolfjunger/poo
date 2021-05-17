@@ -10,6 +10,7 @@ public class JogoBlackjack {
 	private List<Jogador> jogadores = new ArrayList<Jogador>();
 	
 	private final int APOSTA_MIN = 20;
+	private final int FICHAS_INI = 500;
 	private int vez = 0;
 	private int qtdCartasUsadas = 0;
 	private HashMap<Jogador, Integer> apostas;
@@ -39,8 +40,48 @@ public class JogoBlackjack {
 		this.jogadores = jogadores;
 	}
 	
+	public void setJogadores(int num) {
+		List<Jogador> lj = new ArrayList<Jogador>();
+		for (int i=0; i<num; i++) {
+			Jogador j = new Jogador(Integer.toString(i), this.FICHAS_INI);
+			lj.add(j);
+		}
+		
+		this.jogadores = lj;
+	}
+	
 	public List<Jogador> getJogadores() {
 		return new ArrayList<Jogador>(this.jogadores);
+	}
+	
+	public List<String> getIDJogadores() {
+		List<String> ids = new ArrayList<String>();
+		for (Jogador j: this.jogadores) {
+			ids.add(j.getID());
+		}
+		
+		return ids;
+	}
+	
+	public HashMap<String, Boolean> getCartasJogador(int iJog, int iMao) {
+		Jogador j = this.jogadores.get(iJog);
+		List<Carta> lc = j.getMao(iMao);
+		List<String> ls = new ArrayList<String>();
+		HashMap<String, Boolean> cartas = new HashMap<String, Boolean>();
+		
+		for (Carta c: lc) {
+			int val = c.getValor();
+			
+			String num = Integer.toString( c.getValor() );
+			String naipe = c.getNaipe().name();
+			
+			String chave = num + naipe;
+			Boolean praBaixo = c.getPraBaixo();
+			
+			cartas.put(chave, praBaixo);
+		}
+		
+		return cartas;
 	}
 	
 	public Baralho getBaralho() {
@@ -60,6 +101,15 @@ public class JogoBlackjack {
 	
 	public int getFichasMesa() {
 		return this.fichasMesa;
+	}
+	
+	public List<Integer> getFichasJogadores() {
+		List<Integer> fs = new ArrayList<Integer>();
+		for (Jogador j: this.jogadores) {
+			fs.add(j.getFichas());
+		}
+		
+		return fs;
 	}
 
 	// retorna `true` se deu certo

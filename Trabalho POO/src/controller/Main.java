@@ -1,11 +1,9 @@
 package controller;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Point;
+import java.util.HashMap;
+import java.util.List;
 
 import models.*;
 import view.*;
@@ -28,6 +26,7 @@ public class Main {
     		
     		iniciaJogo(numJogadores);
 		});
+		
 		ji.setVisible(true);
 		ji.setLocationRelativeTo(null);
 	}
@@ -35,9 +34,21 @@ public class Main {
 	public static void iniciaJogo(int numJogadores) {
 		Janela jBanca = new JanelaBanca("Banca");
 		jBanca.setVisible(true);
-
-		for (int i = 0; i < numJogadores; i++) {
+		
+		JogoBlackjack jbl = JogoBlackjack.getInstancia();
+		jbl.setJogadores(numJogadores);
+		List<String> jID = jbl.getIDJogadores();
+		List<Integer> jf = jbl.getFichasJogadores();
+		int tam = jID.size();
+		
+		for (int i=0; i<tam; i++) {
+			int numFichas = jf.get(i);
+			//HashMap<String, Boolean> cartas = jbl.getCartasJogador(i, 0);
+			Janela jg = new JanelaJogador(jID.get(i), numFichas, 0, null);
 			
+			Point p = new Point(i*400, 420);
+			jg.setLocation(p);
+			jg.setVisible(true);
 		}
 	}
 }
