@@ -76,6 +76,7 @@ public class JogoBlackjack {
 			String naipe = c.getNaipe().name();
 			
 			String chave = num + naipe;
+			System.out.print(chave);
 			Boolean praBaixo = c.getPraBaixo();
 			
 			cartas.put(chave, praBaixo);
@@ -114,6 +115,7 @@ public class JogoBlackjack {
 
 	// retorna `true` se deu certo
 	// ou `false` se a quantidade de jogadores ou decks for invalida
+	// inicia o jogo e as mãos ainda estão vazias
 	public boolean inicializa(int qtdDecks) {
 		this.qtdCartasUsadas = 0;
 		this.baralho.adicionaDeck(qtdDecks);

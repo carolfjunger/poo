@@ -34,17 +34,25 @@ public class Main {
 	public static void iniciaJogo(int numJogadores) {
 		Janela jBanca = new JanelaBanca("Banca");
 		jBanca.setVisible(true);
-		
 		JogoBlackjack jbl = JogoBlackjack.getInstancia();
 		jbl.setJogadores(numJogadores);
 		List<String> jID = jbl.getIDJogadores();
 		List<Integer> jf = jbl.getFichasJogadores();
 		int tam = jID.size();
 		
+		
+		Boolean inicia = jbl.inicializa(5);
+		
+		if(inicia != true) {
+			System.out.print("erro");
+		}
+		
+		
 		for (int i=0; i<tam; i++) {
 			int numFichas = jf.get(i);
-			//HashMap<String, Boolean> cartas = jbl.getCartasJogador(i, 0);
-			Janela jg = new JanelaJogador(jID.get(i), numFichas, 0, null);
+			HashMap<String, Boolean> cartas = jbl.getCartasJogador(i, 0);
+
+			Janela jg = new JanelaJogador(jID.get(i), numFichas, 0, cartas);
 			
 			Point p = new Point(i*400, 420);
 			jg.setLocation(p);

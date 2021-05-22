@@ -45,6 +45,7 @@ class Jogador {
 	}
 	
 	public List<Carta> getMao(int indice) {
+		System.out.print(this.maos.size());
 		return this.maos.get(indice);
 	}
 	
