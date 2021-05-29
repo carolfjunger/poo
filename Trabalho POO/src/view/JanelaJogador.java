@@ -5,11 +5,14 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -17,7 +20,9 @@ public class JanelaJogador extends Janela {
 	private int fichas = 0;
 	private int indMao = 0;
 	private int fichasApostadas = 0;
+	private boolean estaApostando = false;
 	HashMap<String, Boolean> cartas;
+	final private int APOSTA_MIN = 20;
 	
 	public JanelaJogador(String titulo, int fichas, int indMao, HashMap<String, Boolean> cartas) {
 		super(titulo);
@@ -26,6 +31,22 @@ public class JanelaJogador extends Janela {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 		
+		JButton deal = new JButton("DEAL");
+		deal.setEnabled(false);
+		
+		deal.addActionListener(new ActionListener() {
+		     public void actionPerformed(ActionEvent ae) {
+        		if(fichasApostadas > APOSTA_MIN) {
+        			estaApostando = true;
+        			deal.setEnabled(false);
+	    		} else {
+	    			estaApostando = false;
+	    			deal.setEnabled(true);
+	    		}
+		      }
+		    }
+		  );
+
 		JLabel lFichas = new JLabel();
 		
 		lFichas.setText("Fichas totais: " + Integer.toString(this.fichas));
@@ -44,9 +65,17 @@ public class JanelaJogador extends Janela {
 
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                	jogJanela.addFichaApostada(Integer.parseInt(ficha));
-                	lFichas.setText("Fichas totais: " + Integer.toString(jogJanela.fichas));
-                	lFichasApostadas.setText("Fichas apostadas: " + Integer.toString(jogJanela.fichasApostadas));
+                	if(!jogJanela.estaApostando) {
+                    	jogJanela.addFichaApostada(Integer.parseInt(ficha));
+                    	lFichas.setText("Fichas totais: " + Integer.toString(jogJanela.fichas));
+                    	lFichasApostadas.setText("Fichas apostadas: " + Integer.toString(jogJanela.fichasApostadas));
+                		if(jogJanela.fichasApostadas >= APOSTA_MIN) {
+                			deal.setEnabled(true);
+        	    		} else {
+        	    			deal.setEnabled(false);
+        	    		}
+                	}
+
                  }
             });
 			panel.add(fi);
@@ -63,16 +92,24 @@ public class JanelaJogador extends Janela {
 //			panel.add(pi);
 //		}
 		
-
-       
+//		if(fichasApostadas > APOSTA_MIN) {
+//			System.out.print("oi");
+//			deal.setVisible(true);
+//		} else {
+//			deal.setVisible(false);
+//		}
+		panel.add(deal);
 		panel.add(lFichas);
 		panel.add(lFichasApostadas);
         this.getContentPane().add(panel);
 	}
 	
 	public void addFichaApostada(int ficha) {
-		this.fichasApostadas += ficha;
-		this.fichas -= ficha;
+		if(this.fichas - ficha >= 0) {
+			this.fichasApostadas += ficha;
+			this.fichas -= ficha;
+		}
+
 	}
 	
 	

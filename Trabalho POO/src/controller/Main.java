@@ -1,7 +1,16 @@
 package controller;
 
 import javax.swing.JOptionPane;
+
+import java.awt.Component;
 import java.awt.Point;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.ContainerListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.util.HashMap;
 import java.util.List;
 
@@ -53,6 +62,13 @@ public class Main {
 			HashMap<String, Boolean> cartas = jbl.getCartasJogador(i, 0);
 
 			Janela jg = new JanelaJogador(jID.get(i), numFichas, 0, cartas);
+			
+//			jg.addWindowStateListener(new 				WindowStateListener() {
+////		        @Override
+////		        public void windowStateChanged(WindowEvent e) {
+////		            
+////		        }
+//		    });
 			
 			Point p = new Point(i*400, 420);
 			jg.setLocation(p);
