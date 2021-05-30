@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class JanelaJogador extends Janela {
+	private String jogId = "";
 	private int fichas = 0;
 	private int indMao = 0;
 	private int fichasApostadas = 0;
@@ -24,9 +25,10 @@ public class JanelaJogador extends Janela {
 	HashMap<String, Boolean> cartas;
 	final private int APOSTA_MIN = 20;
 	
-	public JanelaJogador(String titulo, int fichas, int indMao, HashMap<String, Boolean> cartas) {
+	public JanelaJogador(String titulo, int fichas, int indMao, HashMap<String, Boolean> cartas, ActionListener buttonDealAction) {
 		super(titulo);
 		this.fichas = fichas;
+		this.jogId = titulo;
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
@@ -46,6 +48,8 @@ public class JanelaJogador extends Janela {
 		      }
 		    }
 		  );
+		
+		deal.addActionListener(buttonDealAction);
 
 		JLabel lFichas = new JLabel();
 		
@@ -60,7 +64,7 @@ public class JanelaJogador extends Janela {
 		JanelaJogador jogJanela = this;
 		for (String ficha: fichasArray) {
 			String nome = "ficha " + ficha + "$";
-			PainelImagem fi = new PainelImagem(this.assets.get(nome), 0, 0);
+			PainelImagem fi = new PainelImagem(this.assets.get(nome), 0, 0, false);
 			fi.addMouseListener(new MouseAdapter() {
 
                 @Override
@@ -81,6 +85,8 @@ public class JanelaJogador extends Janela {
 			panel.add(fi);
 			
 		}
+		
+
 		
 //		System.out.print(cartas);
 //		for(String carta: cartas.keySet()) {
@@ -125,6 +131,15 @@ public class JanelaJogador extends Janela {
 //		System.out.println(img);
 //		g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), this);
 //	}
+	
+	
+	public boolean verificaSeEstaApostando() {
+		return this.estaApostando;
+	}
+	
+	public int getFichasApostadas() {
+		return this.fichasApostadas;
+	}
 	
 	@Override
 	public void carregarAssets() {
