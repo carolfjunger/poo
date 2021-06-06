@@ -15,6 +15,8 @@ import view.*;
 public class Main {
 	
 	private static Atualizador at;
+	private static Gerenciador ger;
+	private static JogoBlackjack jbl;
 	
 	public static void main(String[] args) {
 		
@@ -45,7 +47,7 @@ public class Main {
     	Janela jBanca = new JanelaBanca("Banca");
     	ArrayList<Janela> jJogador = new ArrayList<Janela>();
 		
-		JogoBlackjack jbl = JogoBlackjack.getInstancia();
+		jbl = JogoBlackjack.getInstancia();
 		jbl.setJogadores(numJogadores);
 		List<String> jID = jbl.getIDJogadores();
 		List<Integer> jf = jbl.getFichasJogadores();
@@ -54,15 +56,16 @@ public class Main {
 		jbl.inicializa(2);
 		jbl.darCartas();
 		
-		at = new Atualizador(jbl);
-//		at.jbl = jbl;
+		at = new Atualizador();
+		ger = new Gerenciador();
 
 		for (int i=0; i<tam; i++) {
 			int numFichas = jf.get(i);
 			String id = jID.get(i);
 			HashMap<String, Boolean> cartas = jbl.getCartasJogador(i, 0);
 			//System.out.println(cartas);
-			Janela jg = new JanelaJogador(id, numFichas, 0, cartas, at);
+			JanelaJogador jg = new JanelaJogador(id, numFichas, 0, cartas, at);
+			ger.registraObs(jg);
 			
 			Point p = new Point(i*400, 420);
 			jg.setLocation(p);
@@ -77,20 +80,45 @@ public class Main {
 	    });
 	}
 	
-	protected static class Atualizador implements Observer {
-		
-		JogoBlackjack jbl;
-		
-		public Atualizador(JogoBlackjack jbl) {
-			this.jbl = jbl;
-		}
-		
+	private static class Atualizador implements Observer {
 		@Override
+		//TODO: falta implementar corretamente, o abaixo eh apenas um exemplo
 		public void update(String evento, Object val) {
-			
-			return;
+			switch(evento.toUpperCase()) {
+			case "HIT":
+				int fichas = (int) val;
+				break;
+			default:
+				System.out.println("Erro fatal! Tipo de evento '" + evento + "' nao reconhecido.");
+				System.exit(1);
+			}
 		}
 	}
 	
-	//protected static class Gerenciador implements Observable
+	private static class Gerenciador implements Observable {
+		private ArrayList<Observer> observers = new ArrayList<Observer>();
+		
+		@Override
+		public void registraObs(Observer observer) {
+			observers.add(observer);			
+		}
+
+		@Override
+		public void removeObs(Observer observer) {
+			observers.remove(observer);
+		}
+
+		@Override
+		public void notificaObs(String evento) {
+			switch(evento) {
+			case "VEZ":
+				for (Observer o: this.observers) {
+					o.update("VEZ", jbl.getVez());
+				}
+				break;
+			default:
+				System.out.println("Erro fatal! Tipo de evento '" + evento + "' nao reconhecido.");
+				System.exit(1);
+			}
+		}}
 }

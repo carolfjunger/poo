@@ -255,18 +255,22 @@ public class JogoBlackjack {
 	// Funcao vez simula a vez de um jogador
 	// Se o retorno for `BlackJack` ou `Fim de Turno`
 	// a funcao avaliarMesa deve ser chamada em seguida
-	public ResultadoVez vez(Jogador j, Comando c, int apostaDouble) {
+	public ResultadoVez vez(Comando c, int apostaDouble) {
 		
-		if (j.getID() == "dealer") {
+		if (this.vez < 0) {
+			this.vez = 0;
+			return ResultadoVez.FIM_DE_TURNO;
+		}
+		
+		Jogador j = jogadores.get(this.vez);
+		
+		// dealer eh o ultimo indice
+		if (this.vez == this.jogadores.size()) {
 			j.compraCarta(baralho, 0);
 			return ResultadoVez.OK;
 		}
 		
 		int qtd = this.apostas.get(j);
-		
-		if (vez < 0) {
-			return ResultadoVez.FIM_DE_TURNO;
-		}
 		
 		this.vez += 1;
 		// depois, trocar jogadores.size() pela qtd de apostadores

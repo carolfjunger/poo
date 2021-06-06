@@ -20,21 +20,32 @@ import javax.swing.JPanel;
 
 import models.Comando;
 
-public class JanelaJogador extends Janela {
+public class JanelaJogador extends Janela implements Observer {
 	private HashMap<String, Boolean> cartas;
 	private ArrayList<PainelImagem> imagens = new ArrayList<PainelImagem>();
 	private Observer obs;
 	
 	private int fichas = 0;
+	private int aposta = 0;
 	private int indMao = 0;
+	private int indJogador = 0;
 	private final int wCarta = 73; //px - largura da imagem da carta
 	private final int hCarta = 97; //px - altura da imagem da carta
+	
+	// componentes
+	private JButton deal = new JButton("Deal");
+	private JButton stand = new JButton("Stand");
+	private JButton hit = new JButton("Hit");
+	private JButton dbl = new JButton("Double");
+	private JButton split = new JButton("Split");
 	
 	public JanelaJogador(String titulo, int fichas, int indMao, HashMap<String, Boolean> cartas, Observer obs) {
 		super(titulo);
 		this.fichas = fichas;
 		this.cartas = cartas;
 		this.obs = obs;
+		// TODO: fazer isso de forma mais correta
+		this.indJogador = Integer.parseInt(titulo);
 		
 		JPanel panel = new PaintPanel();
 		panel.setLayout(null);
@@ -52,12 +63,13 @@ public class JanelaJogador extends Janela {
 			i += 1;
 		}
 		
+		
 		// botoes
-		JButton deal = new JButton("Deal");
-		JButton stand = new JButton("Stand");
-		JButton hit = new JButton("Hit");
-		JButton dbl = new JButton("Double");
-		JButton split = new JButton("Split");
+//		JButton deal = new JButton("Deal");
+//		JButton stand = new JButton("Stand");
+//		JButton hit = new JButton("Hit");
+//		JButton dbl = new JButton("Double");
+//		JButton split = new JButton("Split");
 		
 		Dimension ps = stand.getPreferredSize();
 		int width = (int) ps.getWidth();
@@ -65,7 +77,7 @@ public class JanelaJogador extends Janela {
 		for (int j = 0; j < btns.length; j++) {
 			JButton jb = btns[j];
 			jb.setSize(ps);
-			jb.setLocation(20 + (width * j), 20);
+			jb.setLocation(2 + (width * j), 32);
 			jb.setEnabled(false);
 			
 			jb.addActionListener( (evt) -> {
@@ -111,11 +123,33 @@ public class JanelaJogador extends Janela {
     			}
     		}
 
-            String text = "Look ma, no hands";
+            String text = "Jogador #" + (indJogador + 1);
             g.drawString(text, 20, 20);
         }
 
     }
+    
+    @Override 
+    public void update(String evento, Object val) {
+    	int vez;
+    	switch (evento) {
+    	case "DEAL":
+    		vez = (int) val;
+    		if (vez == this.indJogador) {
+    			
+    		}
+    		this.deal.setEnabled(true);
+    	case "VEZ":
+    		vez = (int) val;
+    		if (this.aposta == 0) {
+    			return;
+    		}
+    		break;
+    	default:
+    		System.out.println("Erro fatal na janela jogador, evento nao reconhecido!");
+    	}
+    }
+
 	
 	@Override
 	public void carregarAssets() {
