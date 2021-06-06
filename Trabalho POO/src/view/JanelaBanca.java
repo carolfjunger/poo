@@ -5,6 +5,12 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.JFrame;
 
 public class JanelaBanca extends Janela {
 	public JanelaBanca(String titulo) {
@@ -28,17 +34,36 @@ public class JanelaBanca extends Janela {
 		// deck2
 		img = this.assets.get("deck2");
 		g.drawImage(img, 200, 50, this);
+		
+		// desenhar fichas
+		String fichasArr[] = {"ficha1", "ficha5", "ficha10", "ficha20", "ficha50", "ficha100"};
+		for (int i = 0; i < fichasArr.length; i++) {
+			img = assets.get(fichasArr[i]);
+			if (img != null) {
+				int width = img.getWidth(this);
+				int height = img.getHeight(this);
+				g.drawImage(img, (width * i), getHeight() - (height + 8), width, height, this);
+			}
+		}
 	}
 
 	@Override
 	public void carregarAssets() {
 		String imageURL;
 		Image image;
+		String baseURL = "../Imagens/";
 		
 		// fundo
 		imageURL = "../Imagens/blackjackBKG.png";
 		image = Toolkit.getDefaultToolkit().getImage(imageURL);
 		this.assets.put("fundo", image);
+		
+		//fichas
+		String fichasArr[] = {"ficha1", "ficha5", "ficha10", "ficha20", "ficha50", "ficha100"};
+		for (String f: fichasArr) {
+			image = Toolkit.getDefaultToolkit().getImage(baseURL + f + ".png");
+			this.assets.put(f, image);
+		}
 		
 		// deck 1
 		imageURL = "../Imagens/deck1.gif";

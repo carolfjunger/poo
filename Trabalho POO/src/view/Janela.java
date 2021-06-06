@@ -6,6 +6,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import java.awt.Dimension;
 import java.awt.Image;
@@ -22,10 +23,10 @@ public class Janela extends JFrame {
 		super(titulo);
 		carregarAssets();
 		
+		Dimension tamMin = new Dimension(400, 400);
 		Dimension tamMax = new Dimension(1200, 700);
+		this.setMinimumSize(tamMin);
 		this.setMaximumSize(tamMax);
-
-		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.display();
 	}
 	
@@ -45,7 +46,12 @@ public class Janela extends JFrame {
 		setSize(this.largura, this.altura);
 		addWindowListener( new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
-				System.exit(0);
+			    SwingUtilities.invokeLater(new Runnable() {
+			        @Override
+			        public void run() {
+			            System.exit(0);
+			        }
+			    });
 			}
 		});
 	}

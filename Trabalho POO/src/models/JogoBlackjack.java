@@ -1,19 +1,22 @@
 package models;
 
 import java.util.List;
+
+import view.Observer;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class JogoBlackjack {
 	private Baralho baralho = new Baralho(); // verificar oq saiu?
-	private int fichasMesa; 
+	private int fichasMesa = 0; 
 	private List<Jogador> jogadores = new ArrayList<Jogador>();
+	private HashMap<Jogador, Integer> apostas;
 	
 	private final int APOSTA_MIN = 20;
 	private final int FICHAS_INI = 500;
 	private int vez = 0;
 	private int qtdCartasUsadas = 0;
-	private HashMap<Jogador, Integer> apostas;
 	
 	private JogoBlackjack() {}
 		
@@ -71,9 +74,15 @@ public class JogoBlackjack {
 		
 		for (Carta c: lc) {
 			int val = c.getValor();
+			String num = Integer.toString( val );
+			if (val > 9) {
+				switch(val) {
+				case 10:
+					num = "t";
+				}
+			}
 			
-			String num = Integer.toString( c.getValor() );
-			String naipe = c.getNaipe().name();
+			String naipe = c.getNaipe().Repr();
 			
 			String chave = num + naipe;
 			Boolean praBaixo = c.getPraBaixo();
@@ -82,6 +91,10 @@ public class JogoBlackjack {
 		}
 		
 		return cartas;
+	}
+	
+	public int getVez() {
+		return this.vez;
 	}
 	
 	public Baralho getBaralho() {
@@ -172,9 +185,39 @@ public class JogoBlackjack {
 			this.apostas.remove(j);
 		}
 	}
+
+	// TODO
+	public void colheAposta(int indJogador, int aposta) {
+		List<Jogador> aRemover = new ArrayList<Jogador>();
+		
+		for (Jogador j: apostas.keySet()) {
+			if (j.getID() == "dealer") {
+				continue;
+			}
+			
+			int fichasAposta = apostas.get(j);
+			
+			if (fichasAposta < this.APOSTA_MIN) {
+				aRemover.add(j);
+				continue;
+			}
+			
+			// fichas nao sao deduzidas do jog
+			// pode falhar, mas o caso eh validado no front-end
+			boolean sucesso = j.apostaFichas(fichasAposta);
+			
+			if (sucesso) {
+				this.fichasMesa += fichasAposta;
+			} else {
+				this.apostas.remove(j);
+			}
+		}
+		
+		for (Jogador j: aRemover) {
+			this.apostas.remove(j);
+		}
+	}
 	
-	// retorna um Jogador se o mesmo n tiver fichas para apostar 
-	// se nao, retorna nulo
 	public void recebeCartas() {
 		int APOSTA_MIN = 20;
 	
@@ -193,6 +236,18 @@ public class JogoBlackjack {
 			if (j.getID() == "dealer") {
 				j.getMao(0).get(1).setPraBaixo(true);
 			}
+		}
+	}
+	
+	public void darCartas() {
+		for (Jogador j: this.jogadores) {
+			j.compraCarta(this.baralho, 0);
+			j.compraCarta(this.baralho, 0);
+			this.qtdCartasUsadas += 2;
+			
+//			if (j.getID() == "dealer") {
+//				j.getMao(0).get(1).setPraBaixo(true);
+//			}
 		}
 	}
 	

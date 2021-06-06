@@ -14,14 +14,17 @@ public class PainelImagem extends JPanel {
 		this.img = img;
 	}
 	
-    private void doDrawing(Graphics g) {
+    private void Draw(Graphics g) {
         //Graphics2D g2d = (Graphics2D) g;
-        g.drawImage(this.img, 0, 0, 100, 100, this);
+    	if (this.img != null) {
+    		g.drawImage(this.img, 0, 0, img.getWidth(null), img.getHeight(null), this);	
+    	}
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        doDrawing(g);
+        Draw(g);
+        g.dispose();
     }
 }

@@ -12,8 +12,8 @@ public enum Naipe {
 		this.repr = r;
 	}
 	
-	public String getNaipe() {
-		return repr;
+	public String Repr() {
+		return this.repr;
 	}
 	
 }
