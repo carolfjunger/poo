@@ -54,7 +54,7 @@ public class Main {
 		int tam = jID.size();
 		
 		jbl.inicializa(2);
-		jbl.darCartas();
+//		jbl.darCartas();
 		
 		at = new Atualizador();
 		ger = new Gerenciador();
@@ -90,8 +90,18 @@ public class Main {
 		public void update(String evento, Object val) {
 			switch(evento.toUpperCase()) {
 			case "DEAL":
-				jbl.setVez(jbl.getVez() + 1);
-				ger.notificaObs("INIT");
+				int proxVez = jbl.getVez() + 1;
+				int totalDeJogadores = jbl.getIDJogadores().size();
+				System.out.println(proxVez);
+				if(proxVez > totalDeJogadores - 1) {
+					jbl.darCartas();
+					proxVez = 0;
+					ger.notificaObs("DAR_CARTAS");
+				} else {
+					ger.notificaObs("INIT");
+				}
+				jbl.setVez(proxVez);
+//				ger.notificaObs("INIT");
 				break;
 			case "HIT":
 				int fichas = (int) val;
@@ -121,13 +131,20 @@ public class Main {
 			switch(evento) {
 			case "INIT":
 				for (Observer o: this.observers) {
-					//System.out.println(o);
 					o.update("INIT", jbl.getVez());
 				}
 				break;
 			case "VEZ":
 				for (Observer o: this.observers) {
 					o.update("VEZ", jbl.getVez());
+				}
+				break;
+			case "DAR_CARTAS":
+				int i = 0; // nao sei se foi a maneira mais eficiente, mas foi só pra continuas
+				for (Observer o: this.observers) {
+					HashMap<String, Boolean> cartas = jbl.getCartasJogador(i, 0);
+					i++;
+					o.update("DAR_CARTAS", cartas);
 				}
 				break;
 			default:

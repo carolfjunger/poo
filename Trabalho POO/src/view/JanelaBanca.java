@@ -45,6 +45,7 @@ public class JanelaBanca extends Janela {
 				g.drawImage(img, (width * i), getHeight() - (height + 8), width, height, this);
 			}
 		}
+		
 	}
 
 	@Override

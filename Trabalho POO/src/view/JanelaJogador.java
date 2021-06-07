@@ -26,9 +26,11 @@ public class JanelaJogador extends Janela implements Observer {
 	private Observer obs;
 	
 	private int fichas = 0;
+	private int fichasApostadas = 0;
 	private int aposta = 0;
 	private int indMao = 0;
 	private int indJogador = 0;
+	private final int apostaMinima = 20;
 	private final int wCarta = 73; //px - largura da imagem da carta
 	private final int hCarta = 97; //px - altura da imagem da carta
 	
@@ -38,6 +40,8 @@ public class JanelaJogador extends Janela implements Observer {
 	private JButton hit = new JButton("Hit");
 	private JButton dbl = new JButton("Double");
 	private JButton split = new JButton("Split");
+	
+	JLabel vezStatus = new JLabel();
 	
 	public JanelaJogador(String titulo, int fichas, int indMao, HashMap<String, Boolean> cartas, Observer obs) {
 		super(titulo);
@@ -84,6 +88,7 @@ public class JanelaJogador extends Janela implements Observer {
 				String txt = jb.getText().toUpperCase();
 				switch(txt) {
 				case "DEAL":
+					this.vezStatus.setText("Apostando");
 					this.deal.setEnabled(false);
 					//obs.update("")
 					break;
@@ -102,8 +107,22 @@ public class JanelaJogador extends Janela implements Observer {
 		lFichas.setSize(lFichas.getPreferredSize());
 		lFichas.setLocation(this.getWidth() - 94, this.getHeight() - 60);
         
+		
+		// Mostra a vez do jogador
+//		JLabel vezStatus = new JLabel();
+//		if (this.fichasApostadas > apostaMinima ) {
+//			vezStatus.setText("Fichas Apostada: " + Integer.toString(fichas));
+//		} else {
+//			vezStatus.setText("Faça sua aposta");
+//		}
+		this.vezStatus.setText("Aguarde sua vez");
+		this.vezStatus.setSize(vezStatus.getPreferredSize());
+		this.vezStatus.setLocation(this.getWidth() - 125, this.getHeight() - 80);
+		
+		
 		// botando tudo no painel principal
 		panel.add(lFichas);
+		panel.add(this.vezStatus);
         
         this.getContentPane().add(panel);
 	}
@@ -145,6 +164,12 @@ public class JanelaJogador extends Janela implements Observer {
     	case "INIT":
     		vez = (int) val;
     		if (vez == this.indJogador) {
+//    			JLabel vezStatus = new JLabel();
+    			if (this.fichasApostadas > apostaMinima ) {
+    				this.vezStatus.setText("Fichas Apostada: " + Integer.toString(fichas));
+    			} else {
+    				this.vezStatus.setText("Faça sua aposta");
+    			}
         		this.deal.setEnabled(true);
         		this.repaint();
     		}
@@ -155,6 +180,15 @@ public class JanelaJogador extends Janela implements Observer {
     		if (this.aposta == 0) {
     			return;
     		}
+    		break;
+    	case "DAR_CARTAS":
+    		HashMap<String, Boolean> cartas = (HashMap<String, Boolean>) val;
+    		this.cartas = cartas;
+    		this.stand.setEnabled(true);
+    		this.dbl.setEnabled(true);
+    		this.hit.setEnabled(true);
+    		this.split.setEnabled(true);
+    		this.repaint();
     		break;
     	default:
     		System.out.println("Erro fatal recebendo evento na janela jogador, evento nao reconhecido!");
