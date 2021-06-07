@@ -65,7 +65,10 @@ public class Main {
 			HashMap<String, Boolean> cartas = jbl.getCartasJogador(i, 0);
 			//System.out.println(cartas);
 			JanelaJogador jg = new JanelaJogador(id, numFichas, 0, cartas, at);
+			
+			// registrar janela jogador como observador
 			ger.registraObs(jg);
+			//System.out.println(tam);
 			
 			Point p = new Point(i*400, 420);
 			jg.setLocation(p);
@@ -77,6 +80,7 @@ public class Main {
         	for (Janela jg: jJogador) {
         		jg.setVisible(true);
         	}
+        	ger.notificaObs("INIT");
 	    });
 	}
 	
@@ -85,6 +89,10 @@ public class Main {
 		//TODO: falta implementar corretamente, o abaixo eh apenas um exemplo
 		public void update(String evento, Object val) {
 			switch(evento.toUpperCase()) {
+			case "DEAL":
+				jbl.setVez(jbl.getVez() + 1);
+				ger.notificaObs("INIT");
+				break;
 			case "HIT":
 				int fichas = (int) val;
 				break;
@@ -111,14 +119,21 @@ public class Main {
 		@Override
 		public void notificaObs(String evento) {
 			switch(evento) {
+			case "INIT":
+				for (Observer o: this.observers) {
+					//System.out.println(o);
+					o.update("INIT", jbl.getVez());
+				}
+				break;
 			case "VEZ":
 				for (Observer o: this.observers) {
 					o.update("VEZ", jbl.getVez());
 				}
 				break;
 			default:
-				System.out.println("Erro fatal! Tipo de evento '" + evento + "' nao reconhecido.");
+				System.out.println("Erro fatal recebendo mensagem na Main! Tipo de evento '" + evento + "' nao reconhecido.");
 				System.exit(1);
 			}
-		}}
+		}
+	}
 }

@@ -81,7 +81,16 @@ public class JanelaJogador extends Janela implements Observer {
 			jb.setEnabled(false);
 			
 			jb.addActionListener( (evt) -> {
-				String txt = jb.getText();
+				String txt = jb.getText().toUpperCase();
+				switch(txt) {
+				case "DEAL":
+					this.deal.setEnabled(false);
+					//obs.update("")
+					break;
+				default:
+		    		//System.out.println("Erro fatal enviando evento na janela jogador, evento nao reconhecido!");
+		    		//System.exit(1);	
+				}
 				obs.update(txt, null);
 			});
 			panel.add(jb);
@@ -133,12 +142,14 @@ public class JanelaJogador extends Janela implements Observer {
     public void update(String evento, Object val) {
     	int vez;
     	switch (evento) {
-    	case "DEAL":
+    	case "INIT":
     		vez = (int) val;
     		if (vez == this.indJogador) {
-    			
+        		this.deal.setEnabled(true);
+        		this.repaint();
     		}
-    		this.deal.setEnabled(true);
+
+    		break;
     	case "VEZ":
     		vez = (int) val;
     		if (this.aposta == 0) {
@@ -146,7 +157,8 @@ public class JanelaJogador extends Janela implements Observer {
     		}
     		break;
     	default:
-    		System.out.println("Erro fatal na janela jogador, evento nao reconhecido!");
+    		System.out.println("Erro fatal recebendo evento na janela jogador, evento nao reconhecido!");
+    		System.exit(1);
     	}
     }
 

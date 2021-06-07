@@ -39,6 +39,10 @@ public class JogoBlackjack {
 		this.baralho = new Baralho();
 	}
 	
+	public void setVez(int vez) {
+		this.vez = vez;
+	}
+	
 	public void setJogadores(List<Jogador> jogadores) {
 		this.jogadores = jogadores;
 	}
