@@ -26,7 +26,6 @@ public class JanelaJogador extends Janela implements Observer {
 	private Observer obs;
 	
 	private int fichas = 0;
-	private int fichasApostadas = 0;
 	private int aposta = 0;
 	private int indMao = 0;
 	private int indJogador = 0;
@@ -165,7 +164,7 @@ public class JanelaJogador extends Janela implements Observer {
     		vez = (int) val;
     		if (vez == this.indJogador) {
 //    			JLabel vezStatus = new JLabel();
-    			if (this.fichasApostadas > apostaMinima ) {
+    			if (this.aposta > apostaMinima ) {
     				this.vezStatus.setText("Fichas Apostada: " + Integer.toString(fichas));
     			} else {
     				this.vezStatus.setText("Faça sua aposta");
@@ -177,17 +176,21 @@ public class JanelaJogador extends Janela implements Observer {
     		break;
     	case "VEZ":
     		vez = (int) val;
-    		if (this.aposta == 0) {
-    			return;
-    		}
+    		// falta verificar se a aposta é maior que a aposta minima
+    		if (vez == this.indJogador) {
+        		this.stand.setEnabled(true);
+        		this.dbl.setEnabled(true);
+        		this.hit.setEnabled(true);
+        		this.split.setEnabled(true);
+        		this.vezStatus.setText("É a sua vez");
+    		} else {
+    			this.vezStatus.setText("Aguarde a sua vez");
+    		} 		
+    		this.repaint();
     		break;
     	case "DAR_CARTAS":
     		HashMap<String, Boolean> cartas = (HashMap<String, Boolean>) val;
     		this.cartas = cartas;
-    		this.stand.setEnabled(true);
-    		this.dbl.setEnabled(true);
-    		this.hit.setEnabled(true);
-    		this.split.setEnabled(true);
     		this.repaint();
     		break;
     	default:

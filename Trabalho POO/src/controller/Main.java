@@ -93,18 +93,23 @@ public class Main {
 				int proxVez = jbl.getVez() + 1;
 				int totalDeJogadores = jbl.getIDJogadores().size();
 				System.out.println(proxVez);
-				if(proxVez > totalDeJogadores - 1) {
+				if(proxVez >= totalDeJogadores - 1) {
 					jbl.darCartas();
 					proxVez = 0;
+					jbl.setVez(proxVez);
 					ger.notificaObs("DAR_CARTAS");
 				} else {
+					jbl.setVez(proxVez);
 					ger.notificaObs("INIT");
 				}
-				jbl.setVez(proxVez);
+				
 //				ger.notificaObs("INIT");
 				break;
-			case "HIT":
-				int fichas = (int) val;
+//			case "HIT":
+//				int fichas = (int) val;
+//				break;
+			case "VEZ":
+				ger.notificaObs("VEZ");
 				break;
 			default:
 				System.out.println("Erro fatal! Tipo de evento '" + evento + "' nao reconhecido.");
@@ -145,6 +150,7 @@ public class Main {
 					HashMap<String, Boolean> cartas = jbl.getCartasJogador(i, 0);
 					i++;
 					o.update("DAR_CARTAS", cartas);
+					ger.notificaObs("VEZ");
 				}
 				break;
 			default:
