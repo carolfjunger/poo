@@ -97,6 +97,20 @@ public class JogoBlackjack {
 		return cartas;
 	}
 	
+	public int getSomaCartasJogador(int iJog, int iMao) {
+		Jogador j = this.jogadores.get(iJog);
+		List<Carta> lc = j.getMao(iMao);
+		List<String> ls = new ArrayList<String>();
+		int somaCartas = 0;
+		
+		for (Carta c: lc) {
+			int val = c.getValor();
+			somaCartas += val;
+		}
+		
+		return somaCartas;
+	}
+	
 	public int getVez() {
 		return this.vez;
 	}

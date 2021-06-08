@@ -41,6 +41,7 @@ public class JanelaJogador extends Janela implements Observer {
 	private JButton split = new JButton("Split");
 	
 	JLabel vezStatus = new JLabel();
+	JLabel somaCartas = new JLabel();
 	
 	public JanelaJogador(String titulo, int fichas, int indMao, HashMap<String, Boolean> cartas, Observer obs) {
 		super(titulo);
@@ -108,20 +109,20 @@ public class JanelaJogador extends Janela implements Observer {
         
 		
 		// Mostra a vez do jogador
-//		JLabel vezStatus = new JLabel();
-//		if (this.fichasApostadas > apostaMinima ) {
-//			vezStatus.setText("Fichas Apostada: " + Integer.toString(fichas));
-//		} else {
-//			vezStatus.setText("Faça sua aposta");
-//		}
 		this.vezStatus.setText("Aguarde sua vez");
 		this.vezStatus.setSize(vezStatus.getPreferredSize());
 		this.vezStatus.setLocation(this.getWidth() - 125, this.getHeight() - 80);
+		
+		// Mostra a soma das cartas do jogador
+		this.somaCartas.setText("Somatório das cartas: 0");
+		this.somaCartas.setSize(somaCartas.getPreferredSize());
+		this.somaCartas.setLocation(this.getWidth() - 175, this.getHeight() - 100);
 		
 		
 		// botando tudo no painel principal
 		panel.add(lFichas);
 		panel.add(this.vezStatus);
+		panel.add(this.somaCartas);
         
         this.getContentPane().add(panel);
 	}
@@ -140,6 +141,7 @@ public class JanelaJogador extends Janela implements Observer {
         	
         	// desenhar cartas
         	int cInd = 0;
+        	int somaCartas = 0;
     		for (String c: cartas.keySet()) {
     			Image img = assets.get( c );
     			if (img != null) {
@@ -175,7 +177,9 @@ public class JanelaJogador extends Janela implements Observer {
 
     		break;
     	case "VEZ":
-    		vez = (int) val;
+    		int [] vezEsoma = (int[]) val;
+    		vez = (int) vezEsoma[0];
+    		int sumCarta = (int) vezEsoma[1];
     		// falta verificar se a aposta é maior que a aposta minima
     		if (vez == this.indJogador) {
         		this.stand.setEnabled(true);
@@ -185,7 +189,8 @@ public class JanelaJogador extends Janela implements Observer {
         		this.vezStatus.setText("É a sua vez");
     		} else {
     			this.vezStatus.setText("Aguarde a sua vez");
-    		} 		
+    		}
+    		this.somaCartas.setText("Somatório das cartas:" + Integer.toString(sumCarta));
     		this.repaint();
     		break;
     	case "DAR_CARTAS":

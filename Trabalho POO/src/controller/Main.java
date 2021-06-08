@@ -140,8 +140,11 @@ public class Main {
 				}
 				break;
 			case "VEZ":
+				int j = 0; // nao sei se foi a maneira mais eficiente, mas foi só pra continuas
 				for (Observer o: this.observers) {
-					o.update("VEZ", jbl.getVez());
+					int[] val = { jbl.getVez(), jbl.getSomaCartasJogador(j, 0)};
+					j++;
+					o.update("VEZ", val);
 				}
 				break;
 			case "DAR_CARTAS":
