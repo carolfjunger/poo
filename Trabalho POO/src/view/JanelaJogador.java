@@ -192,13 +192,14 @@ public class JanelaJogador extends Janela implements Observer {
     	case "INIT":
     		vez = (int) val;
     		if (vez == this.indJogador) {
-//    			JLabel vezStatus = new JLabel();
     			if (this.aposta > apostaMinima ) {
     				this.vezStatus.setText("Fichas Apostada: " + Integer.toString(fichas));
+    				this.deal.setEnabled(true);
     			} else {
     				this.vezStatus.setText("Faça sua aposta");
+    				this.deal.setEnabled(false);
     			}
-        		this.deal.setEnabled(true);
+        		
         		this.repaint();
     		}
 
@@ -217,6 +218,7 @@ public class JanelaJogador extends Janela implements Observer {
     		} else {
     			this.vezStatus.setText("Aguarde a sua vez");
     		}
+    		this.vezStatus.setSize(vezStatus.getPreferredSize());
     		this.somaCartas.setText("Somatório das cartas:" + Integer.toString(sumCarta));
     		this.somaCartas.setSize(somaCartas.getPreferredSize());
     		this.repaint();
@@ -232,6 +234,9 @@ public class JanelaJogador extends Janela implements Observer {
        		int ficha = vezEFicha[1];
        		if (vez == this.indJogador) {
            		this.addFichaApostada(ficha);
+           		if(this.aposta >= apostaMinima) {
+           			this.deal.setEnabled(true);
+           		}
            		this.lFichas.setText("Fichas: " + Integer.toString(this.fichas));
            		this.lFichas.setSize(this.lFichas.getPreferredSize());
         		this.lAposta.setText("Aposta: " + Integer.toString(this.aposta));
