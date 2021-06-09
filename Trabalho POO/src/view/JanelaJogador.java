@@ -40,8 +40,10 @@ public class JanelaJogador extends Janela implements Observer {
 	private JButton dbl = new JButton("Double");
 	private JButton split = new JButton("Split");
 	
-	JLabel vezStatus = new JLabel();
-	JLabel somaCartas = new JLabel();
+	private JLabel lFichas = new JLabel();
+	private JLabel lAposta = new JLabel();
+	private JLabel vezStatus = new JLabel();
+	private JLabel somaCartas = new JLabel();
 	
 	public JanelaJogador(String titulo, int fichas, int indMao, HashMap<String, Boolean> cartas, Observer obs) {
 		super(titulo);
@@ -112,29 +114,44 @@ public class JanelaJogador extends Janela implements Observer {
 		}
 		
 		// valor total das fichas
-		JLabel lFichas = new JLabel();
-		lFichas.setText("Fichas: " + Integer.toString(fichas));
-		lFichas.setSize(lFichas.getPreferredSize());
-		lFichas.setLocation(this.getWidth() - 94, this.getHeight() - 60);
+
+		this.lFichas.setText("Fichas: " + Integer.toString(fichas));
+		this.lFichas.setSize(this.lFichas.getPreferredSize());
+		this.lFichas.setLocation(this.getWidth() - 94, this.getHeight() - 60);
+		
+		// valor total das fichas apostadas
+
+		this.lAposta.setText("Aposta: " + Integer.toString(this.aposta));
+		this.lAposta.setSize(this.lAposta.getPreferredSize());
+		this.lAposta.setLocation(this.getWidth() - 94, this.getHeight() - 80);
         
 		
 		// Mostra a vez do jogador
 		this.vezStatus.setText("Aguarde sua vez");
 		this.vezStatus.setSize(vezStatus.getPreferredSize());
-		this.vezStatus.setLocation(this.getWidth() - 125, this.getHeight() - 80);
+		this.vezStatus.setLocation(this.getWidth() - 125, this.getHeight() - 100);
 		
 		// Mostra a soma das cartas do jogador
 		this.somaCartas.setText("Somatório das cartas: 0");
 		this.somaCartas.setSize(somaCartas.getPreferredSize());
-		this.somaCartas.setLocation(this.getWidth() - 175, this.getHeight() - 100);
+		this.somaCartas.setLocation(this.getWidth() - 175, this.getHeight() - 120);
 		
 		
 		// botando tudo no painel principal
-		panel.add(lFichas);
+		panel.add(this.lFichas);
+		panel.add(this.lAposta);
 		panel.add(this.vezStatus);
 		panel.add(this.somaCartas);
         
         this.getContentPane().add(panel);
+	}
+	
+	public void addFichaApostada(int ficha) {
+		if(this.fichas - ficha >= 0) {
+			this.aposta += ficha;
+			this.fichas -= ficha;
+		}
+
 	}
 	
 //	public getID() {
@@ -209,6 +226,22 @@ public class JanelaJogador extends Janela implements Observer {
     		this.cartas = cartas;
     		this.repaint();
     		break;
+       	case "FICHA_CLICK":
+       		int [] vezEFicha = (int[]) val;
+       		vez = vezEFicha[0];
+       		int ficha = vezEFicha[1];
+       		if (vez == this.indJogador) {
+           		this.addFichaApostada(ficha);
+           		this.lFichas.setText("Fichas: " + Integer.toString(this.fichas));
+           		this.lFichas.setSize(this.lFichas.getPreferredSize());
+        		this.lAposta.setText("Aposta: " + Integer.toString(this.aposta));
+        		this.lAposta.setSize(this.lAposta.getPreferredSize());
+       		}
+
+    		this.repaint();
+    		break;	
+    		
+    		
     	default:
     		System.out.println("Erro fatal recebendo evento na janela jogador, evento nao reconhecido!");
     		System.exit(1);

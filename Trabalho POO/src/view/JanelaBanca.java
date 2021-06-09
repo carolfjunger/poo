@@ -3,18 +3,66 @@ package view;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 public class JanelaBanca extends Janela {
-	public JanelaBanca(String titulo) {
+	HashMap<Integer, Point> fichasPosition = new HashMap<Integer, Point>();
+	final int size = 59; // tamanho da ficha
+	Observer obs;
+	
+	public JanelaBanca(String titulo,  Observer obs) {
 		super(titulo);
+		HashMap<Integer, Point> fichasPosition = this.fichasPosition;
+		this.obs = obs;
+		
+		this.addMouseListener(new MouseListener() {
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		    	int x=e.getX();
+		        int y=e.getY();
+		        for (int key : fichasPosition.keySet()) {
+		        	Point fichaPos = fichasPosition.get(key);
+		        	if(fichaPos.x < x && (fichaPos.x + size) > x && fichaPos.y < y && (fichaPos.y + size) > y) {
+		        		obs.update("FICHA_CLICK", key);
+		        	}
+		        }
+
+		    }
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 
 	@Override
@@ -37,15 +85,19 @@ public class JanelaBanca extends Janela {
 		
 		// desenhar fichas
 		String fichasArr[] = {"ficha1", "ficha5", "ficha10", "ficha20", "ficha50", "ficha100"};
+		int fichasValueArr[] = {1, 5, 10, 20, 50, 100};
 		for (int i = 0; i < fichasArr.length; i++) {
-			img = assets.get(fichasArr[i]);
+			String name = fichasArr[i];
+			img = assets.get(name);
 			if (img != null) {
 				int width = img.getWidth(this);
 				int height = img.getHeight(this);
-				g.drawImage(img, (width * i), getHeight() - (height + 8), width, height, this);
+				int x = (width * i);
+				int y = getHeight() - (height + 8);
+				this.fichasPosition.put(fichasValueArr[i], new Point(x,y));
+				g.drawImage(img, x, y, width, height, this);
 			}
-		}
-		
+		}		
 	}
 
 	@Override

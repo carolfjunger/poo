@@ -43,8 +43,10 @@ public class Main {
 	}
 	
 	public static void iniciaJogo(int numJogadores) {
+		at = new Atualizador();
+		ger = new Gerenciador();
 		
-    	Janela jBanca = new JanelaBanca("Banca");
+    	Janela jBanca = new JanelaBanca("Banca", at);
     	ArrayList<Janela> jJogador = new ArrayList<Janela>();
 		
 		jbl = JogoBlackjack.getInstancia();
@@ -56,8 +58,7 @@ public class Main {
 		jbl.inicializa(2);
 //		jbl.darCartas();
 		
-		at = new Atualizador();
-		ger = new Gerenciador();
+
 
 		for (int i=0; i<tam; i++) {
 			int numFichas = jf.get(i);
@@ -80,7 +81,7 @@ public class Main {
         	for (Janela jg: jJogador) {
         		jg.setVisible(true);
         	}
-        	ger.notificaObs("INIT");
+        	ger.notificaObs("INIT", null);
 	    });
 	}
 	
@@ -100,10 +101,10 @@ public class Main {
 					jbl.darCartas();
 					proxVez = 0;
 					jbl.setVez(proxVez);
-					ger.notificaObs("DAR_CARTAS");
+					ger.notificaObs("DAR_CARTAS", null);
 				} else {
 					jbl.setVez(proxVez);
-					ger.notificaObs("INIT");
+					ger.notificaObs("INIT", null);
 				}
 				
 //				ger.notificaObs("INIT");
@@ -112,7 +113,7 @@ public class Main {
 //				int fichas = (int) val;
 //				break;
 			case "VEZ":
-				ger.notificaObs("VEZ");
+				ger.notificaObs("VEZ", null);
 				break;
 			case "STAND":
 				if(proxVez >= totalDeJogadores - 1) {
@@ -123,8 +124,11 @@ public class Main {
 //					ger.notificaObs("DAR_CARTAS");
 				} else {
 					jbl.setVez(proxVez);
-					ger.notificaObs("VEZ");
+					ger.notificaObs("VEZ", null);
 				}
+				break;
+			case "FICHA_CLICK":
+				ger.notificaObs("FICHA_CLICK", val);
 				break;
 			default:
 				System.out.println("Erro fatal! Tipo de evento '" + evento + "' nao reconhecido.");
@@ -147,7 +151,7 @@ public class Main {
 		}
 
 		@Override
-		public void notificaObs(String evento) {
+		public void notificaObs(String evento, Object val) {
 			switch(evento) {
 			case "INIT":
 				for (Observer o: this.observers) {
@@ -157,9 +161,9 @@ public class Main {
 			case "VEZ":
 				int j = 0; // nao sei se foi a maneira mais eficiente, mas foi só pra continuas
 				for (Observer o: this.observers) {
-					int[] val = { jbl.getVez(), jbl.getSomaCartasJogador(j, 0)};
+					int[] value = { jbl.getVez(), jbl.getSomaCartasJogador(j, 0)};
 					j++;
-					o.update("VEZ", val);
+					o.update("VEZ", value);
 				}
 				break;
 			case "DAR_CARTAS":
@@ -168,7 +172,13 @@ public class Main {
 					HashMap<String, Boolean> cartas = jbl.getCartasJogador(i, 0);
 					i++;
 					o.update("DAR_CARTAS", cartas);
-					ger.notificaObs("VEZ");
+					ger.notificaObs("VEZ", null);
+				}
+				break;
+			case "FICHA_CLICK":
+				for (Observer o: this.observers) {
+					int[] vezEficha = { jbl.getVez(), (int) val};
+					o.update("FICHA_CLICK", vezEficha);
 				}
 				break;
 			default:
