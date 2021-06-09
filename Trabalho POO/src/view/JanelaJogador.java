@@ -201,6 +201,7 @@ public class JanelaJogador extends Janela implements Observer {
     			this.vezStatus.setText("Aguarde a sua vez");
     		}
     		this.somaCartas.setText("Somatório das cartas:" + Integer.toString(sumCarta));
+    		this.somaCartas.setSize(somaCartas.getPreferredSize());
     		this.repaint();
     		break;
     	case "DAR_CARTAS":
