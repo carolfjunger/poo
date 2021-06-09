@@ -88,12 +88,14 @@ public class Main {
 		@Override
 		//TODO: falta implementar corretamente, o abaixo eh apenas um exemplo
 		public void update(String evento, Object val) {
+			int proxVez = jbl.getVez() + 1;
+			int totalDeJogadores = jbl.getIDJogadores().size();
 			switch(evento.toUpperCase()) {
 			case "DEAL":
 				int fichasApostadas = (int) val;
 				jbl.colheAposta(Integer.toString(jbl.getVez()), fichasApostadas);
-				int proxVez = jbl.getVez() + 1;
-				int totalDeJogadores = jbl.getIDJogadores().size();
+//				int proxVez = jbl.getVez() + 1;
+//				int totalDeJogadores = jbl.getIDJogadores().size();
 				if(proxVez >= totalDeJogadores - 1) {
 					jbl.darCartas();
 					proxVez = 0;
@@ -111,6 +113,18 @@ public class Main {
 //				break;
 			case "VEZ":
 				ger.notificaObs("VEZ");
+				break;
+			case "STAND":
+				if(proxVez >= totalDeJogadores - 1) {
+					System.out.println("Finaliza turno");
+//					jbl.darCartas();
+//					proxVez = 0;
+//					jbl.setVez(proxVez);
+//					ger.notificaObs("DAR_CARTAS");
+				} else {
+					jbl.setVez(proxVez);
+					ger.notificaObs("VEZ");
+				}
 				break;
 			default:
 				System.out.println("Erro fatal! Tipo de evento '" + evento + "' nao reconhecido.");
