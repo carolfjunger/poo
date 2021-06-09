@@ -90,13 +90,14 @@ public class JanelaJogador extends Janela implements Observer {
 				case "DEAL":
 					this.vezStatus.setText("Apostando");
 					this.deal.setEnabled(false);
-					//obs.update("")
+					obs.update(txt, this.aposta);
 					break;
 				default:
+					obs.update(txt, null);
 		    		//System.out.println("Erro fatal enviando evento na janela jogador, evento nao reconhecido!");
 		    		//System.exit(1);	
 				}
-				obs.update(txt, null);
+				
 			});
 			panel.add(jb);
 		}

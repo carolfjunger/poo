@@ -90,9 +90,10 @@ public class Main {
 		public void update(String evento, Object val) {
 			switch(evento.toUpperCase()) {
 			case "DEAL":
+				int fichasApostadas = (int) val;
+				jbl.colheAposta(Integer.toString(jbl.getVez()), fichasApostadas);
 				int proxVez = jbl.getVez() + 1;
 				int totalDeJogadores = jbl.getIDJogadores().size();
-				System.out.println(proxVez);
 				if(proxVez >= totalDeJogadores - 1) {
 					jbl.darCartas();
 					proxVez = 0;

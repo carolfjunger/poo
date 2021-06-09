@@ -1,6 +1,7 @@
 package models;
 
 import java.util.List;
+import java.util.Objects;
 
 import view.Observer;
 
@@ -11,7 +12,7 @@ public class JogoBlackjack {
 	private Baralho baralho = new Baralho(); // verificar oq saiu?
 	private int fichasMesa = 0; 
 	private List<Jogador> jogadores = new ArrayList<Jogador>();
-	private HashMap<Jogador, Integer> apostas;
+	private HashMap<Jogador, Integer> apostas = new HashMap<Jogador, Integer>() ;
 	
 	private final int APOSTA_MIN = 20;
 	private final int FICHAS_INI = 500;
@@ -59,6 +60,21 @@ public class JogoBlackjack {
 	
 	public List<Jogador> getJogadores() {
 		return new ArrayList<Jogador>(this.jogadores);
+	}
+	
+	public Jogador getJogadorById(String idJog) {
+		List<Jogador> allJogadores = this.getJogadores();
+		
+		for(Jogador j : allJogadores) {
+			if(Objects.equals( j.getID(), idJog)) {
+				return j;
+			}
+
+		
+		}
+		System.out.println("Erro na função getJogadorById, não encontrou o jogador com id:" + idJog);
+		return null;
+		
 	}
 	
 	public List<String> getIDJogadores() {
@@ -205,35 +221,24 @@ public class JogoBlackjack {
 	}
 
 	// TODO
-	public void colheAposta(int indJogador, int aposta) {
-		List<Jogador> aRemover = new ArrayList<Jogador>();
+	public void colheAposta(String idJog, int fichasAposta) {
 		
-		for (Jogador j: apostas.keySet()) {
-			if (j.getID() == "dealer") {
-				continue;
-			}
-			
-			int fichasAposta = apostas.get(j);
-			
-			if (fichasAposta < this.APOSTA_MIN) {
-				aRemover.add(j);
-				continue;
-			}
-			
-			// fichas nao sao deduzidas do jog
-			// pode falhar, mas o caso eh validado no front-end
-			boolean sucesso = j.apostaFichas(fichasAposta);
-			
-			if (sucesso) {
-				this.fichasMesa += fichasAposta;
-			} else {
-				this.apostas.remove(j);
-			}
-		}
+//		if (fichasAposta > this.APOSTA_MIN) {
+//			/// botar no futuro toda a funçao aqui dentro,
+//			// mas enquanto nao temos a lógica das fichas vou manter fora
+//		}
+//		
+		this.fichasMesa += fichasAposta;
+		Jogador j = this.getJogadorById(idJog);
 		
-		for (Jogador j: aRemover) {
-			this.apostas.remove(j);
+		// apenas para garantir que o aposta nao é null
+		if(this.apostas == null) {
+			this.apostas = new HashMap<Jogador, Integer>();
 		}
+		if(j != null) {
+			this.apostas.put(j, fichasAposta);
+		}
+//		System.out.println(this.apostas);
 	}
 	
 	public void recebeCartas() {
