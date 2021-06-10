@@ -86,8 +86,8 @@ public class JogoBlackjack {
 		return ids;
 	}
 	
-	public HashMap<String, Boolean> getCartasJogador(int iJog, int iMao) {
-		Jogador j = this.jogadores.get(iJog);
+	public HashMap<String, Boolean> getCartasJogador(String idJog, int iMao) {
+		Jogador j = this.getJogadorById(idJog);
 		List<Carta> lc = j.getMao(iMao);
 		List<String> ls = new ArrayList<String>();
 		HashMap<String, Boolean> cartas = new HashMap<String, Boolean>();
@@ -113,8 +113,8 @@ public class JogoBlackjack {
 		return cartas;
 	}
 	
-	public int getSomaCartasJogador(int iJog, int iMao) {
-		Jogador j = this.jogadores.get(iJog);
+	public int getSomaCartasJogador(String idJog, int iMao) {
+		Jogador j = this.getJogadorById(idJog);
 		List<Carta> lc = j.getMao(iMao);
 		List<String> ls = new ArrayList<String>();
 		int somaCartas = 0;

@@ -208,7 +208,6 @@ public class JanelaJogador extends Janela implements Observer {
     		int [] vezEsoma = (int[]) val;
     		vez = (int) vezEsoma[0];
     		int sumCarta = (int) vezEsoma[1];
-    		// falta verificar se a aposta é maior que a aposta minima
     		if (vez == this.indJogador) {
         		this.stand.setEnabled(true);
         		this.dbl.setEnabled(true);

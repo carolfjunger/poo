@@ -63,12 +63,12 @@ public class Main {
 		for (int i=0; i<tam; i++) {
 			int numFichas = jf.get(i);
 			String id = jID.get(i);
-			HashMap<String, Boolean> cartas = jbl.getCartasJogador(i, 0);
+			HashMap<String, Boolean> cartas = jbl.getCartasJogador(id, 0);
 			//System.out.println(cartas);
 			JanelaJogador jg = new JanelaJogador(id, numFichas, 0, cartas, at);
 			
 			// registrar janela jogador como observador
-			ger.registraObs(jg);
+			ger.registraObs(id,jg);
 			//System.out.println(tam);
 			
 			Point p = new Point(i*400, 420);
@@ -95,8 +95,6 @@ public class Main {
 			case "DEAL":
 				int fichasApostadas = (int) val;
 				jbl.colheAposta(Integer.toString(jbl.getVez()), fichasApostadas);
-//				int proxVez = jbl.getVez() + 1;
-//				int totalDeJogadores = jbl.getIDJogadores().size();
 				if(proxVez >= totalDeJogadores - 1) {
 					jbl.darCartas();
 					proxVez = 0;
@@ -112,16 +110,12 @@ public class Main {
 //			case "HIT":
 //				int fichas = (int) val;
 //				break;
-			case "VEZ":
-				ger.notificaObs("VEZ", null);
-				break;
+//			case "VEZ":
+//				ger.notificaObs("VEZ", null);
+//				break;
 			case "STAND":
 				if(proxVez >= totalDeJogadores - 1) {
 					System.out.println("Finaliza turno");
-//					jbl.darCartas();
-//					proxVez = 0;
-//					jbl.setVez(proxVez);
-//					ger.notificaObs("DAR_CARTAS");
 				} else {
 					jbl.setVez(proxVez);
 					ger.notificaObs("VEZ", null);
@@ -138,47 +132,43 @@ public class Main {
 	}
 	
 	private static class Gerenciador implements Observable {
-		private ArrayList<Observer> observers = new ArrayList<Observer>();
+		private HashMap<String, Observer> observers = new  HashMap<String, Observer>();
 		
 		@Override
-		public void registraObs(Observer observer) {
-			observers.add(observer);			
+		public void registraObs(String jogId, Observer observer) {
+			observers.put(jogId, observer);			
 		}
 
 		@Override
-		public void removeObs(Observer observer) {
-			observers.remove(observer);
+		public void removeObs(String jogId) {
+			observers.remove(jogId);
 		}
 
 		@Override
 		public void notificaObs(String evento, Object val) {
 			switch(evento) {
 			case "INIT":
-				for (Observer o: this.observers) {
+				for (Observer o: observers.values()) {
 					o.update("INIT", jbl.getVez());
 				}
 				break;
 			case "VEZ":
-				int j = 0; // nao sei se foi a maneira mais eficiente, mas foi só pra continuas
-				for (Observer o: this.observers) {
-					int[] value = { jbl.getVez(), jbl.getSomaCartasJogador(j, 0)};
-					j++;
-					o.update("VEZ", value);
+				for (String jogId: observers.keySet()) {
+					int[] value = { jbl.getVez(), jbl.getSomaCartasJogador(jogId, 0)};
+					observers.get(jogId).update("VEZ", value);
 				}
 				break;
 			case "DAR_CARTAS":
-				int i = 0; // nao sei se foi a maneira mais eficiente, mas foi só pra continuas
-				for (Observer o: this.observers) {
-					HashMap<String, Boolean> cartas = jbl.getCartasJogador(i, 0);
-					i++;
-					o.update("DAR_CARTAS", cartas);
+				for (String jogId: observers.keySet()) {
+					HashMap<String, Boolean> cartas = jbl.getCartasJogador(jogId, 0);
+					observers.get(jogId).update("DAR_CARTAS", cartas);
 					ger.notificaObs("VEZ", null);
 				}
 				break;
 			case "FICHA_CLICK":
-				for (Observer o: this.observers) {
+				for (String jogId: observers.keySet()) {
 					int[] vezEficha = { jbl.getVez(), (int) val};
-					o.update("FICHA_CLICK", vezEficha);
+					observers.get(jogId).update("FICHA_CLICK", vezEficha);
 				}
 				break;
 			default:
