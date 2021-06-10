@@ -10,6 +10,7 @@ import javax.swing.SwingUtilities;
 
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Toolkit;
 
 public class Janela extends JFrame {
 	//public JogoBlackjack jbl = JogoBlackjack.getInstancia();
@@ -39,7 +40,35 @@ public class Janela extends JFrame {
 		this.altura = altura;
 	}
 	
-	public void carregarAssets() {};
+	public void carregarAssets() {
+		String imageURL;
+		Image image;
+		
+		String baseURL = "../Imagens/";
+		String nomes[] = {"a", "t", "j", "q", "k"};
+		String naipes[] = {"c", "d", "h", "s"};
+		
+		String nome = "b";
+		Image imagem = Toolkit.getDefaultToolkit().getImage(baseURL + nome + ".gif");
+		this.assets.put(nome, imagem);
+		
+		// cartas numericas de todos os naipes
+		for (int i=2; i<10; i++) {
+			for (String n: naipes) {
+				nome = Integer.toString(i) + n;
+				imagem = Toolkit.getDefaultToolkit().getImage(baseURL + nome + ".gif");
+				this.assets.put(nome, imagem);
+			}
+		}
+		
+		for (String nom: nomes) {
+			for (String nai: naipes) {
+				nome = nom + nai;
+				imagem = Toolkit.getDefaultToolkit().getImage(baseURL + nome + ".gif");
+				this.assets.put(nome, imagem);
+			}
+		}
+	};
 	
 	public void display() {
 		

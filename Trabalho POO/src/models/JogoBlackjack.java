@@ -72,33 +72,50 @@ public class JogoBlackjack {
 
 		
 		}
-		System.out.println("Erro na função getJogadorById, não encontrou o jogador com id:" + idJog);
+		System.out.println("Erro na funï¿½ï¿½o getJogadorById, nï¿½o encontrou o jogador com id:" + idJog);
 		return null;
 		
 	}
 	
-	public List<String> getIDJogadores() {
-		List<String> ids = new ArrayList<String>();
+	public List<Integer> getIDJogadores() {
+		List<Integer> ids = new ArrayList<Integer>();
+		int i = 0;
 		for (Jogador j: this.jogadores) {
-			ids.add(j.getID());
+			ids.add(i);
+			i++;
 		}
 		
 		return ids;
 	}
 	
-	public HashMap<String, Boolean> getCartasJogador(String idJog, int iMao) {
-		Jogador j = this.getJogadorById(idJog);
+	public HashMap<String, Boolean> getCartasJogador(int indJog, int iMao) {
+		Jogador j = this.jogadores.get(indJog);
 		List<Carta> lc = j.getMao(iMao);
-		List<String> ls = new ArrayList<String>();
 		HashMap<String, Boolean> cartas = new HashMap<String, Boolean>();
 		
+		String nomes[] = {"a", "t", "j", "q", "k"};
 		for (Carta c: lc) {
 			int val = c.getValor();
 			String num = Integer.toString( val );
 			if (val > 9) {
-				switch(val) {
-				case 10:
+				switch(c.getCarta()) {
+				case DEZ:
 					num = "t";
+					break;
+				case VALETE:
+					num = "j";
+					break;
+				case DAMA:
+					num = "q";
+					break;
+				case REI:
+					num = "k";
+					break;
+				case AS:
+					num =  "a";
+					break;
+				default:
+					break;
 				}
 			}
 			
@@ -113,8 +130,8 @@ public class JogoBlackjack {
 		return cartas;
 	}
 	
-	public int getSomaCartasJogador(String idJog, int iMao) {
-		Jogador j = this.getJogadorById(idJog);
+	public int getSomaCartasJogador(int indJog, int iMao) {
+		Jogador j = this.jogadores.get(indJog);
 		List<Carta> lc = j.getMao(iMao);
 		List<String> ls = new ArrayList<String>();
 		int somaCartas = 0;
@@ -224,14 +241,14 @@ public class JogoBlackjack {
 	public void colheAposta(String idJog, int fichasAposta) {
 		
 //		if (fichasAposta > this.APOSTA_MIN) {
-//			/// botar no futuro toda a funçao aqui dentro,
-//			// mas enquanto nao temos a lógica das fichas vou manter fora
+//			/// botar no futuro toda a funï¿½ao aqui dentro,
+//			// mas enquanto nao temos a lï¿½gica das fichas vou manter fora
 //		}
 //		
 		this.fichasMesa += fichasAposta;
 		Jogador j = this.getJogadorById(idJog);
 		
-		// apenas para garantir que o aposta nao é null
+		// apenas para garantir que o aposta nao ï¿½ null
 		if(this.apostas == null) {
 			this.apostas = new HashMap<Jogador, Integer>();
 		}
@@ -245,8 +262,8 @@ public class JogoBlackjack {
 		int APOSTA_MIN = 20;
 	
 		this.vez = 0;
+		int i = 0;
 		for (Jogador j: this.apostas.keySet()) {
-			
 			if (j.getFichas() < APOSTA_MIN) {
 				this.jogadores.remove(j);
 				continue;
@@ -256,21 +273,23 @@ public class JogoBlackjack {
 			j.compraCarta(this.baralho, 0);
 			this.qtdCartasUsadas += 2;
 			
-			if (j.getID() == "dealer") {
+			if (i == this.jogadores.size() - 1) {
 				j.getMao(0).get(1).setPraBaixo(true);
 			}
+			i++;
 		}
 	}
 	
 	public void darCartas() {
-		for (Jogador j: this.jogadores) {
-			j.compraCarta(this.baralho, 0);
+		for (int i = 0; i < this.jogadores.size(); i++) {
+			Jogador j = this.jogadores.get(i);
+			j.compraCarta(this.baralho, 0); // TODO: split
 			j.compraCarta(this.baralho, 0);
 			this.qtdCartasUsadas += 2;
 			
-//			if (j.getID() == "dealer") {
-//				j.getMao(0).get(1).setPraBaixo(true);
-//			}
+			if (i == this.jogadores.size() - 1) {
+				j.getMao(0).get(1).setPraBaixo(true);
+			}
 		}
 	}
 	
@@ -431,4 +450,8 @@ public class JogoBlackjack {
 		
 		return ResultadoVez.OK;
 	}
+	
+//	private int avaliaMesa() {
+//		
+//	}
 }

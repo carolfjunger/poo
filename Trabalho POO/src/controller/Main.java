@@ -46,30 +46,29 @@ public class Main {
 		at = new Atualizador();
 		ger = new Gerenciador();
 		
-    	Janela jBanca = new JanelaBanca("Banca", at);
+    	JanelaBanca jBanca = new JanelaBanca("Banca", at);
     	ArrayList<Janela> jJogador = new ArrayList<Janela>();
 		
 		jbl = JogoBlackjack.getInstancia();
 		jbl.setJogadores(numJogadores);
-		List<String> jID = jbl.getIDJogadores();
+		jbl.inicializa(2);
+		
+		List<Integer> jID = jbl.getIDJogadores();
 		List<Integer> jf = jbl.getFichasJogadores();
 		int tam = jID.size();
 		
-		jbl.inicializa(2);
+		ger.registraObs(jID.get(tam-1), jBanca);
 //		jbl.darCartas();
 		
-
-
-		for (int i=0; i<tam; i++) {
+		// tam-1 para excluir o dealer
+		for (int i=0; i< tam - 1; i++) {
 			int numFichas = jf.get(i);
-			String id = jID.get(i);
+			int id = jID.get(i);
 			HashMap<String, Boolean> cartas = jbl.getCartasJogador(id, 0);
-			//System.out.println(cartas);
 			JanelaJogador jg = new JanelaJogador(id, numFichas, 0, cartas, at);
 			
 			// registrar janela jogador como observador
-			ger.registraObs(id,jg);
-			//System.out.println(tam);
+			ger.registraObs(id, jg);
 			
 			Point p = new Point(i*400, 420);
 			jg.setLocation(p);
@@ -87,7 +86,6 @@ public class Main {
 	
 	private static class Atualizador implements Observer {
 		@Override
-		//TODO: falta implementar corretamente, o abaixo eh apenas um exemplo
 		public void update(String evento, Object val) {
 			int proxVez = jbl.getVez() + 1;
 			int totalDeJogadores = jbl.getIDJogadores().size();
@@ -132,48 +130,55 @@ public class Main {
 	}
 	
 	private static class Gerenciador implements Observable {
-		private HashMap<String, Observer> observers = new  HashMap<String, Observer>();
+		private HashMap<Integer, Observer> observers = new  HashMap<Integer, Observer>();
 		
 		@Override
-		public void registraObs(String jogId, Observer observer) {
+		public void registraObs(int jogId, Observer observer) {
 			observers.put(jogId, observer);			
 		}
 
 		@Override
-		public void removeObs(String jogId) {
+		public void removeObs(int jogId) {
 			observers.remove(jogId);
 		}
 
 		@Override
 		public void notificaObs(String evento, Object val) {
-			switch(evento) {
-			case "INIT":
-				for (Observer o: observers.values()) {
+			for (int id: observers.keySet()) {
+				Observer o = observers.get(id);
+
+				switch(evento) {
+				case "INIT":
+					if (id == observers.size() - 1) {
+						return;
+					}
 					o.update("INIT", jbl.getVez());
-				}
-				break;
-			case "VEZ":
-				for (String jogId: observers.keySet()) {
-					int[] value = { jbl.getVez(), jbl.getSomaCartasJogador(jogId, 0)};
-					observers.get(jogId).update("VEZ", value);
-				}
-				break;
-			case "DAR_CARTAS":
-				for (String jogId: observers.keySet()) {
-					HashMap<String, Boolean> cartas = jbl.getCartasJogador(jogId, 0);
-					observers.get(jogId).update("DAR_CARTAS", cartas);
+					break;
+				case "VEZ":
+					if (id == observers.size() - 1) {
+						return;
+					}
+					int[] value = { jbl.getVez(), jbl.getSomaCartasJogador(id, 0) };
+					o.update("VEZ", value);
+					break;
+				case "DAR_CARTAS":
+					HashMap<String, Boolean> cartas = jbl.getCartasJogador(id, 0);
+					
+					o.update("DAR_CARTAS", cartas);
 					ger.notificaObs("VEZ", null);
+					
+					break;
+				case "FICHA_CLICK":
+					if (id == observers.size() - 1) {
+						return;
+					}
+					int[] vezEficha = { jbl.getVez(), (int) val };
+					o.update("FICHA_CLICK", vezEficha);
+					break;
+				default:
+					System.out.println("Erro fatal recebendo mensagem na Main! Tipo de evento '" + evento + "' nao reconhecido.");
+					System.exit(1);
 				}
-				break;
-			case "FICHA_CLICK":
-				for (String jogId: observers.keySet()) {
-					int[] vezEficha = { jbl.getVez(), (int) val};
-					observers.get(jogId).update("FICHA_CLICK", vezEficha);
-				}
-				break;
-			default:
-				System.out.println("Erro fatal recebendo mensagem na Main! Tipo de evento '" + evento + "' nao reconhecido.");
-				System.exit(1);
 			}
 		}
 	}

@@ -15,8 +15,9 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-public class JanelaBanca extends Janela {
+public class JanelaBanca extends Janela implements Observer {
 	HashMap<Integer, Point> fichasPosition = new HashMap<Integer, Point>();
+	private HashMap<String, Boolean> cartas = new HashMap<String, Boolean>();
 	final int size = 59; // tamanho da ficha
 	Observer obs;
 	
@@ -40,18 +41,6 @@ public class JanelaBanca extends Janela {
 		    }
 
 			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
 			public void mousePressed(MouseEvent e) {
 				// TODO Auto-generated method stub
 				
@@ -59,6 +48,18 @@ public class JanelaBanca extends Janela {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -97,11 +98,34 @@ public class JanelaBanca extends Janela {
 				this.fichasPosition.put(fichasValueArr[i], new Point(x,y));
 				g.drawImage(img, x, y, width, height, this);
 			}
-		}		
+		}
+		
+    	int padding = 4;
+    	
+    	// desenhar cartas
+    	int cInd = 0;
+    	int somaCartas = 0;
+    	final int wCarta = 73; //px - largura da imagem da carta
+    	final int hCarta = 97; //px - altura da imagem da carta
+		for (String c: cartas.keySet()) {
+			img = assets.get( c );
+			
+			if (cartas.get(c) == true) {
+				img = assets.get( "b" );
+			}
+			if (img != null) {
+				int width = img.getWidth(this);
+				int height = img.getHeight(this);
+				g.drawImage(img, padding + (wCarta * cInd), getHeight() - (hCarta + padding + 100), width, height, this);
+				cInd += 1;
+			}
+		}
 	}
 
 	@Override
 	public void carregarAssets() {
+		super.carregarAssets();
+		
 		String imageURL;
 		Image image;
 		String baseURL = "../Imagens/";
@@ -127,5 +151,24 @@ public class JanelaBanca extends Janela {
 		imageURL = "../Imagens/deck2.gif";
 		image = Toolkit.getDefaultToolkit().getImage(imageURL);
 		this.assets.put("deck2", image);
+	}
+
+	@Override
+	public void update(String evento, Object val) {
+    	int vez;
+    	System.out.println("RECEVIDOU!");
+    	switch (evento) {
+	    	case "DAR_CARTAS":
+	    		HashMap<String, Boolean> cartas = (HashMap<String, Boolean>) val;
+	    		this.cartas = cartas;
+	    		this.repaint();
+	    		System.out.println("RECEVIDO!");
+	    		break;
+	    	default:
+	    		System.out.println(evento);
+	    		System.out.println("Erro fatal recebendo evento na janela banca, evento nao reconhecido!");
+	    		System.exit(1);
+    	}
+		
 	}
 }

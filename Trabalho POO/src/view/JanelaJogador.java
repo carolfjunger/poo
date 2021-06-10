@@ -45,37 +45,17 @@ public class JanelaJogador extends Janela implements Observer {
 	private JLabel vezStatus = new JLabel();
 	private JLabel somaCartas = new JLabel();
 	
-	public JanelaJogador(String titulo, int fichas, int indMao, HashMap<String, Boolean> cartas, Observer obs) {
-		super(titulo);
+	public JanelaJogador(int indice, int fichas, int indMao, HashMap<String, Boolean> cartas, Observer obs) {
+		super(Integer.toString(indice));
 		this.fichas = fichas;
 		this.cartas = cartas;
 		this.obs = obs;
-		// TODO: fazer isso de forma mais correta
-		this.indJogador = Integer.parseInt(titulo);
+		this.indJogador = indice;
 		
 		JPanel panel = new PaintPanel();
 		panel.setLayout(null);
 		
-		// cartas
-		int i = 0;
-		for (String c: cartas.keySet()) {
-			PainelImagem pim = new PainelImagem(this.assets.get( c ));
-			if (cartas.get(c) == true) {
-				pim = new PainelImagem(this.assets.get( "b" ));
-			}
-			
-			pim.setBounds(8 + (i * wCarta), this.getHeight() - 140, wCarta, hCarta);
-			imagens.add(pim);
-			i += 1;
-		}
-		
-		
 		// botoes
-//		JButton deal = new JButton("Deal");
-//		JButton stand = new JButton("Stand");
-//		JButton hit = new JButton("Hit");
-//		JButton dbl = new JButton("Double");
-//		JButton split = new JButton("Split");
 		
 		Dimension ps = stand.getPreferredSize();
 		int width = (int) ps.getWidth();
@@ -132,7 +112,7 @@ public class JanelaJogador extends Janela implements Observer {
 		this.vezStatus.setLocation(this.getWidth() - 125, this.getHeight() - 100);
 		
 		// Mostra a soma das cartas do jogador
-		this.somaCartas.setText("Somatório das cartas: 0");
+		this.somaCartas.setText("Somatï¿½rio das cartas: 0");
 		this.somaCartas.setSize(somaCartas.getPreferredSize());
 		this.somaCartas.setLocation(this.getWidth() - 175, this.getHeight() - 120);
 		
@@ -196,7 +176,7 @@ public class JanelaJogador extends Janela implements Observer {
     				this.vezStatus.setText("Fichas Apostada: " + Integer.toString(fichas));
     				this.deal.setEnabled(true);
     			} else {
-    				this.vezStatus.setText("Faça sua aposta");
+    				this.vezStatus.setText("Faï¿½a sua aposta");
     				this.deal.setEnabled(false);
     			}
         		
@@ -213,12 +193,12 @@ public class JanelaJogador extends Janela implements Observer {
         		this.dbl.setEnabled(true);
         		this.hit.setEnabled(true);
         		this.split.setEnabled(true);
-        		this.vezStatus.setText("É a sua vez");
+        		this.vezStatus.setText("ï¿½ a sua vez");
     		} else {
     			this.vezStatus.setText("Aguarde a sua vez");
     		}
     		this.vezStatus.setSize(vezStatus.getPreferredSize());
-    		this.somaCartas.setText("Somatório das cartas:" + Integer.toString(sumCarta));
+    		this.somaCartas.setText("Somatï¿½rio das cartas:" + Integer.toString(sumCarta));
     		this.somaCartas.setSize(somaCartas.getPreferredSize());
     		this.repaint();
     		break;
@@ -252,35 +232,8 @@ public class JanelaJogador extends Janela implements Observer {
     	}
     }
 
-	
 	@Override
 	public void carregarAssets() {
-		String imageURL;
-		Image image;
-		
-		String baseURL = "../Imagens/";
-		String nomes[] = {"a", "t", "j", "q", "k"};
-		String naipes[] = {"c", "d", "h", "s"};
-		
-		String nome = "b";
-		Image imagem = Toolkit.getDefaultToolkit().getImage(baseURL + nome + ".gif");
-		this.assets.put(nome, imagem);
-		
-		// cartas numericas de todos os naipes
-		for (int i=2; i<10; i++) {
-			for (String n: naipes) {
-				nome = Integer.toString(i) + n;
-				imagem = Toolkit.getDefaultToolkit().getImage(baseURL + nome + ".gif");
-				this.assets.put(nome, imagem);
-			}
-		}
-		
-		for (String nom: nomes) {
-			for (String nai: naipes) {
-				nome = nom + nai;
-				imagem = Toolkit.getDefaultToolkit().getImage(baseURL + nome + ".gif");
-				this.assets.put(nome, imagem);
-			}
-		}
+		super.carregarAssets();
 	}
 }
