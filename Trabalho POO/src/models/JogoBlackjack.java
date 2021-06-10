@@ -1,6 +1,7 @@
 package models;
 
 import java.util.List;
+import java.util.Objects;
 
 import view.Observer;
 
@@ -11,7 +12,7 @@ public class JogoBlackjack {
 	private Baralho baralho = new Baralho(); // verificar oq saiu?
 	private int fichasMesa = 0; 
 	private List<Jogador> jogadores = new ArrayList<Jogador>();
-	private HashMap<Jogador, Integer> apostas;
+	private HashMap<Jogador, Integer> apostas = new HashMap<Jogador, Integer>() ;
 	
 	private final int APOSTA_MIN = 20;
 	private final int FICHAS_INI = 500;
@@ -39,6 +40,10 @@ public class JogoBlackjack {
 		this.baralho = new Baralho();
 	}
 	
+	public void setVez(int vez) {
+		this.vez = vez;
+	}
+	
 	public void setJogadores(List<Jogador> jogadores) {
 		this.jogadores = jogadores;
 	}
@@ -57,6 +62,21 @@ public class JogoBlackjack {
 		return new ArrayList<Jogador>(this.jogadores);
 	}
 	
+	public Jogador getJogadorById(String idJog) {
+		List<Jogador> allJogadores = this.getJogadores();
+		
+		for(Jogador j : allJogadores) {
+			if(Objects.equals( j.getID(), idJog)) {
+				return j;
+			}
+
+		
+		}
+		System.out.println("Erro na função getJogadorById, não encontrou o jogador com id:" + idJog);
+		return null;
+		
+	}
+	
 	public List<String> getIDJogadores() {
 		List<String> ids = new ArrayList<String>();
 		for (Jogador j: this.jogadores) {
@@ -66,8 +86,8 @@ public class JogoBlackjack {
 		return ids;
 	}
 	
-	public HashMap<String, Boolean> getCartasJogador(int iJog, int iMao) {
-		Jogador j = this.jogadores.get(iJog);
+	public HashMap<String, Boolean> getCartasJogador(String idJog, int iMao) {
+		Jogador j = this.getJogadorById(idJog);
 		List<Carta> lc = j.getMao(iMao);
 		List<String> ls = new ArrayList<String>();
 		HashMap<String, Boolean> cartas = new HashMap<String, Boolean>();
@@ -91,6 +111,20 @@ public class JogoBlackjack {
 		}
 		
 		return cartas;
+	}
+	
+	public int getSomaCartasJogador(String idJog, int iMao) {
+		Jogador j = this.getJogadorById(idJog);
+		List<Carta> lc = j.getMao(iMao);
+		List<String> ls = new ArrayList<String>();
+		int somaCartas = 0;
+		
+		for (Carta c: lc) {
+			int val = c.getValor();
+			somaCartas += val;
+		}
+		
+		return somaCartas;
 	}
 	
 	public int getVez() {
@@ -187,35 +221,24 @@ public class JogoBlackjack {
 	}
 
 	// TODO
-	public void colheAposta(int indJogador, int aposta) {
-		List<Jogador> aRemover = new ArrayList<Jogador>();
+	public void colheAposta(String idJog, int fichasAposta) {
 		
-		for (Jogador j: apostas.keySet()) {
-			if (j.getID() == "dealer") {
-				continue;
-			}
-			
-			int fichasAposta = apostas.get(j);
-			
-			if (fichasAposta < this.APOSTA_MIN) {
-				aRemover.add(j);
-				continue;
-			}
-			
-			// fichas nao sao deduzidas do jog
-			// pode falhar, mas o caso eh validado no front-end
-			boolean sucesso = j.apostaFichas(fichasAposta);
-			
-			if (sucesso) {
-				this.fichasMesa += fichasAposta;
-			} else {
-				this.apostas.remove(j);
-			}
-		}
+//		if (fichasAposta > this.APOSTA_MIN) {
+//			/// botar no futuro toda a funçao aqui dentro,
+//			// mas enquanto nao temos a lógica das fichas vou manter fora
+//		}
+//		
+		this.fichasMesa += fichasAposta;
+		Jogador j = this.getJogadorById(idJog);
 		
-		for (Jogador j: aRemover) {
-			this.apostas.remove(j);
+		// apenas para garantir que o aposta nao é null
+		if(this.apostas == null) {
+			this.apostas = new HashMap<Jogador, Integer>();
 		}
+		if(j != null) {
+			this.apostas.put(j, fichasAposta);
+		}
+//		System.out.println(this.apostas);
 	}
 	
 	public void recebeCartas() {
@@ -255,18 +278,22 @@ public class JogoBlackjack {
 	// Funcao vez simula a vez de um jogador
 	// Se o retorno for `BlackJack` ou `Fim de Turno`
 	// a funcao avaliarMesa deve ser chamada em seguida
-	public ResultadoVez vez(Jogador j, Comando c, int apostaDouble) {
+	public ResultadoVez vez(Comando c, int apostaDouble) {
 		
-		if (j.getID() == "dealer") {
+		if (this.vez < 0) {
+			this.vez = 0;
+			return ResultadoVez.FIM_DE_TURNO;
+		}
+		
+		Jogador j = jogadores.get(this.vez);
+		
+		// dealer eh o ultimo indice
+		if (this.vez == this.jogadores.size()) {
 			j.compraCarta(baralho, 0);
 			return ResultadoVez.OK;
 		}
 		
 		int qtd = this.apostas.get(j);
-		
-		if (vez < 0) {
-			return ResultadoVez.FIM_DE_TURNO;
-		}
 		
 		this.vez += 1;
 		// depois, trocar jogadores.size() pela qtd de apostadores

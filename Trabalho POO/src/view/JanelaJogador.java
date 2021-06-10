@@ -20,21 +20,38 @@ import javax.swing.JPanel;
 
 import models.Comando;
 
-public class JanelaJogador extends Janela {
+public class JanelaJogador extends Janela implements Observer {
 	private HashMap<String, Boolean> cartas;
 	private ArrayList<PainelImagem> imagens = new ArrayList<PainelImagem>();
 	private Observer obs;
 	
 	private int fichas = 0;
+	private int aposta = 0;
 	private int indMao = 0;
+	private int indJogador = 0;
+	private final int apostaMinima = 20;
 	private final int wCarta = 73; //px - largura da imagem da carta
 	private final int hCarta = 97; //px - altura da imagem da carta
+	
+	// componentes
+	private JButton deal = new JButton("Deal");
+	private JButton stand = new JButton("Stand");
+	private JButton hit = new JButton("Hit");
+	private JButton dbl = new JButton("Double");
+	private JButton split = new JButton("Split");
+	
+	private JLabel lFichas = new JLabel();
+	private JLabel lAposta = new JLabel();
+	private JLabel vezStatus = new JLabel();
+	private JLabel somaCartas = new JLabel();
 	
 	public JanelaJogador(String titulo, int fichas, int indMao, HashMap<String, Boolean> cartas, Observer obs) {
 		super(titulo);
 		this.fichas = fichas;
 		this.cartas = cartas;
 		this.obs = obs;
+		// TODO: fazer isso de forma mais correta
+		this.indJogador = Integer.parseInt(titulo);
 		
 		JPanel panel = new PaintPanel();
 		panel.setLayout(null);
@@ -52,12 +69,13 @@ public class JanelaJogador extends Janela {
 			i += 1;
 		}
 		
+		
 		// botoes
-		JButton deal = new JButton("Deal");
-		JButton stand = new JButton("Stand");
-		JButton hit = new JButton("Hit");
-		JButton dbl = new JButton("Double");
-		JButton split = new JButton("Split");
+//		JButton deal = new JButton("Deal");
+//		JButton stand = new JButton("Stand");
+//		JButton hit = new JButton("Hit");
+//		JButton dbl = new JButton("Double");
+//		JButton split = new JButton("Split");
 		
 		Dimension ps = stand.getPreferredSize();
 		int width = (int) ps.getWidth();
@@ -65,26 +83,75 @@ public class JanelaJogador extends Janela {
 		for (int j = 0; j < btns.length; j++) {
 			JButton jb = btns[j];
 			jb.setSize(ps);
-			jb.setLocation(20 + (width * j), 20);
+			jb.setLocation(2 + (width * j), 32);
 			jb.setEnabled(false);
 			
 			jb.addActionListener( (evt) -> {
-				String txt = jb.getText();
-				obs.update(txt, null);
+				String txt = jb.getText().toUpperCase();
+				switch(txt) {
+				case "DEAL":
+					this.vezStatus.setText("Apostando");
+					this.deal.setEnabled(false);
+					obs.update(txt, this.aposta);
+					break;
+				case "STAND":
+					this.vezStatus.setText("Apostando");
+					this.deal.setEnabled(false);
+	        		this.stand.setEnabled(false);
+	        		this.dbl.setEnabled(false);
+	        		this.hit.setEnabled(false);
+	        		this.split.setEnabled(false);
+					obs.update(txt, null);
+					break;
+				default:
+					obs.update(txt, null);
+		    		//System.out.println("Erro fatal enviando evento na janela jogador, evento nao reconhecido!");
+		    		//System.exit(1);	
+				}
+				
 			});
 			panel.add(jb);
 		}
 		
 		// valor total das fichas
-		JLabel lFichas = new JLabel();
-		lFichas.setText("Fichas: " + Integer.toString(fichas));
-		lFichas.setSize(lFichas.getPreferredSize());
-		lFichas.setLocation(this.getWidth() - 94, this.getHeight() - 60);
+
+		this.lFichas.setText("Fichas: " + Integer.toString(fichas));
+		this.lFichas.setSize(this.lFichas.getPreferredSize());
+		this.lFichas.setLocation(this.getWidth() - 94, this.getHeight() - 60);
+		
+		// valor total das fichas apostadas
+
+		this.lAposta.setText("Aposta: " + Integer.toString(this.aposta));
+		this.lAposta.setSize(this.lAposta.getPreferredSize());
+		this.lAposta.setLocation(this.getWidth() - 94, this.getHeight() - 80);
         
+		
+		// Mostra a vez do jogador
+		this.vezStatus.setText("Aguarde sua vez");
+		this.vezStatus.setSize(vezStatus.getPreferredSize());
+		this.vezStatus.setLocation(this.getWidth() - 125, this.getHeight() - 100);
+		
+		// Mostra a soma das cartas do jogador
+		this.somaCartas.setText("Somatório das cartas: 0");
+		this.somaCartas.setSize(somaCartas.getPreferredSize());
+		this.somaCartas.setLocation(this.getWidth() - 175, this.getHeight() - 120);
+		
+		
 		// botando tudo no painel principal
-		panel.add(lFichas);
+		panel.add(this.lFichas);
+		panel.add(this.lAposta);
+		panel.add(this.vezStatus);
+		panel.add(this.somaCartas);
         
         this.getContentPane().add(panel);
+	}
+	
+	public void addFichaApostada(int ficha) {
+		if(this.fichas - ficha >= 0) {
+			this.aposta += ficha;
+			this.fichas -= ficha;
+		}
+
 	}
 	
 //	public getID() {
@@ -101,6 +168,7 @@ public class JanelaJogador extends Janela {
         	
         	// desenhar cartas
         	int cInd = 0;
+        	int somaCartas = 0;
     		for (String c: cartas.keySet()) {
     			Image img = assets.get( c );
     			if (img != null) {
@@ -111,11 +179,79 @@ public class JanelaJogador extends Janela {
     			}
     		}
 
-            String text = "Look ma, no hands";
+            String text = "Jogador #" + (indJogador + 1);
             g.drawString(text, 20, 20);
         }
 
     }
+    
+    @Override 
+    public void update(String evento, Object val) {
+    	int vez;
+    	switch (evento) {
+    	case "INIT":
+    		vez = (int) val;
+    		if (vez == this.indJogador) {
+    			if (this.aposta > apostaMinima ) {
+    				this.vezStatus.setText("Fichas Apostada: " + Integer.toString(fichas));
+    				this.deal.setEnabled(true);
+    			} else {
+    				this.vezStatus.setText("Faça sua aposta");
+    				this.deal.setEnabled(false);
+    			}
+        		
+        		this.repaint();
+    		}
+
+    		break;
+    	case "VEZ":
+    		int [] vezEsoma = (int[]) val;
+    		vez = (int) vezEsoma[0];
+    		int sumCarta = (int) vezEsoma[1];
+    		if (vez == this.indJogador) {
+        		this.stand.setEnabled(true);
+        		this.dbl.setEnabled(true);
+        		this.hit.setEnabled(true);
+        		this.split.setEnabled(true);
+        		this.vezStatus.setText("É a sua vez");
+    		} else {
+    			this.vezStatus.setText("Aguarde a sua vez");
+    		}
+    		this.vezStatus.setSize(vezStatus.getPreferredSize());
+    		this.somaCartas.setText("Somatório das cartas:" + Integer.toString(sumCarta));
+    		this.somaCartas.setSize(somaCartas.getPreferredSize());
+    		this.repaint();
+    		break;
+    	case "DAR_CARTAS":
+    		HashMap<String, Boolean> cartas = (HashMap<String, Boolean>) val;
+    		this.cartas = cartas;
+    		this.repaint();
+    		break;
+       	case "FICHA_CLICK":
+       		int [] vezEFicha = (int[]) val;
+       		vez = vezEFicha[0];
+       		int ficha = vezEFicha[1];
+       		if (vez == this.indJogador) {
+           		this.addFichaApostada(ficha);
+           		if(this.aposta >= apostaMinima) {
+           			this.deal.setEnabled(true);
+           		}
+           		this.lFichas.setText("Fichas: " + Integer.toString(this.fichas));
+           		this.lFichas.setSize(this.lFichas.getPreferredSize());
+        		this.lAposta.setText("Aposta: " + Integer.toString(this.aposta));
+        		this.lAposta.setSize(this.lAposta.getPreferredSize());
+       		}
+
+    		this.repaint();
+    		break;	
+    		
+    		
+    	default:
+    		System.out.println("Erro fatal recebendo evento na janela jogador, evento nao reconhecido!");
+    		System.exit(1);
+    	}
+    }
+
 	
 	@Override
 	public void carregarAssets() {
