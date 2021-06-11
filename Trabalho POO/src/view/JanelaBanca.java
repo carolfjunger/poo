@@ -156,13 +156,23 @@ public class JanelaBanca extends Janela implements Observer {
 	@Override
 	public void update(String evento, Object val) {
     	int vez;
-    	System.out.println("RECEVIDOU!");
+//    	System.out.println("RECEVIDOU!");
+    	
     	switch (evento) {
 	    	case "DAR_CARTAS":
+//	    		HashMap<String, Boolean> cartas = (HashMap<String, Boolean>) val;
 	    		HashMap<String, Boolean> cartas = (HashMap<String, Boolean>) val;
 	    		this.cartas = cartas;
+	    		System.out.println(cartas);
 	    		this.repaint();
 	    		System.out.println("RECEVIDO!");
+	    		break;
+	    	case "REABRE_CARTA":
+	    		HashMap<String, Boolean> cartasFinal = (HashMap<String, Boolean>) val;
+	    		this.cartas = cartasFinal;
+	    		this.obs.update("FINALIZA_TURNO", null);
+	    		this.repaint();
+//	    		System.out.println("RECEVIDO!");
 	    		break;
 	    	default:
 	    		System.out.println(evento);

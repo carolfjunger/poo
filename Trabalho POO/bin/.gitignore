@@ -1,3 +1,6 @@
-/view/
+/.DS_Store
+/.classpath
+/.project
 /controller/
 /models/
+/view/

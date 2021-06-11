@@ -176,7 +176,7 @@ public class JanelaJogador extends Janela implements Observer {
     				this.vezStatus.setText("Fichas Apostada: " + Integer.toString(fichas));
     				this.deal.setEnabled(true);
     			} else {
-    				this.vezStatus.setText("Faï¿½a sua aposta");
+    				this.vezStatus.setText("Faça sua aposta");
     				this.deal.setEnabled(false);
     			}
         		
@@ -193,12 +193,12 @@ public class JanelaJogador extends Janela implements Observer {
         		this.dbl.setEnabled(true);
         		this.hit.setEnabled(true);
         		this.split.setEnabled(true);
-        		this.vezStatus.setText("ï¿½ a sua vez");
+        		this.vezStatus.setText("É a sua vez");
     		} else {
     			this.vezStatus.setText("Aguarde a sua vez");
     		}
     		this.vezStatus.setSize(vezStatus.getPreferredSize());
-    		this.somaCartas.setText("Somatï¿½rio das cartas:" + Integer.toString(sumCarta));
+    		this.somaCartas.setText("Somatório das cartas:" + Integer.toString(sumCarta));
     		this.somaCartas.setSize(somaCartas.getPreferredSize());
     		this.repaint();
     		break;
@@ -224,8 +224,24 @@ public class JanelaJogador extends Janela implements Observer {
 
     		this.repaint();
     		break;	
-    		
-    		
+    	case "FINALIZA_TURNO":
+    		int fichas = (int) val;
+    		this.aposta = 0;
+    		this.fichas = fichas;
+    		if (0 == this.indJogador) {
+    			this.vezStatus.setText("Faça sua aposta");
+				this.deal.setEnabled(false);        		
+    		} else {
+    			this.vezStatus.setText("Aguarde a sua vez");
+    		}
+       		this.lFichas.setText("Fichas: " + Integer.toString(this.fichas));
+       		this.lFichas.setSize(this.lFichas.getPreferredSize());
+    		this.lAposta.setText("Aposta: " + Integer.toString(this.aposta));
+    		this.lAposta.setSize(this.lAposta.getPreferredSize());
+    		this.repaint();
+
+    		break;
+    	
     	default:
     		System.out.println("Erro fatal recebendo evento na janela jogador, evento nao reconhecido!");
     		System.exit(1);

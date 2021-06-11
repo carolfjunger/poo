@@ -51,7 +51,7 @@ public class JogoBlackjack {
 	public void setJogadores(int num) {
 		List<Jogador> lj = new ArrayList<Jogador>();
 		for (int i=0; i<num; i++) {
-			Jogador j = new Jogador(Integer.toString(i), this.FICHAS_INI);
+			Jogador j = new Jogador(Integer.toString(i), 0);
 			lj.add(j);
 		}
 		
@@ -170,6 +170,7 @@ public class JogoBlackjack {
 	public List<Integer> getFichasJogadores() {
 		List<Integer> fs = new ArrayList<Integer>();
 		for (Jogador j: this.jogadores) {
+			System.out.println(j.getID());
 			fs.add(j.getFichas());
 		}
 		
@@ -293,6 +294,10 @@ public class JogoBlackjack {
 		}
 	}
 	
+	public void abreMaoDealer() {
+		Jogador j = this.jogadores.get(this.jogadores.size() - 1); // pega o dealer
+		j.getMao(0).get(1).setPraBaixo(false); // TODO: se botar estrategia no dealer deve ter que alterar aqui
+	}
 	
 	// Funcao vez simula a vez de um jogador
 	// Se o retorno for `BlackJack` ou `Fim de Turno`
@@ -370,53 +375,105 @@ public class JogoBlackjack {
 	}
 	
 	public void finalizaTurno() {
-		// alterar pra quando existir o split
-		List<Jogador> jogs = new ArrayList<Jogador>(this.apostas.keySet());
+		// TODO: alterar pra quando existir o split
+		List<Jogador> apostadores = new ArrayList<Jogador>(this.apostas.keySet());
 		List<Jogador> vencedores = new ArrayList<Jogador>();
+		List<Jogador> allJogadores = this.getJogadores();
 		
 		int maior = 0;
-		for (Jogador j: jogs) {
+		System.out.println("APOSTADORES");
+		for (Jogador j: apostadores) {
 			// tratando apenas uma mao, falta adicionar o split
 			int val = contaMao( j.getMao(0) );
-			
+			System.out.print(j.getID());
+			System.out.print(" --- MAO:   ");
+			System.out.println(val);
+			if (val == maior) {
+				vencedores.add(j);
+			} else 
 			if (val > maior) {
 				vencedores = new ArrayList<Jogador>();
 				vencedores.add(j);
+				maior = val;
 			}
 			
-			if (val == maior) {
-				vencedores.add(j);
-			}
+
 			
-			// devolve as cartas de todos os jogadores
+			j.apostaFichas(this.apostas.get(j)); // remove as fichas do jogador	
+			
+		}
+		
+		Jogador dealer = null;
+		for (Jogador j: allJogadores) {
+			 //devolve as cartas de todos os jogadores
 			for (int i = 0; i < j.qtdMaos(); i++) {
 				for (Carta c: j.getMao(i)) {
 					this.baralho.adicionaCarta(c);
 				}
-				j.removeMao(i);
+				if(j.getID() != "dealer") {
+					j.limpaMao(i);
+				}
+				
+			}
+			if(j.getID() == "dealer") {
+				dealer = j;
 			}
 		}
 		
-		boolean vDealer = false;
-		for (Jogador j: vencedores) {
-			if (j.getID() == "dealer") {
-				vDealer = true;
-			}
-		}
-		
-		for (Jogador j: vencedores) {
-			if (vDealer) {
-				j.recebeFichas( this.apostas.get(j) );
-			} else {
+		int maoDealer = contaMao( dealer.getMao(0));
+		dealer.limpaMao(0);
+		boolean vDealer = maoDealer > maior;
+		System.out.print("DEALER --- MAO:   ");
+		System.out.println(maoDealer);
+
+
+		// nunca vai acontecer pq o delaer nao é apostador
+		//		for (Jogador j: vencedores) {
+//			if (j.getID() == "dealer") {
+//				vDealer = true;
+//			}
+//		}
+//		if(vDealer) {
+//			for (Jogador j: apostadores) {
+//				j.apostaFichas(this.apostas.get(j)); // remove as fichas do jogador	
+//			}
+//		}
+		System.out.println("VENCEDORES");
+		if(!vDealer) {
+			
+			for (Jogador j: vencedores) {
+				System.out.print("JOGID:   ");
+				System.out.print(j.getID());
 				int qtdMesa = this.fichasMesa;
 				if (maior == 21) {
+					System.out.println("BLACKJACK");
 					int fichas = (int) (qtdMesa * 1.5);
 					j.recebeFichas(fichas);
 				} else {
-					j.recebeFichas(this.fichasMesa);
+					j.recebeFichas(qtdMesa);
 				}
+				System.out.println(j.getFichas());
+//				if (vDealer) {
+////					j.recebeFichas( this.apostas.get(j) );
+//					j.apostaFichas(this.apostas.get(j)); // remove as fichas do jogador
+//				} else {
+//					int qtdMesa = this.fichasMesa;
+//					if (maior == 21) {
+//						System.out.println("BLACKJACK");
+//						int fichas = (int) (qtdMesa * 1.5);
+//						j.recebeFichas(fichas);
+//					} else {
+//						j.recebeFichas(qtdMesa);
+//					}
+//				}
 			}
+			
+		} else {
+			System.out.print("DEALER : ");
+			System.out.println(contaMao( dealer.getMao(0)));
 		}
+		System.out.println("-------");
+
 	}
 	
 	private int contaMao(List<Carta> mao) {

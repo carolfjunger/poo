@@ -66,6 +66,13 @@ class Jogador {
 		return lc != null;
 	}
 	
+	public void limpaMao(int indice) {
+		if(this.maos.size() == 1) { // tem soh uma mao
+			this.removeMao(indice);
+			this.novaMao();
+		}
+	}
+	
 	public int qtdMaos() {
 		return this.maos.size();
 	}
