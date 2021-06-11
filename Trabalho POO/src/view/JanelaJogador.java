@@ -170,18 +170,18 @@ public class JanelaJogador extends Janela implements Observer {
     	int vez;
     	switch (evento) {
     	case "INIT":
+    		//this.cartas = new HashMap<String, Boolean>();
     		vez = (int) val;
     		if (vez == this.indJogador) {
     			if (this.aposta > apostaMinima ) {
     				this.vezStatus.setText("Fichas Apostada: " + Integer.toString(fichas));
     				this.deal.setEnabled(true);
     			} else {
-    				this.vezStatus.setText("Faça sua aposta");
+    				this.vezStatus.setText("Faca sua aposta");
     				this.deal.setEnabled(false);
     			}
-        		
-        		this.repaint();
     		}
+    		this.repaint();
 
     		break;
     	case "VEZ":
@@ -193,12 +193,12 @@ public class JanelaJogador extends Janela implements Observer {
         		this.dbl.setEnabled(true);
         		this.hit.setEnabled(true);
         		this.split.setEnabled(true);
-        		this.vezStatus.setText("É a sua vez");
+        		this.vezStatus.setText("Eh a sua vez");
     		} else {
     			this.vezStatus.setText("Aguarde a sua vez");
     		}
     		this.vezStatus.setSize(vezStatus.getPreferredSize());
-    		this.somaCartas.setText("Somatório das cartas:" + Integer.toString(sumCarta));
+    		this.somaCartas.setText("Somatorio das cartas:" + Integer.toString(sumCarta));
     		this.somaCartas.setSize(somaCartas.getPreferredSize());
     		this.repaint();
     		break;
@@ -206,6 +206,9 @@ public class JanelaJogador extends Janela implements Observer {
     		HashMap<String, Boolean> cartas = (HashMap<String, Boolean>) val;
     		this.cartas = cartas;
     		this.repaint();
+    		break;
+    	case "LIMPAR_CARTAS":
+    		this.cartas = new HashMap<String, Boolean>();
     		break;
        	case "FICHA_CLICK":
        		int [] vezEFicha = (int[]) val;
@@ -228,8 +231,10 @@ public class JanelaJogador extends Janela implements Observer {
     		int fichas = (int) val;
     		this.aposta = 0;
     		this.fichas = fichas;
+//    		this.cartas = new HashMap<String, Boolean>();
+    		System.out.println("Finalizando turno..");
     		if (0 == this.indJogador) {
-    			this.vezStatus.setText("Faça sua aposta");
+    			this.vezStatus.setText("Faca sua aposta");
 				this.deal.setEnabled(false);        		
     		} else {
     			this.vezStatus.setText("Aguarde a sua vez");

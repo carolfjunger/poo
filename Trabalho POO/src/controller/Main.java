@@ -113,11 +113,13 @@ public class Main {
 //				break;
 			case "STAND":
 				if(proxVez >= totalDeJogadores - 1) {
-//					System.out.println("Finaliza turno");
+					System.out.println("Stand: Finalizando turno");
 					jbl.abreMaoDealer();
-//					jbl.setVez(proxVez);
-//					jbl.finalizaTurno();
+					jbl.setVez(proxVez);
+					//jbl.finalizaTurno();
+					
 					ger.notificaObs("DEALER_OPEN", null);
+					at.update("FINALIZA_TURNO", null);
 				} else {
 					jbl.setVez(proxVez);
 					ger.notificaObs("VEZ", null);
@@ -130,11 +132,13 @@ public class Main {
 				ger.notificaObs("INIT", null);
 				break;
 			case "FINALIZA_TURNO":
-				System.out.println("Finaliza turno");
-//				jbl.setVez(0);
 				jbl.finalizaTurno();
 				List<Integer> jf = jbl.getFichasJogadores();
 				ger.notificaObs("FINALIZA_TURNO", jf);
+				break;
+			case "NOVA_RODADA":
+				ger.notificaObs("LIMPAR_CARTAS", null);
+				ger.notificaObs("INIT", null);
 				break;
 			default:
 				System.out.println("Erro fatal! Tipo de evento '" + evento + "' nao reconhecido.");
@@ -163,17 +167,15 @@ public class Main {
 				HashMap<String, Boolean> cartas = jbl.getCartasJogador(id, 0);
 				switch(evento) {
 				case "INIT":
-					if (id == observers.size() - 1) {
-						return;
-					}
+//					if (id == observers.size() - 1) {
+//						return;
+//					}
 					o.update("INIT", jbl.getVez());
 					break;
 				case "FINALIZA_TURNO":
-					o.update("DAR_CARTAS", cartas);
+					//o.update("DAR_CARTAS", cartas);
 					List<Integer> jf = (List<Integer>) val;
-					if (id != observers.size() - 1) {
-						o.update("FINALIZA_TURNO", jf.get(id));
-					}
+					o.update("FINALIZA_TURNO", jf.get(id));
 					jbl.setVez(0);
 					break;
 				case "VEZ":
@@ -183,12 +185,13 @@ public class Main {
 					int[] value = { jbl.getVez(), jbl.getSomaCartasJogador(id, 0) };
 					o.update("VEZ", value);
 					break;
-				case "DAR_CARTAS":
-//					HashMap<String, Boolean> cartas = jbl.getCartasJogador(id, 0);
-					
+				case "DAR_CARTAS":		
 					o.update("DAR_CARTAS", cartas);
 					ger.notificaObs("VEZ", null);
 					
+					break;
+				case "LIMPAR_CARTAS":
+					o.update(evento, null);
 					break;
 				case "FICHA_CLICK":
 					if (id == observers.size() - 1) {
