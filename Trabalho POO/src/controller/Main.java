@@ -113,7 +113,13 @@ public class Main {
 //				break;
 			case "STAND":
 				if(proxVez >= totalDeJogadores - 1) {
-					System.out.println("Finaliza turno");
+					System.out.println("Stand: Finalizando turno");
+					jbl.abreMaoDealer();
+					jbl.setVez(proxVez);
+					//jbl.finalizaTurno();
+					
+					ger.notificaObs("DEALER_OPEN", null);
+					at.update("FINALIZA_TURNO", null);
 				} else {
 					jbl.setVez(proxVez);
 					ger.notificaObs("VEZ", null);
@@ -121,6 +127,18 @@ public class Main {
 				break;
 			case "FICHA_CLICK":
 				ger.notificaObs("FICHA_CLICK", val);
+				break;
+			case "INIT":
+				ger.notificaObs("INIT", null);
+				break;
+			case "FINALIZA_TURNO":
+				jbl.finalizaTurno();
+				List<Integer> jf = jbl.getFichasJogadores();
+				ger.notificaObs("FINALIZA_TURNO", jf);
+				break;
+			case "NOVA_RODADA":
+				ger.notificaObs("LIMPAR_CARTAS", null);
+				ger.notificaObs("INIT", null);
 				break;
 			default:
 				System.out.println("Erro fatal! Tipo de evento '" + evento + "' nao reconhecido.");
@@ -146,13 +164,16 @@ public class Main {
 		public void notificaObs(String evento, Object val) {
 			for (int id: observers.keySet()) {
 				Observer o = observers.get(id);
-
+				HashMap<String, Boolean> cartas = jbl.getCartasJogador(id, 0);
 				switch(evento) {
 				case "INIT":
-					if (id == observers.size() - 1) {
-						continue;
-					}
 					o.update("INIT", jbl.getVez());
+					break;
+				case "FINALIZA_TURNO":
+					//o.update("DAR_CARTAS", cartas);
+					List<Integer> jf = (List<Integer>) val;
+					o.update("FINALIZA_TURNO", jf.get(id));
+					jbl.setVez(0);
 					break;
 				case "VEZ":
 					if (id == observers.size() - 1) {
@@ -161,12 +182,13 @@ public class Main {
 					int[] value = { jbl.getVez(), jbl.getSomaCartasJogador(id, 0) };
 					o.update("VEZ", value);
 					break;
-				case "DAR_CARTAS":
-					HashMap<String, Boolean> cartas = jbl.getCartasJogador(id, 0);
-					
+				case "DAR_CARTAS":		
 					o.update("DAR_CARTAS", cartas);
 					ger.notificaObs("VEZ", null);
 					
+					break;
+				case "LIMPAR_CARTAS":
+					o.update(evento, null);
 					break;
 				case "FICHA_CLICK":
 					if (id == observers.size() - 1) {
@@ -174,6 +196,12 @@ public class Main {
 					}
 					int[] vezEficha = { jbl.getVez(), (int) val };
 					o.update("FICHA_CLICK", vezEficha);
+					break;
+				case "DEALER_OPEN":
+					if (id == observers.size() - 1) {
+						o.update("DEALER_OPEN", cartas);
+					}
+					
 					break;
 				default:
 					System.out.println("Erro fatal recebendo mensagem na Main! Tipo de evento '" + evento + "' nao reconhecido.");
