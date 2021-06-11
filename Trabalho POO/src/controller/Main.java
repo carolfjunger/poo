@@ -150,13 +150,13 @@ public class Main {
 				switch(evento) {
 				case "INIT":
 					if (id == observers.size() - 1) {
-						return;
+						continue;
 					}
 					o.update("INIT", jbl.getVez());
 					break;
 				case "VEZ":
 					if (id == observers.size() - 1) {
-						return;
+						continue;
 					}
 					int[] value = { jbl.getVez(), jbl.getSomaCartasJogador(id, 0) };
 					o.update("VEZ", value);
@@ -170,7 +170,7 @@ public class Main {
 					break;
 				case "FICHA_CLICK":
 					if (id == observers.size() - 1) {
-						return;
+						continue;
 					}
 					int[] vezEficha = { jbl.getVez(), (int) val };
 					o.update("FICHA_CLICK", vezEficha);
