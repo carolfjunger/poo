@@ -166,11 +166,12 @@ public class JanelaBanca extends Janela implements Observer {
 	    		System.out.println(cartas);
 	    		this.repaint();
 	    		System.out.println("RECEVIDO!");
+	    		this.obs.update("INIT", null);
 	    		break;
-	    	case "REABRE_CARTA":
+	    	case "DEALER_OPEN":
 	    		HashMap<String, Boolean> cartasFinal = (HashMap<String, Boolean>) val;
 	    		this.cartas = cartasFinal;
-	    		this.obs.update("FINALIZA_TURNO", null);
+//	    		this.obs.update("FINALIZA_TURNO", null);
 	    		this.repaint();
 //	    		System.out.println("RECEVIDO!");
 	    		break;

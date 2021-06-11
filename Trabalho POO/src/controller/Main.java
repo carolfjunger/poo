@@ -126,6 +126,9 @@ public class Main {
 			case "FICHA_CLICK":
 				ger.notificaObs("FICHA_CLICK", val);
 				break;
+			case "INIT":
+				ger.notificaObs("INIT", null);
+				break;
 			case "FINALIZA_TURNO":
 				System.out.println("Finaliza turno");
 //				jbl.setVez(0);
@@ -171,7 +174,7 @@ public class Main {
 					if (id != observers.size() - 1) {
 						o.update("FINALIZA_TURNO", jf.get(id));
 					}
-					
+					jbl.setVez(0);
 					break;
 				case "VEZ":
 					if (id == observers.size() - 1) {
@@ -196,7 +199,7 @@ public class Main {
 					break;
 				case "DEALER_OPEN":
 					if (id == observers.size() - 1) {
-						o.update("REABRE_CARTA", cartas);
+						o.update("DEALER_OPEN", cartas);
 					}
 					
 					break;

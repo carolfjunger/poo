@@ -426,18 +426,6 @@ public class JogoBlackjack {
 		System.out.print("DEALER --- MAO:   ");
 		System.out.println(maoDealer);
 
-
-		// nunca vai acontecer pq o delaer nao é apostador
-		//		for (Jogador j: vencedores) {
-//			if (j.getID() == "dealer") {
-//				vDealer = true;
-//			}
-//		}
-//		if(vDealer) {
-//			for (Jogador j: apostadores) {
-//				j.apostaFichas(this.apostas.get(j)); // remove as fichas do jogador	
-//			}
-//		}
 		System.out.println("VENCEDORES");
 		if(!vDealer) {
 			
@@ -453,19 +441,6 @@ public class JogoBlackjack {
 					j.recebeFichas(qtdMesa);
 				}
 				System.out.println(j.getFichas());
-//				if (vDealer) {
-////					j.recebeFichas( this.apostas.get(j) );
-//					j.apostaFichas(this.apostas.get(j)); // remove as fichas do jogador
-//				} else {
-//					int qtdMesa = this.fichasMesa;
-//					if (maior == 21) {
-//						System.out.println("BLACKJACK");
-//						int fichas = (int) (qtdMesa * 1.5);
-//						j.recebeFichas(fichas);
-//					} else {
-//						j.recebeFichas(qtdMesa);
-//					}
-//				}
 			}
 			
 		} else {
