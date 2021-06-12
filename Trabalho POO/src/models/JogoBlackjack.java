@@ -59,12 +59,9 @@ public class JogoBlackjack {
 			if(Objects.equals( j.getID(), idJog)) {
 				return j;
 			}
-
 		
 		}
-		System.out.println("Erro, nao encontrou o jogador com id:" + idJog);
 		return null;
-		
 	}
 	
 	public List<Integer> getIDJogadores() {
@@ -130,6 +127,10 @@ public class JogoBlackjack {
 	
 	public int getQtdJogadores() {
 		return this.jogadores.size();
+	}
+	
+	public int getQtdMaosJogador(int indJog) {
+		return this.jogadores.get(indJog).qtdMaos();
 	}
 	
 	public int getFichasMesa() {
@@ -214,14 +215,14 @@ public class JogoBlackjack {
 			j.compraCarta(this.baralho, 0);
 			this.qtdCartasUsadas += 2;
 			
-			// PARA TESTAR BLACKJACK
-//			if (i == 1) {
-//				j.limpaMao(0);
-//				Carta c1 = new Carta(Naipe.COPAS, ValorCarta.AS);
-//				Carta c2 = new Carta(Naipe.COPAS, ValorCarta.DEZ);
-//				j.adicionaCarta(c1, 0);
-//				j.adicionaCarta(c2, 0);
-//			}
+			// PARA TESTE - BLACKJACK
+			if (i == 1) {
+				j.limpaMao(0);
+				Carta c1 = new Carta(Naipe.COPAS, ValorCarta.AS);
+				Carta c2 = new Carta(Naipe.COPAS, ValorCarta.AS);
+				j.adicionaCarta(c1, 0);
+				j.adicionaCarta(c2, 0);
+			}
 			
 			if (i == this.jogadores.size() - 1) {
 				j.getMao(0).get(1).setPraBaixo(true);
@@ -263,7 +264,11 @@ public class JogoBlackjack {
 		//int qtdMao = j.qtdMaos();
 		List<Carta> mao = j.getMao(0); //TODO: split
 		
+		
 		j.compraCarta(this.baralho, indMao);
+		// PARA TESTE
+//		Carta c1 = new Carta(Naipe.COPAS, ValorCarta.TRES);
+//		j.adicionaCarta(c1, 0);
 		int valMao = this.contaMao(mao);
 		
 		if (valMao > 21)
@@ -273,6 +278,30 @@ public class JogoBlackjack {
 			return 1;
 					
 		return 0;
+	}
+	
+	public int split(int indJogador, int indMao) {
+		
+		Jogador j = this.jogadores.get(indJogador);
+		
+		List<Carta> mao = j.getMao(indMao); //TODO: split
+		Carta c1 = mao.get(0);
+		Carta c2 = mao.get(1);
+		
+		if ( mao.size() != 2 || c1.getCarta() != c2.getCarta() ) {
+			System.out.println(mao.size() == 2);
+			System.out.println(c1);
+			System.out.println(c2);
+			System.out.println("Erro fatal no split! Mao de tamanho != 2 ou cartas desiguais.");
+			System.exit(1);
+		}
+		
+		int indNova = j.novaMao();
+		List<Carta> maoNova = j.getMao(indNova);
+		maoNova.add(c2);
+		mao.remove(1);
+		
+		return indNova;
 	}
 	
 	// retorna o indice do vencedor

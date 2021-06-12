@@ -7,6 +7,8 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ public class JanelaBanca extends Janela implements Observer {
 		for (int j = 0; j < btns.length; j++) {
 			JButton jb = btns[j];
 			jb.setSize(ps);
-			jb.setLocation(200, 185 + ((int)ps.getHeight() * j));
+			jb.setLocation( ((int)ps.getWidth() * j), 160);
 			jb.setEnabled(false);
 			
 			jb.addActionListener( (evt) -> {
@@ -72,6 +74,7 @@ public class JanelaBanca extends Janela implements Observer {
 		}
 		this.getContentPane().add(panel);
 		
+		// mouse
 		this.addMouseListener(new MouseAdapter() {
 		   
 		    public void mouseClicked(MouseEvent e) {
@@ -84,6 +87,20 @@ public class JanelaBanca extends Janela implements Observer {
 		        	}
 		        }
 
+		    }
+		    
+		});
+		
+		// resize
+		this.addComponentListener(new ComponentAdapter() {
+		    public void componentResized(ComponentEvent componentEvent) {
+				for (int j = 0; j < btns.length; j++) {
+					int relX = j - btns.length/2;
+					int xc = getWidth()/2;
+					JButton jb = btns[j];
+					int w = (int) ps.getWidth();
+					jb.setLocation( xc + (w * relX) - w/2, 160);
+				}
 		    }
 		});
 	}
@@ -103,11 +120,12 @@ public class JanelaBanca extends Janela implements Observer {
     		
     		// deck1
     		img = assets.get("deck1");
-    		g.drawImage(img, 100, 50, this);
+    	    int xc = (this.getWidth() - img.getWidth(null)) / 2;
+    		g.drawImage(img, xc - 50, 24, this);
     		
     		// deck2
     		img = assets.get("deck2");
-    		g.drawImage(img, 200, 50, this);
+    		g.drawImage(img, xc + 50, 24, this);
     		
     		// desenhar fichas
     		String fichasArr[] = {"ficha1", "ficha5", "ficha10", "ficha20", "ficha50", "ficha100"};
@@ -188,12 +206,14 @@ public class JanelaBanca extends Janela implements Observer {
 	    	case "INIT":
 	    		this.praBaixo = true;
 	    		break;
+	    	case "VEZ":
+	    	case "HIT":
+	    	case "FICHA_CLICK":
 	    	case "ATUALIZA_FICHA":
 	    		break;
 	    	case "DAR_CARTAS":
 	    		List<String> cartas = (List<String>) val;
 	    		this.cartas = cartas;
-	    		//this.obs.update("INIT", null);
 	    		break;
 	    	case "LIMPAR_CARTAS":
 	    		this.cartas = new ArrayList<String>();

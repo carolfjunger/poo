@@ -113,7 +113,6 @@ public class JogoBlackjackTest {
 		int aposta1 = 1;
 		int aposta2 = 20;
 
-	
 		this.jbl.colheAposta(0, aposta1);
 		this.jbl.colheAposta(1, aposta2);
 		
@@ -136,7 +135,6 @@ public class JogoBlackjackTest {
 			Jogador j = this.jbl.getJogadorById(Integer.toString(jId));
 			Carta c1 = j.getMao(0).get(0);
 			Carta c2 = j.getMao(0).get(1);
-
 			
 			assertEquals(false, c1.getPraBaixo());
 			assertEquals(false, c2.getPraBaixo());
@@ -148,14 +146,11 @@ public class JogoBlackjackTest {
 		// pre teste
 		this.jbl.inicializa(this.QTD_DECKS);
 		
-		
 		int aposta1 = 1;
 		int aposta2 = 20;
-
 	
 		this.jbl.colheAposta(0, aposta1);
 		this.jbl.colheAposta(1, aposta2);
-		
 		
 		this.jbl.darCartas();
 		
@@ -172,7 +167,5 @@ public class JogoBlackjackTest {
 			assertEquals(1, j.qtdMaos());;
 			assertEquals(0, j.getMao(0).size());
 		}
-
-
 	}
 }

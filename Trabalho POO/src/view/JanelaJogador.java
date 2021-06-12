@@ -80,9 +80,8 @@ public class JanelaJogador extends Janela implements Observer {
 					obs.update(txt, null);
 					break;
 				case "HIT":
-					obs.update(txt, this.indMao);
-					break;
 				case "DOUBLE":
+				case "SPLIT":
 					obs.update(txt, this.indMao);
 					break;
 				default:
@@ -93,25 +92,25 @@ public class JanelaJogador extends Janela implements Observer {
 			panel.add(jb);
 		}
 		
+		// Mostra a vez do jogador
+		this.vezStatus.setText("Aguarde sua vez");
+		this.vezStatus.setSize(115, this.vezStatus.getPreferredSize().height);
+		this.vezStatus.setLocation(this.getWidth()/2 - 115/2, this.getHeight() - 260);
+		
 		// valor total das fichas
 		this.lFichas.setText("Fichas: " + Integer.toString(fichas));
 		this.lFichas.setSize(this.lFichas.getPreferredSize());
-		this.lFichas.setLocation(this.getWidth() - 94, this.getHeight() - 60);
+		this.lFichas.setLocation(12, this.getHeight() - 160);
 		
 		// valor total das fichas apostadas
 		this.lAposta.setText("Aposta: " + Integer.toString(this.aposta));
 		this.lAposta.setSize(this.lAposta.getPreferredSize());
-		this.lAposta.setLocation(this.getWidth() - 94, this.getHeight() - 80);
-        
-		// Mostra a vez do jogador
-		this.vezStatus.setText("Aguarde sua vez");
-		this.vezStatus.setSize(vezStatus.getPreferredSize());
-		this.vezStatus.setLocation(this.getWidth() - 125, this.getHeight() - 100);
+		this.lAposta.setLocation(12, this.getHeight() - 180);
 		
 		// Mostra a soma das cartas do jogador
 		this.somaCartas.setText("Somatorio das cartas: 0");
 		this.somaCartas.setSize(somaCartas.getPreferredSize());
-		this.somaCartas.setLocation(this.getWidth() - 175, this.getHeight() - 120);
+		this.somaCartas.setLocation(12, this.getHeight() - 200);
 		
 		// botando tudo no painel principal
 		panel.add(this.lFichas);
@@ -152,6 +151,7 @@ public class JanelaJogador extends Janela implements Observer {
     		}
 
             String text = "Jogador #" + (indJogador + 1);
+            
             g.drawString(text, 20, 20);
         }
 
@@ -184,29 +184,34 @@ public class JanelaJogador extends Janela implements Observer {
     		vez = infoVez[0];
     		int sumCarta = infoVez[1];
     		int vezInicial = infoVez[2];
+    		int indMao = infoVez[3];
     		
-    		// obteve 21, possivelmente blackjack
-    		if (vez == this.indJogador && sumCarta == 21)  {
-    			if (vezInicial == 1) {
-    				this.vezStatus.setText("Blackjack!");
-    			}
-    			this.obs.update("STAND", null);
+    		if (this.indMao != indMao) {
+    			break;
     		}
     		
     		if (vez == this.indJogador && sumCarta < 21) {
     			System.out.println("VEZ NA JANELA:" + this.indJogador);
     			
-        		boolean podeSplit = ( this.cartas != null ) ? this.cartas.get(0) == this.cartas.get(1): false;
+        		boolean podeSplit = this.cartas != null && this.cartas.size() == 2 && this.cartas.get(0).equals(this.cartas.get(1));
         		boolean podeDbl = this.fichas > (this.aposta * 2);
         		
         		this.stand.setEnabled(true);
         		this.dbl.setEnabled(podeDbl);
         		this.hit.setEnabled(true);
         		this.split.setEnabled(podeSplit);
+        		
         		this.vezStatus.setText("Eh a sua vez");
     		}
     		
-    		this.vezStatus.setSize(vezStatus.getPreferredSize());
+    		// obteve 21, possivelmente blackjack
+    		if (vez == this.indJogador && sumCarta == 21)  {
+    			if (vezInicial == 1) {
+    				this.vezStatus.setText("Blackjack!");
+    				//this.obs.update("STAND", null);
+    			}
+    		}
+    		
     		this.somaCartas.setText("Somatorio das cartas:" + Integer.toString(sumCarta));
     		this.somaCartas.setSize(somaCartas.getPreferredSize());
 
@@ -257,14 +262,7 @@ public class JanelaJogador extends Janela implements Observer {
     		int fichas = (int) val;
     		this.aposta = 0;
     		this.fichas = fichas;
-
-//    		if (0 == this.indJogador) {
-//    			this.vezStatus.setText("Faca sua aposta");
-//				this.deal.setEnabled(false);        		
-//    		} 
-//    		else {
-//    			this.vezStatus.setText("Aguarde a sua vez");
-//    		}
+    		
        		this.lFichas.setText("Fichas: " + Integer.toString(this.fichas));
        		this.lFichas.setSize(this.lFichas.getPreferredSize());
     		this.lAposta.setText("Aposta: " + Integer.toString(this.aposta));

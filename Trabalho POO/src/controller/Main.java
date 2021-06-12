@@ -90,7 +90,7 @@ public class Main {
 			int proxVez = vez + 1;
 			int totalDeJogadores = jbl.getIDJogadores().size();
 			List<Integer> jf;
-			
+
 			switch(evento.toUpperCase()) {
 			case "DEAL":
 				int fichasApostadas = (int) val;
@@ -99,7 +99,7 @@ public class Main {
 				if(proxVez >= totalDeJogadores - 1) {
 					jbl.darCartas();
 					jbl.setVez(0);
-					ger.notificaObs("DAR_CARTAS", null);
+					ger.notificaObs("DAR_CARTAS", 0);
 				} else {
 					jbl.setVez(proxVez);
 					ger.notificaObs("INIT", null);
@@ -108,14 +108,13 @@ public class Main {
 			case "HIT":
 				int indMao = (int) val;
 				int resultado = jbl.hit(vez, indMao);
-				
-				ger.notificaObs("DAR_CARTAS", null);
+				ger.notificaObs("DAR_CARTAS", indMao);
 				ger.notificaObs("HIT", resultado);
 				
 				// se quebrou ou obteve 21...
 				if (resultado != 0) {
 					System.out.println("Voce quebrou ou obteve 21, passando a vez para:" + proxVez);
-					at.update("STAND", false);
+					at.update("STAND", null);
 				}
 				break;
 			case "DOUBLE":
@@ -124,7 +123,6 @@ public class Main {
 				int valFichas = jf.get(vez);
 				jbl.colheAposta(vez, valFichas);
 				
-				System.out.println("Val fichas: " + valFichas);
 				ger.notificaObs("ATUALIZA_FICHA", valFichas);
 				at.update("HIT", val);
 				break;
@@ -140,11 +138,23 @@ public class Main {
 					ger.notificaObs("VEZ", null);
 				}
 				break;
+			case "SPLIT":
+				indMao = (int) val;
+				vez = jbl.getVez();
+				jf = jbl.getFichasJogadores();
+				valFichas = jf.get(vez);
+				
+				int indNova = jbl.split(vez, indMao);
+				
+				JanelaJogador jg = new JanelaJogador(vez, valFichas, indNova, null, at);
+				ger.registraObs(vez, jg);
+				
+				Point p = new Point(400*indNova, 820);
+				jg.setLocation(p);
+				jg.setVisible(true);
+				ger.notificaObs("DAR_CARTAS", null);
 			case "FICHA_CLICK":
 				ger.notificaObs("FICHA_CLICK", val);
-				break;
-			case "INIT":
-				ger.notificaObs("INIT", null);
 				break;
 			case "FINALIZA_TURNO":
 				List<Integer> vencedores = jbl.finalizaRodada();
@@ -169,35 +179,40 @@ public class Main {
 		public void notificaObs(String evento, Object val) {
 			for (int id: observers.keySet()) {
 				Observer o = observers.get(id);
-				List<String> cartas = jbl.getCartasJogador(id, 0);
+				List<String> cartas = jbl.getCartasJogador(id, 0); // TODO: split
 				switch(evento) {
 				case "INIT":
 					o.update("INIT", jbl.getVez());
 					break;
 				case "FINALIZA_TURNO":
-					//o.update("DAR_CARTAS", cartas);
 					List<Integer> jf = (List<Integer>) val;
 					o.update("FINALIZA_TURNO", jf.get(id));
 					jbl.setVez(0);
 					break;
+				case "DAR_CARTAS":	
+					//int indMao = (int) val;
+					for (int i = 0; i < jbl.getQtdMaosJogador(id); i++) {
+						cartas = jbl.getCartasJogador(id, i);
+						o.update("DAR_CARTAS", cartas);
+					}
+					// fallthrough
 				case "VEZ":
-					int vezInicial = (val == null) ? 1 : 0;
-					int[] value = { jbl.getVez(), jbl.getSomaCartasJogador(id, 0), vezInicial}; // TODO: split
+					boolean prim = cartas.size() == 2 && jbl.getQtdMaosJogador(jbl.getVez()) == 1;
+					int vezInicial =  prim ? 1 : 0;
+					int soma = jbl.getSomaCartasJogador(id, 0); // TODO: split
+					int vez = jbl.getVez();
 					
-					if (id != observers.size() - 1) {
+					for (int i = 0; i < jbl.getQtdMaosJogador(id); i++) {
+						int[] value = { vez, soma, vezInicial, i}; // TODO: split
 						o.update("VEZ", value);
 					}
 					
-					break;
-				case "DAR_CARTAS":		
-					o.update("DAR_CARTAS", cartas);
-					ger.notificaObs("VEZ", null);
+					if (id == vez && prim && soma == 21) {
+						at.update("STAND", null);
+					}
 					
 					break;
 				case "HIT":
-					if (id == observers.size() - 1) {
-						continue;
-					}
 					if (id == jbl.getVez())
 						o.update("HIT", val);
 					break;
@@ -205,9 +220,9 @@ public class Main {
 					o.update(evento, null);
 					break;
 				case "FICHA_CLICK":
-					// se o jogador ja tiver uma mao ou se for a vez do dealer
-					// nao queremos despachar esse evento
-					if (jbl.getCartasJogador(id, 0).size() != 0 || id == observers.size() - 1) {
+					// se o jogador ja tiver uma mao
+					// nao queremos mandar esse evento
+					if (jbl.getCartasJogador(id, 0).size() != 0) {
 						continue;
 					}
 					
@@ -217,9 +232,8 @@ public class Main {
 					o.update("ATUALIZA_FICHA", new int[]{ jbl.getVez(), (int) val });
 					break;
 				case "DEALER_OPEN":
-					if (id == observers.size() - 1) {
+					if (id == observers.size() - 1)
 						o.update("DEALER_OPEN", cartas);
-					}
 					
 					break;
 				default:
