@@ -97,11 +97,14 @@ public class Main {
 				jbl.colheAposta(jbl.getVez(), fichasApostadas);
 				
 				if(proxVez >= totalDeJogadores - 1) {
-					jbl.darCartas();
+					jbl.darCartas(0);
+					jbl.setMaoCorrente(0);
 					jbl.setVez(0);
+					System.out.println("DEAL: SETANDO PROX VEZ: 0");
 					ger.notificaObs("DAR_CARTAS", 0);
 				} else {
 					jbl.setVez(proxVez);
+					System.out.println("DEAL: SETANDO PROX VEZ:" + proxVez);
 					ger.notificaObs("INIT", null);
 				}
 				break;
@@ -127,6 +130,17 @@ public class Main {
 				at.update("HIT", val);
 				break;
 			case "STAND":
+				int mc = jbl.getMaoCorrente();
+				//System.out.println("SETANDO MAO CORRENTE:" + );
+				int qtdMao = jbl.getQtdMaosJogador(vez);
+				if ( mc < qtdMao - 1 ) {
+					System.out.println("SETANDO MAO CORRENTE:" + (mc + 1));
+					jbl.setMaoCorrente( mc + 1 );
+					ger.notificaObs("VEZ", null);
+					return;
+				}
+				
+				jbl.setMaoCorrente(0);
 				if(proxVez >= totalDeJogadores - 1) {
 					System.out.println("Stand: Finalizando turno");
 					jbl.abreMaoDealer();
@@ -134,6 +148,7 @@ public class Main {
 					ger.notificaObs("DEALER_OPEN", null);
 					at.update("FINALIZA_TURNO", null);
 				} else {
+					System.out.println("STAND: SETANDO PROX VEZ:" + proxVez);
 					jbl.setVez(proxVez);
 					ger.notificaObs("VEZ", null);
 				}
@@ -152,7 +167,9 @@ public class Main {
 				Point p = new Point(400*indNova, 820);
 				jg.setLocation(p);
 				jg.setVisible(true);
+				
 				ger.notificaObs("DAR_CARTAS", null);
+				break;
 			case "FICHA_CLICK":
 				ger.notificaObs("FICHA_CLICK", val);
 				break;
@@ -188,6 +205,7 @@ public class Main {
 					List<Integer> jf = (List<Integer>) val;
 					o.update("FINALIZA_TURNO", jf.get(id));
 					jbl.setVez(0);
+					jbl.setMaoCorrente(0);
 					break;
 				case "DAR_CARTAS":	
 					//int indMao = (int) val;
@@ -199,14 +217,16 @@ public class Main {
 				case "VEZ":
 					boolean prim = cartas.size() == 2 && jbl.getQtdMaosJogador(jbl.getVez()) == 1;
 					int vezInicial =  prim ? 1 : 0;
-					int soma = jbl.getSomaCartasJogador(id, 0); // TODO: split
+					int mc = jbl.getMaoCorrente();
 					int vez = jbl.getVez();
+					int soma = jbl.getSomaCartasJogador(vez, mc); // TODO: split
 					
-					for (int i = 0; i < jbl.getQtdMaosJogador(id); i++) {
-						int[] value = { vez, soma, vezInicial, i}; // TODO: split
-						o.update("VEZ", value);
-					}
-					
+					int[] value = { vez, soma, vezInicial, mc}; // TODO: split
+					o.update("VEZ", value);
+//					for (int i = 0; i < jbl.getQtdMaosJogador(id); i++) {
+//
+//					}
+//					
 					if (id == vez && prim && soma == 21) {
 						at.update("STAND", null);
 					}

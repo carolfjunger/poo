@@ -14,12 +14,14 @@ public class JanelaJogador extends Janela implements Observer {
 	private List<String> cartas;
 	private Observer obs;
 	
+	// estado
 	private int fichas = 0;
 	private int aposta = 0;
 	private int indMao = 0;
 	private int indJogador = 0;
-//	private boolean quebrou = false;
 	private boolean praBaixo = false;
+	
+	// constantes
 	private final int apostaMinima = 20;
 	private final int wCarta = 73; //px - largura da imagem da carta
 	private final int hCarta = 97; //px - altura da imagem da carta
@@ -44,6 +46,7 @@ public class JanelaJogador extends Janela implements Observer {
 		this.cartas = cartas;
 		this.obs = obs;
 		this.indJogador = indice;
+		this.indMao = indMao;
 		
 		JPanel panel = new PaintPanel();
 		panel.setLayout(null);
@@ -150,7 +153,7 @@ public class JanelaJogador extends Janela implements Observer {
     			}
     		}
 
-            String text = "Jogador #" + (indJogador + 1);
+            String text = "Jogador #" + (indJogador + 1) + " -- " + "Mao #" + (indMao);
             
             g.drawString(text, 20, 20);
         }
@@ -186,11 +189,11 @@ public class JanelaJogador extends Janela implements Observer {
     		int vezInicial = infoVez[2];
     		int indMao = infoVez[3];
     		
-    		if (this.indMao != indMao) {
-    			break;
-    		}
+//    		if (this.indMao != indMao) {
+//    			break;
+//    		}
     		
-    		if (vez == this.indJogador && sumCarta < 21) {
+    		if (vez == this.indJogador && this.indMao == indMao && sumCarta < 21) {
     			System.out.println("VEZ NA JANELA:" + this.indJogador);
     			
         		boolean podeSplit = this.cartas != null && this.cartas.size() == 2 && this.cartas.get(0).equals(this.cartas.get(1));
@@ -205,7 +208,7 @@ public class JanelaJogador extends Janela implements Observer {
     		}
     		
     		// obteve 21, possivelmente blackjack
-    		if (vez == this.indJogador && sumCarta == 21)  {
+    		if (vez == this.indJogador && this.indMao == indMao && sumCarta == 21)  {
     			if (vezInicial == 1) {
     				this.vezStatus.setText("Blackjack!");
     				//this.obs.update("STAND", null);
@@ -239,6 +242,10 @@ public class JanelaJogador extends Janela implements Observer {
     		this.cartas = cartas;
     		break;
     	case "LIMPAR_CARTAS":
+    		if (this.indMao != 0) {
+    			this.dispose();
+    		}
+    		
     		this.cartas = new ArrayList<String>();
     		this.somaCartas.setText("Somatorio das cartas:");
     		break;

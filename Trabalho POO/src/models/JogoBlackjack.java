@@ -11,12 +11,16 @@ public class JogoBlackjack {
 	private int fichasMesa = 0; 
 	private List<Jogador> jogadores = new ArrayList<Jogador>();
 	private HashMap<Jogador, Integer> apostas = new HashMap<Jogador, Integer>() ;
-	
-	private final int APOSTA_MIN = 20;
-	private final int FICHAS_INI = 500;
 	private int vez = 0;
+	private int maoCorrente = 0;
 	private int qtdCartasUsadas = 0;
 	
+	// constantes
+	private final int APOSTA_MIN = 20;
+	private final int FICHAS_INI = 500;
+
+	// construtor privado, 
+	// necessario para nossa impl de singleton
 	private JogoBlackjack() {}
 		
 	// singleton
@@ -36,32 +40,6 @@ public class JogoBlackjack {
 		this.jogadores = new ArrayList<Jogador>();
 		this.fichasMesa = 0;
 		this.baralho = new Baralho();
-	}
-	
-	public void setVez(int vez) {
-		this.vez = vez;
-	}
-	
-	public void setJogadores(int num) {
-		List<Jogador> lj = new ArrayList<Jogador>();
-		for (int i=0; i<num; i++) {
-			Jogador j = new Jogador(Integer.toString(i), 0);
-			lj.add(j);
-		}
-		
-		this.jogadores = lj;
-	}
-	
-	protected Jogador getJogadorById(String idJog) {
-		List<Jogador> allJogadores = this.jogadores;
-		
-		for(Jogador j : allJogadores) {
-			if(Objects.equals( j.getID(), idJog)) {
-				return j;
-			}
-		
-		}
-		return null;
 	}
 	
 	public List<Integer> getIDJogadores() {
@@ -116,6 +94,8 @@ public class JogoBlackjack {
 	
 	public int getSomaCartasJogador(int indJog, int iMao) {
 		Jogador j = this.jogadores.get(indJog);
+//		System.out.println( "IND JOG:" + indJog);
+//		System.out.println( "IND MAO:" + iMao);
 		List<Carta> lc = j.getMao(iMao);
 		
 		return this.contaMao(lc);
@@ -123,6 +103,28 @@ public class JogoBlackjack {
 	
 	public int getVez() {
 		return this.vez;
+	}
+	
+	public int getMaoCorrente() {
+		return this.maoCorrente;
+	}
+	
+	public void setVez(int vez) {
+		this.vez = vez;
+	}
+	
+	public void setMaoCorrente(int mc) {
+		this.maoCorrente = mc;
+	}
+	
+	public void setJogadores(int num) {
+		List<Jogador> lj = new ArrayList<Jogador>();
+		for (int i=0; i<num; i++) {
+			Jogador j = new Jogador(Integer.toString(i), 0);
+			lj.add(j);
+		}
+		
+		this.jogadores = lj;
 	}
 	
 	public int getQtdJogadores() {
@@ -208,15 +210,15 @@ public class JogoBlackjack {
 		}
 	}
 	
-	public void darCartas() {
+	public void darCartas(int indMao) {
 		for (int i = 0; i < this.jogadores.size(); i++) {
 			Jogador j = this.jogadores.get(i);
-			j.compraCarta(this.baralho, 0); // TODO: split
-			j.compraCarta(this.baralho, 0);
+			j.compraCarta(this.baralho, indMao); // TODO: split
+			j.compraCarta(this.baralho, indMao);
 			this.qtdCartasUsadas += 2;
 			
 			// PARA TESTE - BLACKJACK
-			if (i == 1) {
+			if (i == 0) {
 				j.limpaMao(0);
 				Carta c1 = new Carta(Naipe.COPAS, ValorCarta.AS);
 				Carta c2 = new Carta(Naipe.COPAS, ValorCarta.AS);
@@ -224,11 +226,12 @@ public class JogoBlackjack {
 				j.adicionaCarta(c2, 0);
 			}
 			
+			// dealer carta pra baixo
 			if (i == this.jogadores.size() - 1) {
 				j.getMao(0).get(1).setPraBaixo(true);
 			}
 			
-			List<Carta> cs = j.getMao(0);
+			List<Carta> cs = j.getMao(indMao);
 			System.out.println("Cartas do jogador: " + i);
 			for (Carta c: cs) {
 				System.out.print("Nome: " + c.getNome());
@@ -262,7 +265,7 @@ public class JogoBlackjack {
 		Jogador j = this.jogadores.get(indJogador);
 		
 		//int qtdMao = j.qtdMaos();
-		List<Carta> mao = j.getMao(0); //TODO: split
+		List<Carta> mao = j.getMao(indMao); //TODO: split
 		
 		
 		j.compraCarta(this.baralho, indMao);
@@ -300,6 +303,9 @@ public class JogoBlackjack {
 		List<Carta> maoNova = j.getMao(indNova);
 		maoNova.add(c2);
 		mao.remove(1);
+		
+		System.out.println( "TAM MAO VELHA:" + mao.size() );
+		System.out.println( "TAM MAO NOVA:" + maoNova.size() );
 		
 		return indNova;
 	}
@@ -429,5 +435,17 @@ public class JogoBlackjack {
 		}
 		
 		return valor;
+	}
+	
+	protected Jogador getJogadorById(String idJog) {
+		List<Jogador> allJogadores = this.jogadores;
+		
+		for(Jogador j : allJogadores) {
+			if(Objects.equals( j.getID(), idJog)) {
+				return j;
+			}
+		
+		}
+		return null;
 	}
 }
