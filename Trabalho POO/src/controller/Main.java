@@ -58,13 +58,12 @@ public class Main {
 		int tam = jID.size();
 		
 		ger.registraObs(jID.get(tam-1), jBanca);
-//		jbl.darCartas();
 		
 		// tam-1 para excluir o dealer
 		for (int i=0; i< tam - 1; i++) {
 			int numFichas = jf.get(i);
 			int id = jID.get(i);
-			HashMap<String, Boolean> cartas = jbl.getCartasJogador(id, 0);
+			List<String> cartas = jbl.getCartasJogador(id, 0);
 			JanelaJogador jg = new JanelaJogador(id, numFichas, 0, cartas, at);
 			
 			// registrar janela jogador como observador
@@ -87,36 +86,52 @@ public class Main {
 	private static class Atualizador implements Observer {
 		@Override
 		public void update(String evento, Object val) {
-			int proxVez = jbl.getVez() + 1;
+			int vez = jbl.getVez();
+			int proxVez = vez + 1;
 			int totalDeJogadores = jbl.getIDJogadores().size();
+			List<Integer> jf;
+			
 			switch(evento.toUpperCase()) {
 			case "DEAL":
 				int fichasApostadas = (int) val;
-				jbl.colheAposta(Integer.toString(jbl.getVez()), fichasApostadas);
+				jbl.colheAposta(jbl.getVez(), fichasApostadas);
+				
 				if(proxVez >= totalDeJogadores - 1) {
 					jbl.darCartas();
-					proxVez = 0;
-					jbl.setVez(proxVez);
+					jbl.setVez(0);
 					ger.notificaObs("DAR_CARTAS", null);
 				} else {
 					jbl.setVez(proxVez);
 					ger.notificaObs("INIT", null);
 				}
-				
-//				ger.notificaObs("INIT");
 				break;
-//			case "HIT":
-//				int fichas = (int) val;
-//				break;
-//			case "VEZ":
-//				ger.notificaObs("VEZ", null);
-//				break;
+			case "HIT":
+				int indMao = (int) val;
+				int resultado = jbl.hit(vez, indMao);
+				
+				ger.notificaObs("DAR_CARTAS", null);
+				ger.notificaObs("HIT", resultado);
+				
+				// se quebrou ou obteve 21...
+				if (resultado != 0) {
+					System.out.println("Voce quebrou ou obteve 21, passando a vez para:" + proxVez);
+					at.update("STAND", false);
+				}
+				break;
+			case "DOUBLE":
+				jf = jbl.getApostasJogadores();
+				vez = jbl.getVez();
+				int valFichas = jf.get(vez);
+				jbl.colheAposta(vez, valFichas);
+				
+				System.out.println("Val fichas: " + valFichas);
+				ger.notificaObs("ATUALIZA_FICHA", valFichas);
+				at.update("HIT", val);
+				break;
 			case "STAND":
 				if(proxVez >= totalDeJogadores - 1) {
 					System.out.println("Stand: Finalizando turno");
 					jbl.abreMaoDealer();
-					jbl.setVez(proxVez);
-					//jbl.finalizaTurno();
 					
 					ger.notificaObs("DEALER_OPEN", null);
 					at.update("FINALIZA_TURNO", null);
@@ -132,8 +147,8 @@ public class Main {
 				ger.notificaObs("INIT", null);
 				break;
 			case "FINALIZA_TURNO":
-				jbl.finalizaTurno();
-				List<Integer> jf = jbl.getFichasJogadores();
+				List<Integer> vencedores = jbl.finalizaRodada();
+				jf = jbl.getFichasJogadores();
 				ger.notificaObs("FINALIZA_TURNO", jf);
 				break;
 			case "NOVA_RODADA":
@@ -149,22 +164,12 @@ public class Main {
 	
 	private static class Gerenciador implements Observable {
 		private HashMap<Integer, Observer> observers = new  HashMap<Integer, Observer>();
-		
-		@Override
-		public void registraObs(int jogId, Observer observer) {
-			observers.put(jogId, observer);			
-		}
-
-		@Override
-		public void removeObs(int jogId) {
-			observers.remove(jogId);
-		}
 
 		@Override
 		public void notificaObs(String evento, Object val) {
 			for (int id: observers.keySet()) {
 				Observer o = observers.get(id);
-				HashMap<String, Boolean> cartas = jbl.getCartasJogador(id, 0);
+				List<String> cartas = jbl.getCartasJogador(id, 0);
 				switch(evento) {
 				case "INIT":
 					o.update("INIT", jbl.getVez());
@@ -176,26 +181,40 @@ public class Main {
 					jbl.setVez(0);
 					break;
 				case "VEZ":
-					if (id == observers.size() - 1) {
-						continue;
+					int vezInicial = (val == null) ? 1 : 0;
+					int[] value = { jbl.getVez(), jbl.getSomaCartasJogador(id, 0), vezInicial}; // TODO: split
+					
+					if (id != observers.size() - 1) {
+						o.update("VEZ", value);
 					}
-					int[] value = { jbl.getVez(), jbl.getSomaCartasJogador(id, 0) };
-					o.update("VEZ", value);
+					
 					break;
 				case "DAR_CARTAS":		
 					o.update("DAR_CARTAS", cartas);
 					ger.notificaObs("VEZ", null);
 					
 					break;
+				case "HIT":
+					if (id == observers.size() - 1) {
+						continue;
+					}
+					if (id == jbl.getVez())
+						o.update("HIT", val);
+					break;
 				case "LIMPAR_CARTAS":
 					o.update(evento, null);
 					break;
 				case "FICHA_CLICK":
-					if (id == observers.size() - 1) {
+					// se o jogador ja tiver uma mao ou se for a vez do dealer
+					// nao queremos despachar esse evento
+					if (jbl.getCartasJogador(id, 0).size() != 0 || id == observers.size() - 1) {
 						continue;
 					}
-					int[] vezEficha = { jbl.getVez(), (int) val };
-					o.update("FICHA_CLICK", vezEficha);
+					
+					o.update("ATUALIZA_FICHA", new int[]{ jbl.getVez(), (int) val });
+					break;
+				case "ATUALIZA_FICHA":
+					o.update("ATUALIZA_FICHA", new int[]{ jbl.getVez(), (int) val });
 					break;
 				case "DEALER_OPEN":
 					if (id == observers.size() - 1) {
@@ -204,10 +223,21 @@ public class Main {
 					
 					break;
 				default:
-					System.out.println("Erro fatal recebendo mensagem na Main! Tipo de evento '" + evento + "' nao reconhecido.");
+					System.out.println("Erro fatal mandando mensagem na Main! Tipo de evento '" + evento + "' nao reconhecido.");
 					System.exit(1);
 				}
 			}
 		}
+		
+		@Override
+		public void registraObs(int jogId, Observer observer) {
+			observers.put(jogId, observer);			
+		}
+
+		@Override
+		public void removeObs(int jogId) {
+			observers.remove(jogId);
+		}
+		
 	}
 }

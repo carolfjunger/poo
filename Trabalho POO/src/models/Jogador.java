@@ -44,6 +44,11 @@ class Jogador {
 		this.maos.get(mao).add(c);
 	}
 	
+	public void adicionaCarta(Carta c, int mao) {
+		//Carta c = b.compraCarta();
+		this.maos.get(mao).add(c);
+	}
+	
 	public List<Carta> getMao(int indice) {
 		return this.maos.get(indice);
 	}

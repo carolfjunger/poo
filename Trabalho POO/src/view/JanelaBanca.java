@@ -9,19 +9,19 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class JanelaBanca extends Janela implements Observer {
-	HashMap<Integer, Point> fichasPosition = new HashMap<Integer, Point>();
-	private HashMap<String, Boolean> cartas = new HashMap<String, Boolean>();
+	
+	private HashMap<Integer, Point> fichasPosition = new HashMap<Integer, Point>();
+	private List<String> cartas = new ArrayList<String>();
+	private boolean praBaixo = false;
+	
 	final int size = 59; // tamanho da ficha
 	Observer obs;
 	
@@ -53,7 +53,7 @@ public class JanelaBanca extends Janela implements Observer {
 				String txt = jb.getText().toUpperCase().replace(" ", "_");
 				switch(txt) {
 				case "NOVA_RODADA":
-					this.cartas = new HashMap<String, Boolean>();
+					this.cartas = new ArrayList<String>();
 					obs.update(txt, null);
 					break;
 				case "SALVAR":
@@ -133,10 +133,10 @@ public class JanelaBanca extends Janela implements Observer {
         	final int wCarta = 73; //px - largura da imagem da carta
         	final int hCarta = 97; //px - altura da imagem da carta
 
-    		for (String c: cartas.keySet()) {
+    		for (String c: cartas) {
     			img = assets.get( c );
     			
-    			if (cartas.get(c) == true) {
+    			if (praBaixo && cInd == 0) {
     				img = assets.get( "b" );
     			}
     			if (img != null) {
@@ -186,22 +186,26 @@ public class JanelaBanca extends Janela implements Observer {
 
     	switch (evento) {
 	    	case "INIT":
+	    		this.praBaixo = true;
+	    		break;
+	    	case "ATUALIZA_FICHA":
 	    		break;
 	    	case "DAR_CARTAS":
-	    		HashMap<String, Boolean> cartas = (HashMap<String, Boolean>) val;
+	    		List<String> cartas = (List<String>) val;
 	    		this.cartas = cartas;
-	    		this.obs.update("INIT", null);
+	    		//this.obs.update("INIT", null);
 	    		break;
 	    	case "LIMPAR_CARTAS":
-	    		this.cartas = new HashMap<String, Boolean>();
+	    		this.cartas = new ArrayList<String>();
 	    		this.novaRodada.setEnabled(false);
 	    		break;
 	    	case "DEALER_OPEN":
-	    		HashMap<String, Boolean> cartasFinal = (HashMap<String, Boolean>) val;
+	    		List<String> cartasFinal = (List<String>) val;
 	    		this.cartas = cartasFinal;
    		
 	    		break;
 	    	case "FINALIZA_TURNO":
+	    		this.praBaixo = false;
 	    		this.novaRodada.setEnabled(true);
    		
 	    		break;
