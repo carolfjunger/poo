@@ -72,10 +72,10 @@ class Jogador {
 	}
 	
 	public void limpaMao(int indice) {
-		if(this.maos.size() == 1) { // tem soh uma mao
-			this.removeMao(indice);
-			this.novaMao();
+		for (int i = 0; i < this.maos.size(); i++) {
+			this.maos.remove(i);
 		}
+		this.novaMao();
 	}
 	
 	public int qtdMaos() {

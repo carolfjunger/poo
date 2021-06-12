@@ -46,9 +46,6 @@ public class Main {
 		at = new Atualizador();
 		ger = new Gerenciador();
 		
-    	JanelaBanca jBanca = new JanelaBanca("Banca", at);
-    	ArrayList<Janela> jJogador = new ArrayList<Janela>();
-		
 		jbl = JogoBlackjack.getInstancia();
 		jbl.setJogadores(numJogadores);
 		jbl.inicializa(2);
@@ -57,7 +54,10 @@ public class Main {
 		List<Integer> jf = jbl.getFichasJogadores();
 		int tam = jID.size();
 		
-		ger.registraObs(jID.get(tam-1), jBanca);
+		JanelaBanca jBanca = new JanelaBanca("Banca", jID.get(tam-1), at);
+    	ArrayList<Janela> jJogador = new ArrayList<Janela>();
+    	
+		ger.registraObs(jBanca);
 		
 		// tam-1 para excluir o dealer
 		for (int i=0; i< tam - 1; i++) {
@@ -67,7 +67,7 @@ public class Main {
 			JanelaJogador jg = new JanelaJogador(id, numFichas, 0, cartas, at);
 			
 			// registrar janela jogador como observador
-			ger.registraObs(id, jg);
+			ger.registraObs(jg);
 			
 			Point p = new Point(i*400, 420);
 			jg.setLocation(p);
@@ -140,7 +140,6 @@ public class Main {
 					return;
 				}
 				
-				jbl.setMaoCorrente(0);
 				if(proxVez >= totalDeJogadores - 1) {
 					System.out.println("Stand: Finalizando turno");
 					jbl.abreMaoDealer();
@@ -149,6 +148,7 @@ public class Main {
 					at.update("FINALIZA_TURNO", null);
 				} else {
 					System.out.println("STAND: SETANDO PROX VEZ:" + proxVez);
+					jbl.setMaoCorrente(0);
 					jbl.setVez(proxVez);
 					ger.notificaObs("VEZ", null);
 				}
@@ -162,15 +162,21 @@ public class Main {
 				int indNova = jbl.split(vez, indMao);
 				
 				JanelaJogador jg = new JanelaJogador(vez, valFichas, indNova, null, at);
-				ger.registraObs(vez, jg);
+				ger.registraObs(jg);
 				
 				Point p = new Point(400*indNova, 820);
 				jg.setLocation(p);
 				jg.setVisible(true);
 				
 				ger.notificaObs("DAR_CARTAS", null);
+				
+				valFichas = jbl.getApostasJogadores().get(vez);
+				jbl.colheAposta(vez, valFichas);				
+				ger.notificaObs("ATUALIZA_FICHA", valFichas);
+//				ger.notificaObs("DAR_CARTAS", indNova);
 				break;
 			case "FICHA_CLICK":
+				System.out.println("MANDANDO FICHAS CLICK!!!!");
 				ger.notificaObs("FICHA_CLICK", val);
 				break;
 			case "FINALIZA_TURNO":
@@ -181,37 +187,54 @@ public class Main {
 			case "NOVA_RODADA":
 				ger.notificaObs("LIMPAR_CARTAS", null);
 				ger.notificaObs("INIT", null);
+//				ger.removeObs(3);
 				break;
 			default:
 				System.out.println("Erro fatal! Tipo de evento '" + evento + "' nao reconhecido.");
 				System.exit(1);
 			}
 		}
+
+		@Override
+		public int getInd() {
+			return -1;
+		}
 	}
 	
 	private static class Gerenciador implements Observable {
-		private HashMap<Integer, Observer> observers = new  HashMap<Integer, Observer>();
+		private List<Observer> observers = new ArrayList<Observer>();
 
 		@Override
 		public void notificaObs(String evento, Object val) {
-			for (int id: observers.keySet()) {
-				Observer o = observers.get(id);
+			for (Observer o: observers) {
+				int id = o.getInd();
+//				Observer o = observers.get(id);
 				List<String> cartas = jbl.getCartasJogador(id, 0); // TODO: split
 				switch(evento) {
 				case "INIT":
 					o.update("INIT", jbl.getVez());
+					
+					// remover observers extras
+					while (this.observers.size() > jbl.getQtdJogadores())
+						this.observers.remove(this.observers.size() - 1);
+					
+//					SwingUtilities.invokeLater(() -> {
+//						while (this.observers.size() > jbl.getQtdJogadores())
+//							this.observers.remove(this.observers.size() - 1);
+//					});
 					break;
 				case "FINALIZA_TURNO":
 					List<Integer> jf = (List<Integer>) val;
 					o.update("FINALIZA_TURNO", jf.get(id));
 					jbl.setVez(0);
 					jbl.setMaoCorrente(0);
+
 					break;
-				case "DAR_CARTAS":	
-					//int indMao = (int) val;
+				case "DAR_CARTAS":
 					for (int i = 0; i < jbl.getQtdMaosJogador(id); i++) {
 						cartas = jbl.getCartasJogador(id, i);
-						o.update("DAR_CARTAS", cartas);
+						Object[] inf = {cartas, i};
+						o.update("DAR_CARTAS", inf);
 					}
 					// fallthrough
 				case "VEZ":
@@ -219,22 +242,21 @@ public class Main {
 					int vezInicial =  prim ? 1 : 0;
 					int mc = jbl.getMaoCorrente();
 					int vez = jbl.getVez();
-					int soma = jbl.getSomaCartasJogador(vez, mc); // TODO: split
+					int soma = jbl.getSomaCartasJogador(vez, mc);
 					
-					int[] value = { vez, soma, vezInicial, mc}; // TODO: split
+					int[] value = { vez, soma, vezInicial, mc};
 					o.update("VEZ", value);
-//					for (int i = 0; i < jbl.getQtdMaosJogador(id); i++) {
-//
-//					}
-//					
 					if (id == vez && prim && soma == 21) {
 						at.update("STAND", null);
 					}
 					
 					break;
 				case "HIT":
+					int resultado = (int) val;
+					int mao = jbl.getMaoCorrente();
+					int[] info = {resultado, mao};
 					if (id == jbl.getVez())
-						o.update("HIT", val);
+						o.update("HIT", info);
 					break;
 				case "LIMPAR_CARTAS":
 					o.update(evento, null);
@@ -264,13 +286,13 @@ public class Main {
 		}
 		
 		@Override
-		public void registraObs(int jogId, Observer observer) {
-			observers.put(jogId, observer);			
+		public void registraObs(Observer observer) {
+			observers.add(observer);			
 		}
 
 		@Override
-		public void removeObs(int jogId) {
-			observers.remove(jogId);
+		public void removeObs(int jogInd) {
+			observers.remove(jogInd);
 		}
 		
 	}

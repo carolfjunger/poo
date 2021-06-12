@@ -23,6 +23,7 @@ public class JanelaBanca extends Janela implements Observer {
 	private HashMap<Integer, Point> fichasPosition = new HashMap<Integer, Point>();
 	private List<String> cartas = new ArrayList<String>();
 	private boolean praBaixo = false;
+	private int indJogador = 0;
 	
 	final int size = 59; // tamanho da ficha
 	Observer obs;
@@ -32,10 +33,11 @@ public class JanelaBanca extends Janela implements Observer {
 	private JButton encerrar = new JButton("Encerrar jogo");
 	
 	
-	public JanelaBanca(String titulo,  Observer obs) {
+	public JanelaBanca(String titulo, int indJogador, Observer obs) {
 		super(titulo);
 		HashMap<Integer, Point> fichasPosition = this.fichasPosition;
 		this.obs = obs;
+		this.indJogador = indJogador;
 		
 		JPanel panel = new PaintPanel();
 		panel.setLayout(null);
@@ -198,6 +200,11 @@ public class JanelaBanca extends Janela implements Observer {
 		image = Toolkit.getDefaultToolkit().getImage(imageURL);
 		this.assets.put("deck2", image);
 	}
+	
+	@Override
+	public int getInd() {
+		return this.indJogador;
+	}
 
 	@Override
 	public void update(String evento, Object val) {
@@ -212,7 +219,9 @@ public class JanelaBanca extends Janela implements Observer {
 	    	case "ATUALIZA_FICHA":
 	    		break;
 	    	case "DAR_CARTAS":
-	    		List<String> cartas = (List<String>) val;
+	    		Object[] inf = (Object[]) val;
+	    		List<String> cartas = (List<String>) inf[0];
+
 	    		this.cartas = cartas;
 	    		break;
 	    	case "LIMPAR_CARTAS":

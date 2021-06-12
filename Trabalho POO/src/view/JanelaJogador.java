@@ -160,6 +160,11 @@ public class JanelaJogador extends Janela implements Observer {
 
     }
     
+	@Override
+	public int getInd() {
+		return this.indJogador;
+	}
+    
     @Override 
     public void update(String evento, Object val) {
     	int vez;
@@ -167,6 +172,10 @@ public class JanelaJogador extends Janela implements Observer {
     	switch (evento) {
     	case "INIT":
     		System.out.println("INIT...");
+    		if (this.indMao != 0) {
+    			this.dispose();
+    			//this.obs.update(evento, );
+    		}
     		vez = (int) val;
     		if (vez == this.indJogador) {
     			if (this.aposta > apostaMinima ) {
@@ -189,42 +198,40 @@ public class JanelaJogador extends Janela implements Observer {
     		int vezInicial = infoVez[2];
     		int indMao = infoVez[3];
     		
-//    		if (this.indMao != indMao) {
-//    			break;
-//    		}
-    		
-    		if (vez == this.indJogador && this.indMao == indMao && sumCarta < 21) {
+    		if (vez == this.indJogador && this.indMao == indMao) {
     			System.out.println("VEZ NA JANELA:" + this.indJogador);
     			
-        		boolean podeSplit = this.cartas != null && this.cartas.size() == 2 && this.cartas.get(0).equals(this.cartas.get(1));
-        		boolean podeDbl = this.fichas > (this.aposta * 2);
-        		
-        		this.stand.setEnabled(true);
-        		this.dbl.setEnabled(podeDbl);
-        		this.hit.setEnabled(true);
-        		this.split.setEnabled(podeSplit);
-        		
-        		this.vezStatus.setText("Eh a sua vez");
-    		}
-    		
-    		// obteve 21, possivelmente blackjack
-    		if (vez == this.indJogador && this.indMao == indMao && sumCarta == 21)  {
-    			if (vezInicial == 1) {
-    				this.vezStatus.setText("Blackjack!");
-    				//this.obs.update("STAND", null);
+    			if (sumCarta < 21) {
+            		boolean podeSplit = this.cartas != null && this.cartas.size() == 2 && this.cartas.get(0).equals(this.cartas.get(1));
+            		boolean podeDbl = this.fichas > (this.aposta * 2);
+            		
+            		this.stand.setEnabled(true);
+            		this.dbl.setEnabled(podeDbl);
+            		this.hit.setEnabled(true);
+            		this.split.setEnabled(podeSplit);			
     			}
-    		}
-    		
-    		this.somaCartas.setText("Somatorio das cartas:" + Integer.toString(sumCarta));
-    		this.somaCartas.setSize(somaCartas.getPreferredSize());
+    			else if (sumCarta == 21) {
+    				this.vezStatus.setText("21!");
+        			if (vezInicial == 1) {
+        				this.vezStatus.setText("Blackjack!");
+        				//this.obs.update("STAND", null);
+        			}
+    			}
+
+        		this.vezStatus.setText("Eh a sua vez");
+        		this.somaCartas.setText("Somatorio das cartas:" + Integer.toString(sumCarta));
+        		this.somaCartas.setSize(somaCartas.getPreferredSize());
+    		}    		
 
     		break;
     	case "HIT":
-    		int resultado = (int) val;
+    		int[] info = (int[]) val;
+    		int resultado = info[0];
+    		int mao = info[1];
     		System.out.println("HIT NA JANELA:" + this.indJogador);
     		
     		// quebramos ou 21
-    		if (resultado != 0) {
+    		if (resultado != 0 && this.indMao == mao) {
     			
         		this.stand.setEnabled(false);
         		this.dbl.setEnabled(false);
@@ -238,14 +245,15 @@ public class JanelaJogador extends Janela implements Observer {
     		}
     		break;
     	case "DAR_CARTAS":
-    		cartas = (List<String>) val;
-    		this.cartas = cartas;
+    		Object[] inf = (Object[]) val;
+    		cartas = (List<String>) inf[0];
+    		mao = (int) inf[1];
+    		
+    		if (this.indMao == mao)
+    			this.cartas = cartas;
+    		
     		break;
     	case "LIMPAR_CARTAS":
-    		if (this.indMao != 0) {
-    			this.dispose();
-    		}
-    		
     		this.cartas = new ArrayList<String>();
     		this.somaCartas.setText("Somatorio das cartas:");
     		break;
@@ -269,6 +277,10 @@ public class JanelaJogador extends Janela implements Observer {
     		int fichas = (int) val;
     		this.aposta = 0;
     		this.fichas = fichas;
+    		
+//    		if (this.indMao != 0) {
+//			this.dispose();
+//		}
     		
        		this.lFichas.setText("Fichas: " + Integer.toString(this.fichas));
        		this.lFichas.setSize(this.lFichas.getPreferredSize());
