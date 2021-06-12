@@ -97,8 +97,8 @@ public class JogoBlackjackTest {
 		int aposta2 = 20;
 
 	
-		this.jbl.colheAposta("0", aposta1);
-		this.jbl.colheAposta("1", aposta2);
+		this.jbl.colheAposta(0, aposta1);
+		this.jbl.colheAposta(0, aposta2);
 		int f = this.jbl.getFichasMesa();
 
 		assertEquals(40, f);
@@ -114,8 +114,8 @@ public class JogoBlackjackTest {
 		int aposta2 = 20;
 
 	
-		this.jbl.colheAposta("0", aposta1);
-		this.jbl.colheAposta("1", aposta2);
+		this.jbl.colheAposta(0, aposta1);
+		this.jbl.colheAposta(1, aposta2);
 		
 		// teste
 		this.jbl.darCartas();
@@ -153,14 +153,14 @@ public class JogoBlackjackTest {
 		int aposta2 = 20;
 
 	
-		this.jbl.colheAposta("0", aposta1);
-		this.jbl.colheAposta("1", aposta2);
+		this.jbl.colheAposta(0, aposta1);
+		this.jbl.colheAposta(1, aposta2);
 		
 		
 		this.jbl.darCartas();
 		
 		// teste
-		this.jbl.finalizaTurno();
+		this.jbl.finalizaRodada();
 		
 		for (Integer jId: this.jbl.getIDJogadores()) {
 			

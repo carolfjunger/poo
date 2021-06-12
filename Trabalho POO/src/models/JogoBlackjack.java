@@ -52,7 +52,7 @@ public class JogoBlackjack {
 		this.jogadores = lj;
 	}
 	
-	private Jogador getJogadorById(String idJog) {
+	protected Jogador getJogadorById(String idJog) {
 		List<Jogador> allJogadores = this.jogadores;
 		
 		for(Jogador j : allJogadores) {
