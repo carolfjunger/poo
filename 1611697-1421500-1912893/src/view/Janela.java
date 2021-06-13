@@ -82,7 +82,7 @@ public abstract class Janela extends JFrame {
 		}
 		
 		// fundo
-		imageURL = "../Imagens/blackjackBKG.png";
+		imageURL = "./Imagens/blackjackBKG.png";
 		image = Toolkit.getDefaultToolkit().getImage(imageURL);
 		this.assets.put("fundo", image);
 		
@@ -94,12 +94,12 @@ public abstract class Janela extends JFrame {
 		}
 		
 		// deck 1
-		imageURL = "../Imagens/deck1.gif";
+		imageURL = "./Imagens/deck1.gif";
 		image = Toolkit.getDefaultToolkit().getImage(imageURL);
 		this.assets.put("deck1", image);
 		
 		// deck 1
-		imageURL = "../Imagens/deck2.gif";
+		imageURL = "./Imagens/deck2.gif";
 		image = Toolkit.getDefaultToolkit().getImage(imageURL);
 		this.assets.put("deck2", image);
 	};
