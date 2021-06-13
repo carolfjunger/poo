@@ -79,7 +79,7 @@ public class Main {
         	for (Janela jg: jJogador) {
         		jg.setVisible(true);
         	}
-        	ger.notificaObs("INIT", null);
+        	//ger.notificaObs("INIT", null);
 	    });
 	}
 	
@@ -198,6 +198,25 @@ public class Main {
 			case "NOVA_RODADA":
 				ger.notificaObs("LIMPAR_CARTAS", null);
 				ger.notificaObs("INIT", null);
+				
+				SwingUtilities.invokeLater(() -> {
+					// remover observers criados por splits	
+					while (ger.observers.size() > jbl.getQtdJogadores())
+						ger.observers.remove(ger.observers.size() - 1);
+					
+					// remover pessoas com poucas fichas
+					List<Integer> jogF = jbl.getFichasJogadores();
+					List<Integer> removidos = new ArrayList<Integer>();
+					int apostaMin = 20;
+					for (int i=0; i<jogF.size(); i++) {
+						if (jogF.get(i) < apostaMin)
+							removidos.add(i);
+					}
+					
+					for (int r: removidos) {
+						at.update("QUIT", r);
+					}
+				});
 				break;
 			case "QUIT":
 				jbl.removeJogador((int) val);
@@ -232,11 +251,6 @@ public class Main {
 				case "INIT":
 					o.update("INIT", jbl.getVez());
 					
-					// remover observers criados por splits				
-					SwingUtilities.invokeLater(() -> {
-						while (this.observers.size() > jbl.getQtdJogadores())
-							this.observers.remove(this.observers.size() - 1);
-					});
 					break;
 				case "FINALIZA_TURNO":
 					List<Integer> jf = (List<Integer>) val;

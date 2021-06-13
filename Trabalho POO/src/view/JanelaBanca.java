@@ -74,7 +74,9 @@ public class JanelaBanca extends Janela implements Observer {
 			panel.add(jb);
 		}
 		this.getContentPane().add(panel);
+		
 		this.encerrar.setEnabled(true);
+		this.novaRodada.setEnabled(true);
 		
 		// mouse
 		this.addMouseListener(new MouseAdapter() {
@@ -171,13 +173,15 @@ public class JanelaBanca extends Janela implements Observer {
 	public void update(String evento, Object val) {
 
     	switch (evento) {
-	    	case "INIT":
 	    	case "VEZ":
 	    	case "HIT":
 	    	case "FICHA_CLICK":
 	    	case "ATUALIZA_FICHAS":
 	    	case "PRE_APOSTA":
 	    	case "QUIT":
+	    		break;
+	    	case "INIT":
+	    		this.novaRodada.setEnabled(false);
 	    		break;
 	    	case "DAR_CARTAS":
 	    		Object[] inf = (Object[]) val;

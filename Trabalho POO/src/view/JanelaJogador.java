@@ -104,7 +104,8 @@ public class JanelaJogador extends Janela implements Observer {
 			panel.add(jb);
 		}
 		
-		this.quit.setEnabled(true);
+		if (this.indMao == 0)
+			this.quit.setEnabled(true);
 		
 		// Mostra a vez do jogador
 		this.vezStatus.setText("Aguarde sua vez");
