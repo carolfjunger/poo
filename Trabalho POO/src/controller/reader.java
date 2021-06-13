@@ -22,16 +22,16 @@ public class reader {
         Scanner s = new Scanner(Save);
 
         jqtd = s.nextInt();// o numero de jogadores
-        fichamesa= s.nextInt();
-        vez = s.nextInt();
-        qtdCartasUsadas = s.nextInt();
+        fichamesa= s.nextInt();//fichas que ja foram usadas
+        vez = s.nextInt();//vez
+        qtdCartasUsadas = s.nextInt();//cartas usadas
         
         for(int i =1;i < jqtd;i++) {
         	id = s.nextInt();
         	ficha = s.nextInt();
         	Jid.add(id);
         	Jf.add(ficha);
-        }//listas de ids e fichas esta funcionando
+        }//listas de ids e fichas de jogador
         
 
         	
