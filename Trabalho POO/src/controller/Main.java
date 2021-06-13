@@ -1,3 +1,7 @@
+// Ana Carolina Junger
+// Joao Marcus
+// Thomas Botelho
+
 package controller;
 
 import javax.swing.JFrame;

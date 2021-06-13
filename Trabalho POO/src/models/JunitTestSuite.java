@@ -1,3 +1,7 @@
+// Ana Carolina Junger
+// Joao Marcus
+// Thomas Botelho
+
 package models;
 
 import org.junit.runner.RunWith;

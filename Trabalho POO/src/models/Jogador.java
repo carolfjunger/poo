@@ -1,3 +1,7 @@
+// Ana Carolina Junger
+// Joao Marcus
+// Thomas Botelho
+
 package models;
 import java.util.List;
 import java.util.ArrayList;
