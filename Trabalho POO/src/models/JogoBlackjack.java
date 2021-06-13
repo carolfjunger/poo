@@ -333,8 +333,10 @@ public class JogoBlackjack {
 		return indNova;
 	}
 	
-	// retorna o indice do vencedor
-	// ou -1 no caso de empate
+	// retorna 
+	// 1 no caso de vitoria
+	// 0 no caso de empate
+	// -1 no caso de derrota
 	public int finalizaTurnoJog(int indJogador, int indMao) {
 		Jogador vencedor = null;
 		
@@ -361,26 +363,25 @@ public class JogoBlackjack {
 				&& this.apostas.get(indJogador).containsKey(indMao)) {
 			fichas = this.apostas.get(indJogador).get(indMao);
 		}
-		int ind = last;
 		
 		if (jogadorQuebrou) {
-			return last;
+			return -1;
 		}
 		
 		if (dealerBj && !jogadorBj) {
-			return last;
+			return -1;
 		}
 		
 		if (!dealerBj && jogadorBj) {
 			fichas = fichas + (int)1.5*fichas;
 			j.recebeFichas(fichas);
 			
-			return indJogador;
+			return 1;
 		}
 		
 		if (dealerQuebrou) {
 			j.recebeFichas(fichas * 2);
-			return indJogador;
+			return 1;
 		}
 		
 		//
@@ -388,41 +389,44 @@ public class JogoBlackjack {
 		//
 		if (somaJogador > somaDealer) {
 			j.recebeFichas(fichas * 2);
-			return indJogador;
+			return 1;
 		}
 	
 		if (somaDealer > somaJogador) {
-			return last;
+			return -1;
 		}
 
 		if (somaJogador == somaDealer) {
 			j.recebeFichas(fichas);
-			return -1;
+			return 0;
 		}
 		
 		j.recebeFichas(fichas);
-		return ind;
+		return -1;
 	}
 	
-	public List<Integer> finalizaRodada() {
-		List<Integer> vencedores = new ArrayList<Integer>();
+	public List<HashMap<Integer, Integer>> finalizaRodada() {
+		List<HashMap<Integer, Integer>> resultados = new ArrayList<HashMap<Integer, Integer>>();
 		
 		for (int i = 0; i < this.jogadores.size() - 1; i++) {
 			Jogador jog = this.jogadores.get(i);
+			HashMap<Integer, Integer> apMao = new HashMap<Integer, Integer>();
 			
 			for (int j = 0; j < jog.qtdMaos(); j++) {
 				int resultado = this.finalizaTurnoJog(i, j);
-				if (resultado >= 0 && !vencedores.contains(resultado)) {
-					vencedores.add(resultado);
+				apMao.put(j, resultado);
+				
+				if (resultado >= 0) {
 					System.out.println("Vencedor: " + resultado);
 				}
 				apostas.get(i).put(j, 0);
 			}
+			
+			resultados.add(apMao);
 		}
 		
 		limpaMaos();
-		
-		return vencedores;
+		return resultados;
 	}
 	
 	private void limpaMaos() {
@@ -436,7 +440,6 @@ public class JogoBlackjack {
 		}
 		
 		for (Jogador j: this.jogadores) {
-			//j.limpaMao();
 			while (j.qtdMaos() > 0) {
 				j.removeMao(j.qtdMaos() - 1);
 

@@ -183,7 +183,6 @@ public class Main {
 				ger.notificaObs("DAR_CARTAS", null);
 				
 				valFichas = jbl.getApostasJogadores().get(vez).get(indMao);
-				System.out.println("VAL FICHAS SPLIT -----:" + valFichas);
 				jbl.colheAposta(vez, indNova, valFichas);				
 				ger.notificaObs("ATUALIZA_FICHAS", null);
 				break;
@@ -191,9 +190,11 @@ public class Main {
 				ger.notificaObs("PRE_APOSTA", val);
 				break;
 			case "FINALIZA_TURNO":
-				List<Integer> vencedores = jbl.finalizaRodada();
+				List<HashMap<Integer, Integer>> res = jbl.finalizaRodada();
 				jf = jbl.getFichasJogadores();
-				ger.notificaObs("FINALIZA_TURNO", jf);
+				
+				Object[] inf = {jf, res};
+				ger.notificaObs("FINALIZA_TURNO", inf);
 				break;
 			case "NOVA_RODADA":
 				ger.notificaObs("LIMPAR_CARTAS", null);
@@ -253,21 +254,21 @@ public class Main {
 					
 					break;
 				case "FINALIZA_TURNO":
-					List<Integer> jf = (List<Integer>) val;
-					o.update("FINALIZA_TURNO", jf.get(id));
+					Object[] objs = (Object[]) val;
+					List<Integer> jf = (List<Integer>) objs[0];
+					List<HashMap<Integer, Integer>> resultados = (List<HashMap<Integer, Integer>>) objs[1];
+					Object[] inf = {jf.get(id), resultados};
+					o.update("FINALIZA_TURNO", inf);
 					jbl.setVez(0);
 					jbl.setMaoCorrente(0);
 
 					break;
 				case "DAR_CARTAS":
-					for (Observer ob: this.observers) {
-						System.out.println("OB ID:" + ob.getInd());
-					}
 					for (int i = 0; i < jbl.getQtdMaosJogador(id); i++) {
 						cartas = jbl.getCartasJogador(id, i);
 						int soma = jbl.getSomaCartasJogador(id, i);
-						Object[] inf = {cartas, soma, i};
-						o.update("DAR_CARTAS", inf);
+						Object[] infC = {cartas, soma, i};
+						o.update("DAR_CARTAS", infC);
 					}
 					// fallthrough
 				case "VEZ":

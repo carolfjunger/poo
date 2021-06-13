@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -309,7 +310,25 @@ public class JanelaJogador extends Janela implements Observer {
 
     		break;	
     	case "FINALIZA_TURNO":
-    		int fichas = (int) val;
+    		Object[] obj = (Object[]) val;
+    		int fichas = (int) obj[0];
+    		List<HashMap<Integer, Integer>> resultados = (List<HashMap<Integer, Integer>>) obj[1];
+    		HashMap<Integer, Integer> apMao = resultados.get(this.indJogador);
+
+			if (apMao.containsKey(this.indMao)) {
+				int resul = apMao.get(this.indMao);
+				if (resul > 0) {
+					this.vezStatus.setText("Voce ganhou!");
+				}
+				else if (resul == 0) {
+					this.vezStatus.setText("Voce empatou...");
+				}
+				else {
+					this.vezStatus.setText("Voce perdeu...");
+				}
+				
+			}
+			
     		this.aposta = 0;
     		this.fichas = fichas;
     		
