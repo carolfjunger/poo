@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import controller.Reader;
 
 public class JanelaInicial extends Janela {
-	public JanelaInicial(String titulo, Runnable run) {
+	public JanelaInicial(String titulo, Runnable run, Runnable run2) {
 		super(titulo);
 		
         JButton button = new JButton("Iniciar novo jogo");
@@ -29,14 +29,8 @@ public class JanelaInicial extends Janela {
         button2.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) 
         	{
-        		try {
-        			Reader.carregamento();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
         		ji.setVisible(false);
-        		run.run();
+        		run2.run();
         	}
         });
         

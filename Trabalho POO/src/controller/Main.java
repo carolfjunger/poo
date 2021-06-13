@@ -5,10 +5,13 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import java.awt.Point;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 import models.*;
 import view.*;
@@ -35,7 +38,11 @@ public class Main {
     		}
     		
     		iniciaJogo(numJogadores);
-		});
+		}, () -> {
+			HashMap<Integer, Integer> jogoSalvo = carregamento();
+			
+			iniciaJogoPorCarregamento(jogoSalvo.size(), jogoSalvo);
+		}) ;
 		
 //		iniciaJogo(2);
 		
@@ -83,6 +90,94 @@ public class Main {
         	//ger.notificaObs("INIT", null);
 	    });
 	}
+	
+	public static void iniciaJogoPorCarregamento(int numJogadores, HashMap<Integer, Integer> jogadoresSave) {
+		at = new Atualizador();
+		ger = new Gerenciador();
+		
+		jbl = JogoBlackjack.getInstancia();
+		jbl.setJogadores(numJogadores);
+		jbl.inicializaBySalvamento(2, jogadoresSave);
+		
+		List<Integer> jID = jbl.getIDJogadores();
+		System.out.println(jID);
+		List<Integer> jf = jbl.getFichasJogadores();
+		int tam = jID.size();
+		
+		JanelaBanca jBanca = new JanelaBanca("Banca", jID.get(tam-1), at);
+    	ArrayList<Janela> jJogador = new ArrayList<Janela>();
+    	
+		ger.registraObs(jBanca);
+		
+		// tam-1 para excluir o dealer
+		for (int i=0; i< tam - 1; i++) {
+			int numFichas = jf.get(i);
+			int id = jID.get(i);
+			List<String> cartas = jbl.getCartasJogador(id, 0);
+			JanelaJogador jg = new JanelaJogador(id, numFichas, 0, cartas, at);
+			
+			// registrar janela jogador como observador
+			ger.registraObs(jg);
+			
+			Point p = new Point(i*400, 420);
+			jg.setLocation(p);
+			jJogador.add(jg);
+		}
+		
+	    SwingUtilities.invokeLater(() -> {
+        	jBanca.setVisible(true);
+        	for (Janela jg: jJogador) {
+        		jg.setVisible(true);
+        	}
+        	//ger.notificaObs("INIT", null);
+	    });
+	}
+	
+	
+	public static HashMap<Integer, Integer> carregamento()  {
+        
+        int jqtd,id,ficha,qtdCartasUsadas;
+        HashMap<Integer, Integer> jogadores = new HashMap<Integer, Integer>();
+        
+        File save = new File("Save.txt"); 
+        System.out.println(save);
+        Scanner s = null;
+		try {
+			s = new Scanner(save);
+		} catch (FileNotFoundException e) {
+			System.out.println("Erro você não tem nenhum jogo salvo ainda");
+			System.exit(0);
+		}
+       
+        
+
+        jqtd = s.nextInt();// o numero de jogadores
+        qtdCartasUsadas = s.nextInt();//cartas usadas
+        
+        for(int i = 0;i < jqtd - 1;i++) {
+        	id = s.nextInt();
+        	ficha = s.nextInt();
+        	jogadores.put(id, ficha);
+        }//listas de ids e fichas de jogador
+        
+
+	
+        
+        
+        /****/
+        //teste
+
+        s.close();
+        System.out.println("Jogadores = "+jqtd);
+        System.out.println("jogs + fichas ="+jogadores);
+        System.out.println("cartas usadas = "+qtdCartasUsadas);
+        
+        
+        
+        /*******/
+        
+         return jogadores;
+    }
 	
 	private static class Atualizador implements Observer {
 		@Override
@@ -253,13 +348,13 @@ public class Main {
 	
 	private static class Gerenciador implements Observable {
 		protected List<Observer> observers = new ArrayList<Observer>();
-
+		
 		@Override
 		public void notificaObs(String evento, Object val) {
 			for (int io=0; io < this.observers.size(); io++) {
 				Observer o = this.observers.get(io);
 				int id = o.getInd();
-				
+				System.out.println(evento);
 				List<String> cartas = null;
 				switch(evento) {
 				case "INIT":
@@ -375,6 +470,7 @@ public class Main {
 						
 						// reajustar os indices dos observers
 						// para ficar sem buracos
+						
 						for (int k=0; k<this.observers.size(); k++) {
 							Observer ob = this.observers.get(k);
 							ob.setInd(k);

@@ -64,6 +64,7 @@ public class JanelaBanca extends Janela implements Observer {
 					obs.update(txt, null);
 					break;
 				case "SALVAR":
+					this.salvar.setEnabled(false);
 					obs.update(txt, null);
 					break;
 				case "ENCERRAR_JOGO":
