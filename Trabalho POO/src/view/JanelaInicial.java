@@ -19,7 +19,6 @@ public class JanelaInicial extends Janela {
         	public void actionPerformed(ActionEvent e) {
         		ji.setVisible(false);
         		run.run();
-        		//System.exit(0);
         	}
         	
         });
@@ -28,10 +27,5 @@ public class JanelaInicial extends Janela {
         panel.add(button);
         panel.add(button2);
         this.getContentPane().add(panel);
-	}
-
-	@Override
-	public void carregarAssets() {
-		return;
 	}
 }

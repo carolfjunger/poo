@@ -76,7 +76,6 @@ public class JanelaBanca extends Janela implements Observer {
 		
 		// mouse
 		this.addMouseListener(new MouseAdapter() {
-		   
 		    public void mouseClicked(MouseEvent e) {
 		    	int x=e.getX();
 		        int y=e.getY();
@@ -86,9 +85,7 @@ public class JanelaBanca extends Janela implements Observer {
 		        		obs.update("FICHA_CLICK", key);
 		        	}
 		        }
-
-		    }
-		    
+		    }  
 		});
 		
 		// resize
@@ -167,37 +164,6 @@ public class JanelaBanca extends Janela implements Observer {
 
         }
     }
-
-	@Override
-	public void carregarAssets() {
-		super.carregarAssets();
-		
-		String imageURL;
-		Image image;
-		String baseURL = "../Imagens/";
-		
-		// fundo
-		imageURL = "../Imagens/blackjackBKG.png";
-		image = Toolkit.getDefaultToolkit().getImage(imageURL);
-		this.assets.put("fundo", image);
-		
-		//fichas
-		String fichasArr[] = {"ficha1", "ficha5", "ficha10", "ficha20", "ficha50", "ficha100"};
-		for (String f: fichasArr) {
-			image = Toolkit.getDefaultToolkit().getImage(baseURL + f + ".png");
-			this.assets.put(f, image);
-		}
-		
-		// deck 1
-		imageURL = "../Imagens/deck1.gif";
-		image = Toolkit.getDefaultToolkit().getImage(imageURL);
-		this.assets.put("deck1", image);
-		
-		// deck 1
-		imageURL = "../Imagens/deck2.gif";
-		image = Toolkit.getDefaultToolkit().getImage(imageURL);
-		this.assets.put("deck2", image);
-	}
 	
 	@Override
 	public int getInd() {

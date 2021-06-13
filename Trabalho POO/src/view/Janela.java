@@ -12,9 +12,7 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 
-public class Janela extends JFrame {
-	//public JogoBlackjack jbl = JogoBlackjack.getInstancia();
-	//private List<Jogadores> jogs = new ArrayList<Jogador>();
+public abstract class Janela extends JFrame {
 	protected HashMap<String, Image> assets = new HashMap<String, Image>();
 	private boolean inicializado;
 	private int largura = 400;
@@ -35,9 +33,18 @@ public class Janela extends JFrame {
 		return this.assets.get(chave);
 	}
 	
-	public void setDimensao(int largura, int altura) {
-		this.largura = largura;
-		this.altura = altura;
+	public void display() {
+		setSize(this.largura, this.altura);
+		addWindowListener( new WindowAdapter() {
+			public void windowClosing(WindowEvent we) {
+			    SwingUtilities.invokeLater(new Runnable() {
+			        @Override
+			        public void run() {
+			            System.exit(0);
+			        }
+			    });
+			}
+		});
 	}
 	
 	public void carregarAssets() {
@@ -68,20 +75,27 @@ public class Janela extends JFrame {
 				this.assets.put(nome, imagem);
 			}
 		}
-	};
-	
-	public void display() {
 		
-		setSize(this.largura, this.altura);
-		addWindowListener( new WindowAdapter() {
-			public void windowClosing(WindowEvent we) {
-			    SwingUtilities.invokeLater(new Runnable() {
-			        @Override
-			        public void run() {
-			            System.exit(0);
-			        }
-			    });
-			}
-		});
-	}
+		// fundo
+		imageURL = "../Imagens/blackjackBKG.png";
+		image = Toolkit.getDefaultToolkit().getImage(imageURL);
+		this.assets.put("fundo", image);
+		
+		//fichas
+		String fichasArr[] = {"ficha1", "ficha5", "ficha10", "ficha20", "ficha50", "ficha100"};
+		for (String f: fichasArr) {
+			image = Toolkit.getDefaultToolkit().getImage(baseURL + f + ".png");
+			this.assets.put(f, image);
+		}
+		
+		// deck 1
+		imageURL = "../Imagens/deck1.gif";
+		image = Toolkit.getDefaultToolkit().getImage(imageURL);
+		this.assets.put("deck1", image);
+		
+		// deck 1
+		imageURL = "../Imagens/deck2.gif";
+		image = Toolkit.getDefaultToolkit().getImage(imageURL);
+		this.assets.put("deck2", image);
+	};
 }

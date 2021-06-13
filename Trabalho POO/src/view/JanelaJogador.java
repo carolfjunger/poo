@@ -320,9 +320,4 @@ public class JanelaJogador extends Janela implements Observer {
     	
     	this.repaint();
     }
-
-	@Override
-	public void carregarAssets() {
-		super.carregarAssets();
-	}
 }
