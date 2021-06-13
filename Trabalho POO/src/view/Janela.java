@@ -56,7 +56,7 @@ public abstract class Janela extends JFrame {
 		String imageURL;
 		Image image;
 		
-		String baseURL = "../Imagens/";
+		String baseURL = "./Imagens/";
 		String nomes[] = {"a", "t", "j", "q", "k"};
 		String naipes[] = {"c", "d", "h", "s"};
 		
