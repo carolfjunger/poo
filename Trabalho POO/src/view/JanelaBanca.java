@@ -186,6 +186,7 @@ public class JanelaBanca extends Janela implements Observer {
 	    	case "DAR_CARTAS":
 	    		Object[] inf = (Object[]) val;
 	    		List<String> cartas = (List<String>) inf[0];
+	    		this.novaRodada.setEnabled(false);
 
 	    		this.cartas = cartas;
 	    		break;

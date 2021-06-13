@@ -186,6 +186,10 @@ public class Main {
 				jbl.colheAposta(vez, indNova, valFichas);				
 				ger.notificaObs("ATUALIZA_FICHAS", null);
 				break;
+			case "SURRENDER":
+				int ind = (int) val;
+				jbl.surrender(ind);
+				at.update("STAND", null);
 			case "FICHA_CLICK":
 				ger.notificaObs("PRE_APOSTA", val);
 				break;

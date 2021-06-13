@@ -73,12 +73,12 @@ public class JanelaJogador extends Janela implements Observer {
 				String txt = jb.getText().toUpperCase();
 				switch(txt) {
 				case "DEAL":
-					this.vezStatus.setText("Apostando");
+					this.vezStatus.setText("Apostando.");
 					this.deal.setEnabled(false);
 					obs.update(txt, this.aposta);
 					break;
 				case "STAND":
-					this.vezStatus.setText("Apostando");
+					this.vezStatus.setText("Apostando.");
 					
 					this.deal.setEnabled(false);
 	        		this.stand.setEnabled(false);
@@ -92,7 +92,20 @@ public class JanelaJogador extends Janela implements Observer {
 				case "HIT":
 				case "DOUBLE":
 				case "SPLIT":
+					this.surrender.setEnabled(false);
 					obs.update(txt, this.indMao);
+					break;
+				case "SURRENDER":
+					this.vezStatus.setText("Rendido.");
+					
+					this.deal.setEnabled(false);
+	        		this.stand.setEnabled(false);
+	        		this.dbl.setEnabled(false);
+	        		this.hit.setEnabled(false);
+	        		this.split.setEnabled(false);
+	        		this.surrender.setEnabled(false);
+	        		
+					obs.update(txt, this.indJogador);
 					break;
 				case "QUIT":
 					obs.update(txt, this.indJogador);
@@ -188,10 +201,10 @@ public class JanelaJogador extends Janela implements Observer {
     		vez = (int) val;
     		if (vez == this.indJogador) {
     			if (this.aposta > apostaMinima ) {
-    				this.vezStatus.setText("Fichas Apostada: " + Integer.toString(fichas));
+    				this.vezStatus.setText("Faça sua aposta");
     				this.deal.setEnabled(true);
     			} else {
-    				this.vezStatus.setText("Faca sua aposta");
+    				this.vezStatus.setText("Faça sua aposta");
     				this.deal.setEnabled(false);
     			}
     		} 
@@ -209,6 +222,7 @@ public class JanelaJogador extends Janela implements Observer {
     		
     		if (vez == this.indJogador && this.indMao == indMao) {
         		this.vezStatus.setText("É a sua vez de jogar...");
+        		this.vezStatus.setSize(160, 18);
         		this.somaCartas.setText("Somatorio das cartas:" + Integer.toString(sumCarta));
         		this.somaCartas.setSize(somaCartas.getPreferredSize());
     			
@@ -219,7 +233,8 @@ public class JanelaJogador extends Janela implements Observer {
             		this.stand.setEnabled(true);
             		this.dbl.setEnabled(podeDbl);
             		this.hit.setEnabled(true);
-            		this.split.setEnabled(podeSplit);			
+            		this.split.setEnabled(podeSplit && podeDbl);
+            		this.surrender.setEnabled(vezInicial == 1);
     			}
     			else if (sumCarta == 21) {
     				this.vezStatus.setText("21!");
@@ -244,6 +259,7 @@ public class JanelaJogador extends Janela implements Observer {
         		this.dbl.setEnabled(false);
         		this.hit.setEnabled(false);
         		this.split.setEnabled(false);
+        		this.surrender.setEnabled(false);
     			
         		if (resultado > 0)
         			this.vezStatus.setText("21!");
@@ -322,7 +338,7 @@ public class JanelaJogador extends Janela implements Observer {
 				else if (resul == 0) {
 					this.vezStatus.setText("Voce empatou...");
 				}
-				else {
+				else if (resul == -1) {
 					this.vezStatus.setText("Voce perdeu...");
 				}
 				
@@ -341,7 +357,7 @@ public class JanelaJogador extends Janela implements Observer {
     		vez = (int) val;
     		if (this.indJogador == vez+1) {
     			this.vezStatus.setText("É a sua vez de jogar...");
-    			this.vezStatus.setSize(160, 20);
+    			this.vezStatus.setSize(160, 18);
     		}
     		
     		if (this.indJogador == vez)

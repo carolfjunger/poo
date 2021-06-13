@@ -333,13 +333,20 @@ public class JogoBlackjack {
 		return indNova;
 	}
 	
+	public void surrender(int indJogador) {
+		int aposta = this.apostas.get(indJogador).get(0);
+		this.apostas.get(indJogador).put(0, 0);
+		Jogador j = this.jogadores.get(indJogador);
+		
+		j.recebeFichas((int) Math.round(aposta/2.0));
+	}
+	
 	// retorna 
 	// 1 no caso de vitoria
 	// 0 no caso de empate
 	// -1 no caso de derrota
+	// -2 no caso de aposta zerada
 	public int finalizaTurnoJog(int indJogador, int indMao) {
-		Jogador vencedor = null;
-		
 		int last = this.jogadores.size() - 1;
 		Jogador dealer = this.jogadores.get(last);
 		List<Carta> maoDealer = dealer.getMao(0);
@@ -362,6 +369,10 @@ public class JogoBlackjack {
 		if (this.apostas.size() > indJogador 
 				&& this.apostas.get(indJogador).containsKey(indMao)) {
 			fichas = this.apostas.get(indJogador).get(indMao);
+		}
+		
+		if (fichas == 0) {
+			return -2;
 		}
 		
 		if (jogadorQuebrou) {
