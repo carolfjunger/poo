@@ -234,6 +234,10 @@ public class JogoBlackjack {
 		}
 	}
 	
+	public List<HashMap<Integer, Integer>> getApostas() {
+		return this.apostas;
+	}
+	
 	public void darCartas(int indMao) {
 		for (int i = 0; i < this.jogadores.size(); i++) {
 			Jogador j = this.jogadores.get(i);

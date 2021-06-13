@@ -41,9 +41,9 @@ public class JogoBlackjackTest {
 		assertEquals(true, jogsJogo.contains(0));
 		assertEquals(true, jogsJogo.contains(1));
 		
-		
-		// nenhuma ficha na mesa
-		assertEquals(0, this.jbl.getFichasMesa());
+		// apostas vazias
+		List<HashMap<Integer, Integer>> apostas = this.jbl.getApostas();
+		assertEquals(null, apostas);
 		
 	}
 	
@@ -82,8 +82,6 @@ public class JogoBlackjackTest {
 		//existe um dealer
 		assertEquals(true, hasDealer);
 		
-		// nenhuma ficha na mesa
-		assertEquals(0, this.jbl.getFichasMesa());
 
 	}
 	
@@ -93,15 +91,16 @@ public class JogoBlackjackTest {
 		
 		
 		
-		int aposta1 = 20;
-		int aposta2 = 20;
+		int aposta = 20;
 
-	
-		this.jbl.colheAposta(0, aposta1);
-		this.jbl.colheAposta(1, aposta2);
-		int f = this.jbl.getFichasMesa();
-
-		assertEquals(40, f);
+		this.jbl.colheAposta(0, 0, aposta);
+		this.jbl.colheAposta(1, 0, aposta);
+		
+		List<HashMap<Integer, Integer>> apostas = this.jbl.getApostas();
+		int aposta1Real = apostas.get(0).get(0);
+		int aposta2Real = apostas.get(0).get(0);
+		assertEquals(aposta, aposta1Real);
+		assertEquals(aposta, aposta2Real);
 		
 	}
 	
@@ -113,8 +112,8 @@ public class JogoBlackjackTest {
 		int aposta1 = 1;
 		int aposta2 = 20;
 
-		this.jbl.colheAposta(0, aposta1);
-		this.jbl.colheAposta(1, aposta2);
+		this.jbl.colheAposta(0, 0, aposta1);
+		this.jbl.colheAposta(1, 0, aposta2);
 		
 		// teste
 		this.jbl.darCartas(0);
@@ -149,8 +148,8 @@ public class JogoBlackjackTest {
 		int aposta1 = 1;
 		int aposta2 = 20;
 	
-		this.jbl.colheAposta(0, aposta1);
-		this.jbl.colheAposta(1, aposta2);
+		this.jbl.colheAposta(0, 0, aposta1);
+		this.jbl.colheAposta(1, 0, aposta2);
 		
 		this.jbl.darCartas(0);
 		
@@ -164,8 +163,7 @@ public class JogoBlackjackTest {
 			}
 			
 			Jogador j = this.jbl.getJogadorById(Integer.toString(jId));
-			assertEquals(1, j.qtdMaos());;
-			assertEquals(0, j.getMao(0).size());
+			assertEquals(0, j.qtdMaos());;
 		}
 	}
 }
