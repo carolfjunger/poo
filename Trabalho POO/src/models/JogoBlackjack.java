@@ -246,14 +246,14 @@ public class JogoBlackjack {
 			this.qtdCartasUsadas += 2;
 			
 			// PARA TESTE - BLACKJACK
-//			if (i == 0 || i == 1) {
-//				j.limpaMao();
-//				j.novaMao();
-//				Carta c1 = new Carta(Naipe.COPAS, ValorCarta.AS);
-//				Carta c2 = new Carta(Naipe.COPAS, ValorCarta.AS);
-//				j.adicionaCarta(c1, 0);
-//				j.adicionaCarta(c2, 0);
-//			}
+			if (i == 0 || i == 1) {
+				j.limpaMao();
+				j.novaMao();
+				Carta c1 = new Carta(Naipe.COPAS, ValorCarta.AS);
+				Carta c2 = new Carta(Naipe.COPAS, ValorCarta.AS);
+				j.adicionaCarta(c1, 0);
+				j.adicionaCarta(c2, 0);
+			}
 			
 			// dealer carta pra baixo
 			if (i == this.jogadores.size() - 1) {

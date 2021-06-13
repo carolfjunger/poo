@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -23,6 +24,7 @@ public class JanelaBanca extends Janela implements Observer {
 	private HashMap<Integer, Point> fichasPosition = new HashMap<Integer, Point>();
 	private List<String> cartas = new ArrayList<String>();
 	private int indJogador = 0;
+	private int soma = 0;
 	private boolean init = false;
 	private boolean praBaixo = true;
 	private Observer obs;
@@ -33,7 +35,6 @@ public class JanelaBanca extends Janela implements Observer {
 	private JButton novaRodada = new JButton("Nova Rodada");
 	private JButton salvar = new JButton("Salvar jogo");
 	private JButton encerrar = new JButton("Encerrar jogo");
-	
 	
 	public JanelaBanca(String titulo, int indJogador, Observer obs) {
 		super(titulo);
@@ -155,7 +156,6 @@ public class JanelaBanca extends Janela implements Observer {
         	
         	// desenhar cartas
         	int cInd = 0;
-        	int somaCartas = 0;
         	final int wCarta = 73; //px - largura da imagem da carta
         	final int hCarta = 97; //px - altura da imagem da carta
 
@@ -172,7 +172,13 @@ public class JanelaBanca extends Janela implements Observer {
     				cInd += 1;
     			}
     		}
-
+    		
+            String text = "Somatorio das cartas:" + (soma == 0 || praBaixo ? "" : Integer.toString(soma));
+            g.setColor(Color.WHITE);
+            g.fillRect(8, 135, 165, 18);
+            g.setColor(Color.BLACK);
+            g.drawRect(8, 135, 165, 18);
+            g.drawString(text, 14, 149);
         }
     }
 
@@ -188,12 +194,15 @@ public class JanelaBanca extends Janela implements Observer {
 	    		break;
 	    	case "INIT":
 	    		this.init = true;
+	    		this.soma = 0;
 	    		this.novaRodada.setEnabled(false);
 	    		break;
 	    	case "DAR_CARTAS":
 	    		this.init = false;
 	    		Object[] inf = (Object[]) val;
 	    		List<String> cartas = (List<String>) inf[0];
+	    		int soma = (int) inf[1];
+	    		this.soma = soma;
 	    		this.novaRodada.setEnabled(false);
 
 	    		this.cartas = cartas;
@@ -203,8 +212,6 @@ public class JanelaBanca extends Janela implements Observer {
 	    		this.novaRodada.setEnabled(false);
 	    		break;
 	    	case "DEALER_OPEN":
-	    		List<String> cartasFinal = (List<String>) val;
-	    		this.cartas = cartasFinal;
 	    		this.praBaixo = false;
    		
 	    		break;

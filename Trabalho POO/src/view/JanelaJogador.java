@@ -356,8 +356,8 @@ public class JanelaJogador extends Janela implements Observer {
     	case "QUIT":
     		vez = (int) val;
     		if (this.indJogador == vez+1) {
-    			this.vezStatus.setText("É a sua vez de jogar...");
-    			this.vezStatus.setSize(160, 18);
+    			this.vezStatus.setText("Faça sua aposta...");
+    			this.vezStatus.setSize(150, 18);
     		}
     		
     		if (this.indJogador == vez)

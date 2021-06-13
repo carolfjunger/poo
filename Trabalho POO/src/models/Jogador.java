@@ -1,5 +1,4 @@
 package models;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -65,7 +64,7 @@ class Jogador {
 	
 	public boolean removeMao(int indice) {
 		List<Carta> lc;
-		int qtd = this.qtdMaos();
+
 		if (indice < 0) {
 			return false;
 		}

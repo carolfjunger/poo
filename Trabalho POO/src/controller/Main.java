@@ -325,7 +325,16 @@ public class Main {
 					
 				case "DEALER_OPEN":
 					List<String> cartasD = jbl.getCartasJogador(id, 0);
-					o.update("DEALER_OPEN", cartasD);
+					//if (id == jbl.getN)
+					if (id == jbl.getQtdJogadores() - 1) {
+						cartas = jbl.getCartasJogador(id, 0);
+						soma = jbl.getSomaCartasJogador(id, 0);
+						Object[] infC = {cartas, soma, 0};
+						o.update("DAR_CARTAS", infC);
+					}
+
+					o.update("DEALER_OPEN", null);
+					
 					break;
 				case "QUIT":
 					int iJog = (int) val;
