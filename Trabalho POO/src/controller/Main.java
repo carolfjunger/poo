@@ -114,9 +114,14 @@ public class Main {
 				ger.notificaObs("DAR_CARTAS", indMao);
 				ger.notificaObs("HIT", resultado);
 				
+				int soma = jbl.getSomaCartasJogador(vez, indMao);
+				int tam = jbl.getTamMaoJogador(vez, indMao);
+				boolean temAs = (tam == 1) && (soma == 11);
+				
 				// se quebrou ou obteve 21...
-				if (resultado != 0) {
-					System.out.println("Voce quebrou ou obteve 21, passando a vez para:" + proxVez);
+				// ou se fez um split com AS
+				// passa a vez
+				if (resultado != 0 || temAs) {
 					at.update("STAND", null);
 				}
 				break;

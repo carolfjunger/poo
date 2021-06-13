@@ -164,17 +164,12 @@ public class JanelaJogador extends Janela implements Observer {
     			}
     		}
 
-            String text = "Jogador #" + (indJogador + 1) + " -- " + "Mao #" + (indMao);
+            String text = "Jogador #" + (indJogador + 1) + " -- " + "Mao #" + (indMao + 1);
             
             g.drawString(text, 20, 20);
         }
 
     }
-    
-	@Override
-	public int getInd() {
-		return this.indJogador;
-	}
     
     @Override 
     public void update(String evento, Object val) {
@@ -184,10 +179,9 @@ public class JanelaJogador extends Janela implements Observer {
     	case "DEALER_OPEN":
     		break;
     	case "INIT":
-    		System.out.println("INIT...");
+    		// removendo maos resultantes de split
     		if (this.indMao != 0) {
     			this.dispose();
-    			//this.obs.update(evento, );
     		}
     		vez = (int) val;
     		if (vez == this.indJogador) {
@@ -338,6 +332,11 @@ public class JanelaJogador extends Janela implements Observer {
     	
     	this.repaint();
     }
+    
+	@Override
+	public int getInd() {
+		return this.indJogador;
+	}
 
 	@Override
 	public void setInd(int ind) {

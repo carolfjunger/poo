@@ -144,6 +144,10 @@ public class JogoBlackjack {
 		return this.jogadores.get(indJog).qtdMaos();
 	}
 	
+	public int getTamMaoJogador(int indJog, int indMao) {
+		return this.jogadores.get(indJog).getMao(indMao).size();
+	}
+	
 	public List<Integer> getFichasJogadores() {
 		List<Integer> fs = new ArrayList<Integer>();
 		for (Jogador j: this.jogadores) {
