@@ -241,19 +241,19 @@ public class JogoBlackjack {
 			if (j.qtdMaos() == 0)
 				j.novaMao();
 			
-			j.compraCarta(this.baralho, indMao); // TODO: split
+			j.compraCarta(this.baralho, indMao);
 			j.compraCarta(this.baralho, indMao);
 			this.qtdCartasUsadas += 2;
 			
 			// PARA TESTE - BLACKJACK
-			if (i == 0 || i == 1) {
-				j.limpaMao();
-				j.novaMao();
-				Carta c1 = new Carta(Naipe.COPAS, ValorCarta.AS);
-				Carta c2 = new Carta(Naipe.COPAS, ValorCarta.AS);
-				j.adicionaCarta(c1, 0);
-				j.adicionaCarta(c2, 0);
-			}
+//			if (i == 0 || i == 1) {
+//				j.limpaMao();
+//				j.novaMao();
+//				Carta c1 = new Carta(Naipe.COPAS, ValorCarta.AS);
+//				Carta c2 = new Carta(Naipe.COPAS, ValorCarta.AS);
+//				j.adicionaCarta(c1, 0);
+//				j.adicionaCarta(c2, 0);
+//			}
 			
 			// dealer carta pra baixo
 			if (i == this.jogadores.size() - 1) {
@@ -298,9 +298,6 @@ public class JogoBlackjack {
 		
 		
 		j.compraCarta(this.baralho, indMao);
-		// PARA TESTE
-//		Carta c1 = new Carta(Naipe.COPAS, ValorCarta.TRES);
-//		j.adicionaCarta(c1, 0);
 		int valMao = this.contaMao(mao);
 		
 		if (valMao > 21)

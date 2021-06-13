@@ -23,11 +23,13 @@ public class JanelaBanca extends Janela implements Observer {
 	private HashMap<Integer, Point> fichasPosition = new HashMap<Integer, Point>();
 	private List<String> cartas = new ArrayList<String>();
 	private int indJogador = 0;
+	private boolean init = false;
 	private boolean praBaixo = true;
+	private Observer obs;
 	
 	final int size = 59; // tamanho da ficha
-	Observer obs;
 	
+	// botoes
 	private JButton novaRodada = new JButton("Nova Rodada");
 	private JButton salvar = new JButton("Salvar jogo");
 	private JButton encerrar = new JButton("Encerrar jogo");
@@ -85,7 +87,12 @@ public class JanelaBanca extends Janela implements Observer {
 		        int y=e.getY();
 		        for (int key : fichasPosition.keySet()) {
 		        	Point fichaPos = fichasPosition.get(key);
-		        	if(fichaPos.x < x && (fichaPos.x + size) > x && fichaPos.y + size/2 < y && (fichaPos.y + size + size/2) > y) {
+		        	if  (fichaPos.x < x && 
+	        			(fichaPos.x + size) > x && 
+	        			(fichaPos.y + size/2) < y && 
+	        			(fichaPos.y + size + size/2) > y &&
+		        		init)
+		        	{
 		        		obs.update("FICHA_CLICK", key);
 		        	}
 		        }
@@ -175,15 +182,16 @@ public class JanelaBanca extends Janela implements Observer {
     	switch (evento) {
 	    	case "VEZ":
 	    	case "HIT":
-	    	case "FICHA_CLICK":
 	    	case "ATUALIZA_FICHAS":
 	    	case "PRE_APOSTA":
 	    	case "QUIT":
 	    		break;
 	    	case "INIT":
+	    		this.init = true;
 	    		this.novaRodada.setEnabled(false);
 	    		break;
 	    	case "DAR_CARTAS":
+	    		this.init = false;
 	    		Object[] inf = (Object[]) val;
 	    		List<String> cartas = (List<String>) inf[0];
 	    		this.novaRodada.setEnabled(false);
