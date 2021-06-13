@@ -54,6 +54,9 @@ class Jogador {
 	}
 	
 	public int novaMao() {
+		if (this.maos == null) {
+			this.maos = new ArrayList<List<Carta>>();
+		}
 		List<Carta> ac = new ArrayList<Carta>();
 		this.maos.add(ac);
 		
@@ -63,7 +66,7 @@ class Jogador {
 	public boolean removeMao(int indice) {
 		List<Carta> lc;
 		int qtd = this.qtdMaos();
-		if (indice < 0 || indice >= qtd) {
+		if (indice < 0) {
 			return false;
 		}
 		
@@ -71,14 +74,14 @@ class Jogador {
 		return lc != null;
 	}
 	
-	public void limpaMao(int indice) {
-		for (int i = 0; i < this.maos.size(); i++) {
-			this.maos.remove(i);
-		}
-		this.novaMao();
+	public void limpaMao() {
+		this.maos = null;
 	}
 	
 	public int qtdMaos() {
+		if (this.maos == null)
+			return 0;
+		
 		return this.maos.size();
 	}
 }

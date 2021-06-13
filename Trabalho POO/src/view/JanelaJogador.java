@@ -200,6 +200,9 @@ public class JanelaJogador extends Janela implements Observer {
     		
     		if (vez == this.indJogador && this.indMao == indMao) {
     			System.out.println("VEZ NA JANELA:" + this.indJogador);
+        		this.vezStatus.setText("Eh a sua vez");
+        		this.somaCartas.setText("Somatorio das cartas:" + Integer.toString(sumCarta));
+        		this.somaCartas.setSize(somaCartas.getPreferredSize());
     			
     			if (sumCarta < 21) {
             		boolean podeSplit = this.cartas != null && this.cartas.size() == 2 && this.cartas.get(0).equals(this.cartas.get(1));
@@ -217,10 +220,6 @@ public class JanelaJogador extends Janela implements Observer {
         				//this.obs.update("STAND", null);
         			}
     			}
-
-        		this.vezStatus.setText("Eh a sua vez");
-        		this.somaCartas.setText("Somatorio das cartas:" + Integer.toString(sumCarta));
-        		this.somaCartas.setSize(somaCartas.getPreferredSize());
     		}    		
 
     		break;
@@ -247,7 +246,10 @@ public class JanelaJogador extends Janela implements Observer {
     	case "DAR_CARTAS":
     		Object[] inf = (Object[]) val;
     		cartas = (List<String>) inf[0];
-    		mao = (int) inf[1];
+    		sumCarta = (int) inf[1];
+    		mao = (int) inf[2];
+    		this.somaCartas.setText("Somatorio das cartas:" + Integer.toString(sumCarta));
+    		this.somaCartas.setSize(somaCartas.getPreferredSize());
     		
     		if (this.indMao == mao)
     			this.cartas = cartas;
@@ -258,10 +260,11 @@ public class JanelaJogador extends Janela implements Observer {
     		this.somaCartas.setText("Somatorio das cartas:");
     		break;
        	case "ATUALIZA_FICHA":
-       		int [] vezEFicha = (int[]) val;
-       		vez = vezEFicha[0];
-       		int ficha = vezEFicha[1];
-       		if (vez == this.indJogador) {
+       		info = (int[]) val;
+       		vez = info[0];
+       		int iMao = info[1];
+       		int ficha = info[2];
+       		if (vez == this.indJogador && this.indMao == iMao) {
            		this.addFichaApostada(ficha);
            		if(this.aposta >= apostaMinima && this.cartas.size() == 0) {
            			this.deal.setEnabled(true);

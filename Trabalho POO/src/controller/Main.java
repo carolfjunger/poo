@@ -89,12 +89,14 @@ public class Main {
 			int vez = jbl.getVez();
 			int proxVez = vez + 1;
 			int totalDeJogadores = jbl.getIDJogadores().size();
-			List<Integer> jf;
+			List<HashMap<Integer, Integer>> aj;
 
 			switch(evento.toUpperCase()) {
 			case "DEAL":
 				int fichasApostadas = (int) val;
-				jbl.colheAposta(jbl.getVez(), fichasApostadas);
+				jbl.colheAposta(jbl.getVez(), 0, fichasApostadas);
+				System.out.println("COLHENDO APOSTA: "+ fichasApostadas + "|| VEZ:" + jbl.getVez());
+				System.out.println("DEAL: SETANDO PROX VEZ: 0");
 				
 				if(proxVez >= totalDeJogadores - 1) {
 					jbl.darCartas(0);
@@ -121,11 +123,18 @@ public class Main {
 				}
 				break;
 			case "DOUBLE":
-				jf = jbl.getApostasJogadores();
+				aj = jbl.getApostasJogadores();
 				vez = jbl.getVez();
-				int valFichas = jf.get(vez);
-				jbl.colheAposta(vez, valFichas);
-				
+				indMao = (int) val;
+				int valFichas = 0;
+				if (aj.size() > vez && aj.get(vez).containsKey(indMao)) {
+					valFichas = aj.get(vez).get(indMao);
+					System.out.println("DUBLIN:" + valFichas);
+					System.out.println("VEZ:" + vez);
+					System.out.println("IND MAO:" + indMao);
+				}
+					
+				jbl.colheAposta(vez, indMao, valFichas);
 				ger.notificaObs("ATUALIZA_FICHA", valFichas);
 				at.update("HIT", val);
 				break;
@@ -135,6 +144,7 @@ public class Main {
 				int qtdMao = jbl.getQtdMaosJogador(vez);
 				if ( mc < qtdMao - 1 ) {
 					System.out.println("SETANDO MAO CORRENTE:" + (mc + 1));
+					System.out.println("QTD MAO:" + qtdMao);
 					jbl.setMaoCorrente( mc + 1 );
 					ger.notificaObs("VEZ", null);
 					return;
@@ -156,7 +166,7 @@ public class Main {
 			case "SPLIT":
 				indMao = (int) val;
 				vez = jbl.getVez();
-				jf = jbl.getFichasJogadores();
+				List <Integer> jf = jbl.getFichasJogadores();
 				valFichas = jf.get(vez);
 				
 				int indNova = jbl.split(vez, indMao);
@@ -170,8 +180,9 @@ public class Main {
 				
 				ger.notificaObs("DAR_CARTAS", null);
 				
-				valFichas = jbl.getApostasJogadores().get(vez);
-				jbl.colheAposta(vez, valFichas);				
+				valFichas = jbl.getApostasJogadores().get(vez).get(indMao);
+				System.out.println("VAL FICHAS SPLIT -----:" + valFichas);
+				jbl.colheAposta(vez, indNova, valFichas);				
 				ger.notificaObs("ATUALIZA_FICHA", valFichas);
 //				ger.notificaObs("DAR_CARTAS", indNova);
 				break;
@@ -185,9 +196,9 @@ public class Main {
 				ger.notificaObs("FINALIZA_TURNO", jf);
 				break;
 			case "NOVA_RODADA":
+				
 				ger.notificaObs("LIMPAR_CARTAS", null);
 				ger.notificaObs("INIT", null);
-//				ger.removeObs(3);
 				break;
 			default:
 				System.out.println("Erro fatal! Tipo de evento '" + evento + "' nao reconhecido.");
@@ -209,19 +220,16 @@ public class Main {
 			for (Observer o: observers) {
 				int id = o.getInd();
 //				Observer o = observers.get(id);
-				List<String> cartas = jbl.getCartasJogador(id, 0); // TODO: split
+				List<String> cartas = null;
 				switch(evento) {
 				case "INIT":
 					o.update("INIT", jbl.getVez());
 					
-					// remover observers extras
-					while (this.observers.size() > jbl.getQtdJogadores())
-						this.observers.remove(this.observers.size() - 1);
-					
-//					SwingUtilities.invokeLater(() -> {
-//						while (this.observers.size() > jbl.getQtdJogadores())
-//							this.observers.remove(this.observers.size() - 1);
-//					});
+					// remover observers extras					
+					SwingUtilities.invokeLater(() -> {
+						while (this.observers.size() > jbl.getQtdJogadores())
+							this.observers.remove(this.observers.size() - 1);
+					});
 					break;
 				case "FINALIZA_TURNO":
 					List<Integer> jf = (List<Integer>) val;
@@ -233,16 +241,19 @@ public class Main {
 				case "DAR_CARTAS":
 					for (int i = 0; i < jbl.getQtdMaosJogador(id); i++) {
 						cartas = jbl.getCartasJogador(id, i);
-						Object[] inf = {cartas, i};
+						int soma = jbl.getSomaCartasJogador(id, i);
+						Object[] inf = {cartas, soma, i};
 						o.update("DAR_CARTAS", inf);
 					}
 					// fallthrough
 				case "VEZ":
-					boolean prim = cartas.size() == 2 && jbl.getQtdMaosJogador(jbl.getVez()) == 1;
-					int vezInicial =  prim ? 1 : 0;
 					int mc = jbl.getMaoCorrente();
 					int vez = jbl.getVez();
 					int soma = jbl.getSomaCartasJogador(vez, mc);
+					
+					cartas = jbl.getCartasJogador(vez, mc);
+					boolean prim = cartas.size() == 2 && jbl.getQtdMaosJogador(jbl.getVez()) == 1;
+					int vezInicial =  prim ? 1 : 0;
 					
 					int[] value = { vez, soma, vezInicial, mc};
 					o.update("VEZ", value);
@@ -262,20 +273,21 @@ public class Main {
 					o.update(evento, null);
 					break;
 				case "FICHA_CLICK":
+					vez = jbl.getVez();
 					// se o jogador ja tiver uma mao
 					// nao queremos mandar esse evento
-					if (jbl.getCartasJogador(id, 0).size() != 0) {
+					if (jbl.getQtdMaosJogador(vez) > 0 && jbl.getCartasJogador(vez, 0).size() != 0) {
+						System.out.println("CONTINUEEE: " + jbl.getCartasJogador(vez, 0));
 						continue;
 					}
-					
-					o.update("ATUALIZA_FICHA", new int[]{ jbl.getVez(), (int) val });
-					break;
 				case "ATUALIZA_FICHA":
-					o.update("ATUALIZA_FICHA", new int[]{ jbl.getVez(), (int) val });
+					//jbl.colheAposta(jbl.getVez(), jbl.getMaoCorrente(), (int) val);
+					o.update("ATUALIZA_FICHA", new int[]{ jbl.getVez(), jbl.getMaoCorrente(), (int) val });
 					break;
 				case "DEALER_OPEN":
+					List<String> cartasD = jbl.getCartasJogador(id, 0); // TODO: split
 					if (id == observers.size() - 1)
-						o.update("DEALER_OPEN", cartas);
+						o.update("DEALER_OPEN", cartasD);
 					
 					break;
 				default:
