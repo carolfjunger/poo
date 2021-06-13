@@ -216,6 +216,7 @@ public class JanelaBanca extends Janela implements Observer {
    		
 	    		break;
 	    	case "FINALIZA_TURNO":
+	    		this.salvar.setEnabled(true);
 	    		this.novaRodada.setEnabled(true);
    		
 	    		break;

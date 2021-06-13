@@ -488,4 +488,13 @@ public class JogoBlackjack {
 		}
 		return null;
 	}
+	
+	 public List<Integer> pegaVal() {
+	        List<Integer> val = new ArrayList<Integer>();
+	        val.add(getQtdJogadores());
+	        val.add(qtdCartasUsadas);
+
+	        return val;
+
+	    }
 }
