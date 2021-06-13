@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class JogoBlackjack {
 	private Baralho baralho = new Baralho(); // verificar oq saiu?
-	private int fichasMesa = 0; 
+	
 	private List<Jogador> jogadores = new ArrayList<Jogador>();
 	private List<HashMap<Integer, Integer>> apostas = null;
 	private int vez = 0;
@@ -18,6 +18,7 @@ public class JogoBlackjack {
 	// constantes
 	private final int APOSTA_MIN = 20;
 	private final int FICHAS_INI = 500;
+	//private int fichasMesa = 0; 
 
 	// construtor privado, 
 	// necessario para nossa impl de singleton
@@ -38,7 +39,6 @@ public class JogoBlackjack {
 		this.qtdCartasUsadas = 0;
 		this.apostas = null;
 		this.jogadores = new ArrayList<Jogador>();
-		this.fichasMesa = 0;
 		this.baralho = new Baralho();
 	}
 	
@@ -135,10 +135,6 @@ public class JogoBlackjack {
 		return this.jogadores.get(indJog).qtdMaos();
 	}
 	
-	public int getFichasMesa() {
-		return this.fichasMesa;
-	}
-	
 	public List<Integer> getFichasJogadores() {
 		List<Integer> fs = new ArrayList<Integer>();
 		for (Jogador j: this.jogadores) {
@@ -201,14 +197,13 @@ public class JogoBlackjack {
 	}
 
 	public void colheAposta(int indJog, int indMao, int fichasAposta) {
-		
-		this.fichasMesa += fichasAposta;
 		Jogador j = this.jogadores.get(indJog);
 		
-//		// apenas para garantir que o aposta nao eh null
-//		if(this.apostas == null) {
-//			this.apostas = new ArrayList<HashMap<Integer, Integer>>();
-//		}
+		if (fichasAposta < this.APOSTA_MIN) {
+			System.out.printf("Jogador #%d com mao #%d esta tentando apostar menos que o minimo (%d)\n", 
+					indJog, indMao, this.APOSTA_MIN);
+			return;
+		}
 		
 		HashMap<Integer, Integer> li = null;
 		if (this.apostas.size() > indJog) {
@@ -238,7 +233,7 @@ public class JogoBlackjack {
 			this.qtdCartasUsadas += 2;
 			
 			// PARA TESTE - BLACKJACK
-			if (i == 0) {
+			if (i == 0 || i == 1) {
 				j.limpaMao();
 				j.novaMao();
 				Carta c1 = new Carta(Naipe.COPAS, ValorCarta.AS);
@@ -257,7 +252,7 @@ public class JogoBlackjack {
 			for (Carta c: cs) {
 				System.out.print("Nome: " + c.getNome());
 				System.out.print(" - Naipe: " + c.getNaipe().Repr());
-				System.out.println(" -");
+				System.out.println("---");
 			}
 			
 		}

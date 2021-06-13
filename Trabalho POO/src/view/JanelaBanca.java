@@ -216,6 +216,7 @@ public class JanelaBanca extends Janela implements Observer {
 	    	case "VEZ":
 	    	case "HIT":
 	    	case "FICHA_CLICK":
+	    	case "ATUALIZA_FICHAS":
 	    	case "ATUALIZA_FICHA":
 	    		break;
 	    	case "DAR_CARTAS":

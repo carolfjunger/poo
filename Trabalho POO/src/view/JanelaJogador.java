@@ -170,6 +170,8 @@ public class JanelaJogador extends Janela implements Observer {
     	int vez;
     	List<String> cartas;
     	switch (evento) {
+    	case "DEALER_OPEN":
+    		break;
     	case "INIT":
     		System.out.println("INIT...");
     		if (this.indMao != 0) {
@@ -206,7 +208,7 @@ public class JanelaJogador extends Janela implements Observer {
     			
     			if (sumCarta < 21) {
             		boolean podeSplit = this.cartas != null && this.cartas.size() == 2 && this.cartas.get(0).equals(this.cartas.get(1));
-            		boolean podeDbl = this.fichas > (this.aposta * 2);
+            		boolean podeDbl = this.fichas >= (this.aposta * 2);
             		
             		this.stand.setEnabled(true);
             		this.dbl.setEnabled(podeDbl);
@@ -276,6 +278,29 @@ public class JanelaJogador extends Janela implements Observer {
        		}
 
     		break;	
+       	case "ATUALIZA_FICHAS":
+       		info = (int[]) val;
+       		ficha = info[0];
+       		int aposta = info[1];
+       		iMao = info[2];
+       		
+       		System.out.println("FICHAS: " + fichas);
+   			System.out.println("APOSTAS: " + aposta);
+    		
+    		if (this.indMao == iMao) {
+    			this.aposta = aposta;
+        		this.lAposta.setText("Aposta: " + Integer.toString(this.aposta));
+        		this.lAposta.setSize(this.lAposta.getPreferredSize());	
+    		}
+    		
+       		if(this.aposta >= apostaMinima && this.cartas.size() == 0) {
+       			this.deal.setEnabled(true);
+       		}
+       		this.fichas = ficha;
+       		this.lFichas.setText("Fichas: " + Integer.toString(this.fichas));
+       		this.lFichas.setSize(this.lFichas.getPreferredSize());
+
+    		break;	
     	case "FINALIZA_TURNO":
     		int fichas = (int) val;
     		this.aposta = 0;
@@ -293,7 +318,7 @@ public class JanelaJogador extends Janela implements Observer {
     		break;
     	
     	default:
-    		System.out.println("Erro fatal recebendo evento na janela jogador, evento nao reconhecido!");
+    		System.out.println("Erro fatal recebendo evento na janela jogador, evento nao reconhecido!" + evento);
     		System.exit(1);
     	}
     	

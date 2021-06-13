@@ -135,7 +135,9 @@ public class Main {
 				}
 					
 				jbl.colheAposta(vez, indMao, valFichas);
-				ger.notificaObs("ATUALIZA_FICHA", valFichas);
+				
+				ger.notificaObs("ATUALIZA_FICHAS", null);
+				//ger.notificaObs("ATUALIZA_FICHA", valFichas);
 				at.update("HIT", val);
 				break;
 			case "STAND":
@@ -183,7 +185,7 @@ public class Main {
 				valFichas = jbl.getApostasJogadores().get(vez).get(indMao);
 				System.out.println("VAL FICHAS SPLIT -----:" + valFichas);
 				jbl.colheAposta(vez, indNova, valFichas);				
-				ger.notificaObs("ATUALIZA_FICHA", valFichas);
+				ger.notificaObs("ATUALIZA_FICHAS", null);
 //				ger.notificaObs("DAR_CARTAS", indNova);
 				break;
 			case "FICHA_CLICK":
@@ -219,13 +221,12 @@ public class Main {
 		public void notificaObs(String evento, Object val) {
 			for (Observer o: observers) {
 				int id = o.getInd();
-//				Observer o = observers.get(id);
 				List<String> cartas = null;
 				switch(evento) {
 				case "INIT":
 					o.update("INIT", jbl.getVez());
 					
-					// remover observers extras					
+					// remover observers criados por splits				
 					SwingUtilities.invokeLater(() -> {
 						while (this.observers.size() > jbl.getQtdJogadores())
 							this.observers.remove(this.observers.size() - 1);
@@ -284,10 +285,23 @@ public class Main {
 					//jbl.colheAposta(jbl.getVez(), jbl.getMaoCorrente(), (int) val);
 					o.update("ATUALIZA_FICHA", new int[]{ jbl.getVez(), jbl.getMaoCorrente(), (int) val });
 					break;
+				case "ATUALIZA_FICHAS":
+					jf = jbl.getFichasJogadores();
+					List<HashMap<Integer, Integer>> aj = jbl.getApostasJogadores();
+					if (id == jbl.getQtdJogadores() - 1)
+						break;
+						
+					for (int i=0; i<jbl.getQtdMaosJogador(id); i++) {
+						int fichas = jf.get(id);
+						int ap = aj.get(id).get(i);
+						o.update("ATUALIZA_FICHAS", new int[]{ fichas, ap, i });
+					}
+					break;
+				
 				case "DEALER_OPEN":
-					List<String> cartasD = jbl.getCartasJogador(id, 0); // TODO: split
-					if (id == observers.size() - 1)
-						o.update("DEALER_OPEN", cartasD);
+					List<String> cartasD = jbl.getCartasJogador(id, 0);
+					System.out.println("DEALER OPEN! 2");
+					o.update("DEALER_OPEN", cartasD);
 					
 					break;
 				default:
