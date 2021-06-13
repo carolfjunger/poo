@@ -95,8 +95,6 @@ public class Main {
 			case "DEAL":
 				int fichasApostadas = (int) val;
 				jbl.colheAposta(jbl.getVez(), 0, fichasApostadas);
-				System.out.println("COLHENDO APOSTA: "+ fichasApostadas + "|| VEZ:" + jbl.getVez());
-				System.out.println("DEAL: SETANDO PROX VEZ: 0");
 				
 				if(proxVez >= totalDeJogadores - 1) {
 					jbl.darCartas(0);
@@ -129,20 +127,16 @@ public class Main {
 				int valFichas = 0;
 				if (aj.size() > vez && aj.get(vez).containsKey(indMao)) {
 					valFichas = aj.get(vez).get(indMao);
-					System.out.println("DUBLIN:" + valFichas);
-					System.out.println("VEZ:" + vez);
-					System.out.println("IND MAO:" + indMao);
+					System.out.println("DOBRANDO:" + valFichas);
 				}
 					
 				jbl.colheAposta(vez, indMao, valFichas);
 				
 				ger.notificaObs("ATUALIZA_FICHAS", null);
-				//ger.notificaObs("ATUALIZA_FICHA", valFichas);
 				at.update("HIT", val);
 				break;
 			case "STAND":
 				int mc = jbl.getMaoCorrente();
-				//System.out.println("SETANDO MAO CORRENTE:" + );
 				int qtdMao = jbl.getQtdMaosJogador(vez);
 				if ( mc < qtdMao - 1 ) {
 					System.out.println("SETANDO MAO CORRENTE:" + (mc + 1));
@@ -186,11 +180,9 @@ public class Main {
 				System.out.println("VAL FICHAS SPLIT -----:" + valFichas);
 				jbl.colheAposta(vez, indNova, valFichas);				
 				ger.notificaObs("ATUALIZA_FICHAS", null);
-//				ger.notificaObs("DAR_CARTAS", indNova);
 				break;
 			case "FICHA_CLICK":
-				System.out.println("MANDANDO FICHAS CLICK!!!!");
-				ger.notificaObs("FICHA_CLICK", val);
+				ger.notificaObs("PRE_APOSTA", val);
 				break;
 			case "FINALIZA_TURNO":
 				List<Integer> vencedores = jbl.finalizaRodada();
@@ -273,17 +265,14 @@ public class Main {
 				case "LIMPAR_CARTAS":
 					o.update(evento, null);
 					break;
-				case "FICHA_CLICK":
+				case "PRE_APOSTA":
 					vez = jbl.getVez();
 					// se o jogador ja tiver uma mao
 					// nao queremos mandar esse evento
 					if (jbl.getQtdMaosJogador(vez) > 0 && jbl.getCartasJogador(vez, 0).size() != 0) {
-						System.out.println("CONTINUEEE: " + jbl.getCartasJogador(vez, 0));
 						continue;
 					}
-				case "ATUALIZA_FICHA":
-					//jbl.colheAposta(jbl.getVez(), jbl.getMaoCorrente(), (int) val);
-					o.update("ATUALIZA_FICHA", new int[]{ jbl.getVez(), jbl.getMaoCorrente(), (int) val });
+					o.update("PRE_APOSTA", new int[]{ jbl.getVez(), jbl.getMaoCorrente(), (int) val });
 					break;
 				case "ATUALIZA_FICHAS":
 					jf = jbl.getFichasJogadores();

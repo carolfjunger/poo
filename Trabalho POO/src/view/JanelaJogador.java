@@ -261,7 +261,7 @@ public class JanelaJogador extends Janela implements Observer {
     		this.cartas = new ArrayList<String>();
     		this.somaCartas.setText("Somatorio das cartas:");
     		break;
-       	case "ATUALIZA_FICHA":
+       	case "PRE_APOSTA":
        		info = (int[]) val;
        		vez = info[0];
        		int iMao = info[1];
@@ -305,10 +305,6 @@ public class JanelaJogador extends Janela implements Observer {
     		int fichas = (int) val;
     		this.aposta = 0;
     		this.fichas = fichas;
-    		
-//    		if (this.indMao != 0) {
-//			this.dispose();
-//		}
     		
        		this.lFichas.setText("Fichas: " + Integer.toString(this.fichas));
        		this.lFichas.setSize(this.lFichas.getPreferredSize());

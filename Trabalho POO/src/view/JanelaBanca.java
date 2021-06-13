@@ -66,9 +66,7 @@ public class JanelaBanca extends Janela implements Observer {
 				case "ENCERRAR":
 					break;
 				default:
-					obs.update(txt, null);
-		    		//System.out.println("Erro fatal enviando evento na janela jogador, evento nao reconhecido!");
-		    		//System.exit(1);	
+					obs.update(txt, null);	
 				}
 				
 			});
@@ -217,7 +215,7 @@ public class JanelaBanca extends Janela implements Observer {
 	    	case "HIT":
 	    	case "FICHA_CLICK":
 	    	case "ATUALIZA_FICHAS":
-	    	case "ATUALIZA_FICHA":
+	    	case "PRE_APOSTA":
 	    		break;
 	    	case "DAR_CARTAS":
 	    		Object[] inf = (Object[]) val;

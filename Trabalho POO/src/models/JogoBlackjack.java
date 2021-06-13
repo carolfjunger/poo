@@ -300,7 +300,6 @@ public class JogoBlackjack {
 	}
 	
 	public int split(int indJogador, int indMao) {
-		System.out.println("SPLIT RECEBVER IND MAO:" + indMao);
 		
 		Jogador j = this.jogadores.get(indJogador);
 		
@@ -309,9 +308,6 @@ public class JogoBlackjack {
 		Carta c2 = mao.get(1);
 		
 		if ( mao.size() != 2 || c1.getCarta() != c2.getCarta() ) {
-			System.out.println(mao.size() == 2);
-			System.out.println(c1);
-			System.out.println(c2);
 			System.out.println("Erro fatal no split! Mao de tamanho != 2 ou cartas desiguais.");
 			System.exit(1);
 		}
@@ -320,9 +316,6 @@ public class JogoBlackjack {
 		List<Carta> maoNova = j.getMao(indNova);
 		maoNova.add(c2);
 		mao.remove(1);
-		
-		System.out.println( "TAM MAO VELHA:" + mao.size() );
-		System.out.println( "TAM MAO NOVA:" + maoNova.size() );
 		
 		return indNova;
 	}
@@ -357,12 +350,6 @@ public class JogoBlackjack {
 		}
 		int ind = last;
 		
-		if (fichas == 0)
-			return -1;
-		
-		System.out.println( "FICHAS NAO ZERO!");
-		//this.colheAposta(indJogador, 0);
-		
 		if (jogadorQuebrou) {
 			return last;
 		}
@@ -382,8 +369,6 @@ public class JogoBlackjack {
 			j.recebeFichas(fichas * 2);
 			return indJogador;
 		}
-		
-		System.out.println( "NADA ESPECIAL!");
 		
 		//
 		// empate e vitoria ordinaria
