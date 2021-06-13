@@ -31,7 +31,6 @@ public class JanelaBanca extends Janela implements Observer {
 	private int soma = 0;
 	private boolean init = false;
 	private boolean praBaixo = true;
-	private Observer obs;
 	
 	final int size = 59; // tamanho da ficha
 	
@@ -43,7 +42,6 @@ public class JanelaBanca extends Janela implements Observer {
 	public JanelaBanca(String titulo, int indJogador, Observer obs) {
 		super(titulo);
 		HashMap<Integer, Point> fichasPosition = this.fichasPosition;
-		this.obs = obs;
 		this.indJogador = indJogador;
 		
 		JPanel panel = new PaintPanel();
@@ -99,7 +97,8 @@ public class JanelaBanca extends Janela implements Observer {
 	        			(fichaPos.y + size + size/2) > y &&
 		        		init)
 		        	{
-		        		obs.update("FICHA_CLICK", key);
+		        		int val = (e.getButton() == MouseEvent.BUTTON1) ? key : -key;
+		        		obs.update("FICHA_CLICK", val);
 		        	}
 		        }
 		    }  

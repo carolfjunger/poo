@@ -155,11 +155,13 @@ public class JanelaJogador extends Janela implements Observer {
 	}
 	
 	public void addFichaApostada(int ficha) {
-		if(this.fichas - ficha >= 0) {
+		if(
+			ficha > 0 && this.fichas - ficha >= 0 ||
+			ficha < 0 && this.aposta + ficha >= 0
+		) {
 			this.aposta += ficha;
 			this.fichas -= ficha;
 		}
-
 	}
 
 	// pintar as fichas e as cartas
