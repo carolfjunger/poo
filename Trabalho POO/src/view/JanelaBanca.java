@@ -63,7 +63,8 @@ public class JanelaBanca extends Janela implements Observer {
 					this.cartas = new ArrayList<String>();
 					obs.update(txt, null);
 					break;
-				case "SALVAR":
+				case "SALVAR_JOGO":
+					this.salvar.setEnabled(false);
 					obs.update(txt, null);
 					break;
 				case "ENCERRAR_JOGO":
@@ -216,6 +217,7 @@ public class JanelaBanca extends Janela implements Observer {
    		
 	    		break;
 	    	case "FINALIZA_TURNO":
+	    		this.salvar.setEnabled(true);
 	    		this.novaRodada.setEnabled(true);
    		
 	    		break;

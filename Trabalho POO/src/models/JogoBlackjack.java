@@ -208,6 +208,38 @@ public class JogoBlackjack {
 		
 		return true;
 	}
+	
+	// retorna `true` se deu certo
+	// ou `false` se a quantidade de jogadores ou decks for invalida
+	public boolean inicializaBySalvamento(int qtdDecks, HashMap<Integer, Integer> jogadoresSave) {
+		this.qtdCartasUsadas = 0;
+		this.baralho.adicionaDeck(qtdDecks);
+		this.baralho.embaralha();
+		this.apostas = new ArrayList<HashMap<Integer, Integer>>();
+		
+		if (qtdDecks <= 0) {
+			return false;
+		}
+		
+		for (int i=0; i < this.jogadores.size(); i++) {
+			Jogador j = this.jogadores.get(i);
+			int ficha = jogadoresSave.get(i);
+			j.recebeFichas(ficha);
+			j.novaMao();
+			
+			HashMap<Integer, Integer> apostaMao = new HashMap<Integer, Integer>();
+			apostaMao.put(0, 0);
+			this.apostas.add(apostaMao);
+		}
+		
+		// dealer entra por ultimo
+		Jogador dealer = new Jogador("dealer", 500);
+		dealer.novaMao();
+		this.jogadores.add(dealer);
+		
+		return true;
+	}
+
 
 	public void colheAposta(int indJog, int indMao, int fichasAposta) {
 		Jogador j = this.jogadores.get(indJog);
@@ -488,4 +520,13 @@ public class JogoBlackjack {
 		}
 		return null;
 	}
+	
+	 public List<Integer> pegaVal() {
+	        List<Integer> val = new ArrayList<Integer>();
+	        val.add(getQtdJogadores());
+	        val.add(qtdCartasUsadas);
+
+	        return val;
+
+	    }
 }

@@ -5,9 +5,15 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import java.awt.Point;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 import models.*;
 import view.*;
@@ -20,35 +26,44 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-//		Janela ji = new JanelaInicial("Jogo de blackjack", () -> {
-//    		String input = "";
-//    		int numJogadores = 0;
-//    		while (numJogadores <= 0 || numJogadores > 4) {
-//    			input = JOptionPane.showInputDialog("Favor entrar com valor entre 1 e 4:");
-//    			try {
-//    				numJogadores = Integer.parseInt(input);
-//    			}
-//    			catch (NumberFormatException nfe) {
-//    				continue;
-//    			}
-//    		}
-//    		
-//    		iniciaJogo(numJogadores);
-//		});
+		Janela ji = new JanelaInicial("Jogo de blackjack", () -> {
+    		String input = "";
+    		int numJogadores = 0;
+    		while (numJogadores <= 0 || numJogadores > 4) {
+    			input = JOptionPane.showInputDialog("Favor entrar com valor entre 1 e 4:");
+    			try {
+    				numJogadores = Integer.parseInt(input);
+    			}
+    			catch (NumberFormatException nfe) {
+    				continue;
+    			}
+    		}
+    		
+    		iniciaJogo(numJogadores, null);
+		}, () -> {
+			HashMap<Integer, Integer> jogoSalvo = carregamento();
+			
+			iniciaJogo(jogoSalvo.size(), jogoSalvo);
+		}) ;
 		
-		iniciaJogo(2);
+//		iniciaJogo(2);
 		
-//		ji.setVisible(true);
-//		ji.setLocationRelativeTo(null);
+		ji.setVisible(true);
+		ji.setLocationRelativeTo(null);
 	}
 	
-	public static void iniciaJogo(int numJogadores) {
+	public static void iniciaJogo(int numJogadores, HashMap<Integer, Integer> jogadoresSave) {
 		at = new Atualizador();
 		ger = new Gerenciador();
 		
 		jbl = JogoBlackjack.getInstancia();
 		jbl.setJogadores(numJogadores);
-		jbl.inicializa(2);
+		if(jogadoresSave ==  null) {
+			jbl.inicializa(2);
+		} else {
+			jbl.inicializaBySalvamento(2, jogadoresSave);
+		}
+		
 		
 		List<Integer> jID = jbl.getIDJogadores();
 		List<Integer> jf = jbl.getFichasJogadores();
@@ -82,6 +97,102 @@ public class Main {
         	//ger.notificaObs("INIT", null);
 	    });
 	}
+	
+	public static HashMap<Integer, Integer> carregamento()  {
+        
+        int jqtd,id,ficha,qtdCartasUsadas;
+        HashMap<Integer, Integer> jogadores = new HashMap<Integer, Integer>();
+        
+        File save = new File("Save.txt"); 
+        System.out.println(save);
+        Scanner s = null;
+		try {
+			s = new Scanner(save);
+		} catch (FileNotFoundException e) {
+			System.out.println("Erro você não tem nenhum jogo salvo ainda");
+			System.exit(0);
+		}
+       
+        
+
+        jqtd = s.nextInt();// o numero de jogadores
+        qtdCartasUsadas = s.nextInt();//cartas usadas
+        
+        for(int i = 0;i < jqtd - 1;i++) {
+        	id = s.nextInt();
+        	ficha = s.nextInt();
+        	jogadores.put(id, ficha);
+        } //listas de ids e fichas de jogador
+        
+
+	
+        
+        
+        /****/
+
+        s.close();
+        System.out.println("Jogadores = "+jqtd);
+        System.out.println("jogs + fichas ="+jogadores);
+        System.out.println("cartas usadas = "+qtdCartasUsadas);
+        
+        
+        
+        /*******/
+        
+         return jogadores;
+    }
+	
+	public static void salvamento()  {
+
+//		JogoBlackjack jbl = JogoBlackjack.getInstancia();
+
+		List<Integer> jID = jbl.getIDJogadores();//id jogadores
+		List<Integer> jf = jbl.getFichasJogadores();//ficha de cada jogador
+
+		int tam = jID.size() -1;
+
+
+
+
+		List<Integer> jval = jbl.pegaVal();//numero de jogadores,fichasmesa,vez,qtdCartasUsadas
+
+        /*****/
+        //forma de escrever
+        File  Save = new File("Save.txt");
+        FileWriter w = null;
+		try {
+			w = new FileWriter(Save);
+		} catch (IOException e) {
+			System.out.println("Erro ao salvar o jogo");
+			e.printStackTrace();
+			System.exit(0);
+		}
+        PrintWriter writer = new PrintWriter(w);
+
+
+
+
+
+        /******/
+        //escrever
+        for(int k = 0; k < 2 ;k++) {
+        	writer.write(jval.get(k) + "\n");
+
+        }//jogadores, cartas usadas
+
+        for(int i = 0; i < tam ;i++) {
+        	writer.write(jID.get(i) + " ");
+        	writer.write(jf.get(i) + "\n");
+
+
+        }//id, fichas jogador
+
+
+        System.out.println("Salvou");
+
+        writer.close();  
+    }
+	
 	
 	private static class Atualizador implements Observer {
 		@Override
@@ -230,6 +341,9 @@ public class Main {
 			case "ENCERRAR_JOGO":
 				System.exit(0);
 				break;
+			case "SALVAR_JOGO":
+				salvamento();
+				break;
 			default:
 				System.out.println("Erro fatal! Tipo de evento '" + evento + "' nao reconhecido.");
 				System.exit(1);
@@ -244,13 +358,13 @@ public class Main {
 	
 	private static class Gerenciador implements Observable {
 		protected List<Observer> observers = new ArrayList<Observer>();
-
+		
 		@Override
 		public void notificaObs(String evento, Object val) {
 			for (int io=0; io < this.observers.size(); io++) {
 				Observer o = this.observers.get(io);
 				int id = o.getInd();
-				
+				System.out.println(evento);
 				List<String> cartas = null;
 				switch(evento) {
 				case "INIT":
@@ -366,6 +480,7 @@ public class Main {
 						
 						// reajustar os indices dos observers
 						// para ficar sem buracos
+						
 						for (int k=0; k<this.observers.size(); k++) {
 							Observer ob = this.observers.get(k);
 							ob.setInd(k);
