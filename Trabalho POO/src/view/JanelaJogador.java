@@ -204,11 +204,10 @@ public class JanelaJogador extends Janela implements Observer {
     		}
     		vez = (int) val;
     		if (vez == this.indJogador) {
+    			this.vezStatus.setText("Faca sua aposta");
     			if (this.aposta > apostaMinima ) {
-    				this.vezStatus.setText("Faça sua aposta");
     				this.deal.setEnabled(true);
     			} else {
-    				this.vezStatus.setText("Faça sua aposta");
     				this.deal.setEnabled(false);
     			}
     		} 
@@ -223,7 +222,7 @@ public class JanelaJogador extends Janela implements Observer {
     		int sumCarta = infoVez[1];
     		int vezInicial = infoVez[2];
     		int indMao = infoVez[3];
-    		
+
     		if (vez == this.indJogador && this.indMao == indMao) {
         		this.vezStatus.setText("Eh a sua vez de jogar...");
         		this.vezStatus.setSize(160, 18);
@@ -360,7 +359,7 @@ public class JanelaJogador extends Janela implements Observer {
     	case "QUIT":
     		vez = (int) val;
     		if (this.indJogador == vez+1) {
-    			this.vezStatus.setText("Faça sua aposta...");
+    			this.vezStatus.setText("Faca sua aposta...");
     			this.vezStatus.setSize(150, 18);
     		}
     		
