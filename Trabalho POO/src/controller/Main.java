@@ -325,10 +325,10 @@ public class Main {
 					break;
 				case "QUIT":
 					int iJog = (int) val;
+					
+					o.update("QUIT", iJog);
 					if (id != iJog)
 						break;
-								
-					o.update("QUIT", iJog);
 
 					SwingUtilities.invokeLater( () -> {
 						// remover a janela cujo jogador apertou "QUIT"
@@ -357,12 +357,6 @@ public class Main {
 							Observer ob = this.observers.get(k);
 							ob.setInd(k);
 						}
-						
-//						for (Observer ob: this.observers) {
-//							int ind = ob.getInd();
-//							if (ind > iJog)
-//								ob.setInd(ind - 1);
-//						}
 					});
 					
 					break;

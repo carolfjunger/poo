@@ -208,8 +208,7 @@ public class JanelaJogador extends Janela implements Observer {
     		int indMao = infoVez[3];
     		
     		if (vez == this.indJogador && this.indMao == indMao) {
-    			System.out.println("VEZ NA JANELA:" + this.indJogador);
-        		this.vezStatus.setText("Eh a sua vez");
+        		this.vezStatus.setText("É a sua vez de jogar...");
         		this.somaCartas.setText("Somatorio das cartas:" + Integer.toString(sumCarta));
         		this.somaCartas.setSize(somaCartas.getPreferredSize());
     			
@@ -340,6 +339,11 @@ public class JanelaJogador extends Janela implements Observer {
     		break;
     	case "QUIT":
     		vez = (int) val;
+    		if (this.indJogador == vez+1) {
+    			this.vezStatus.setText("É a sua vez de jogar...");
+    			this.vezStatus.setSize(160, 20);
+    		}
+    		
     		if (this.indJogador == vez)
     			this.dispose();
 
