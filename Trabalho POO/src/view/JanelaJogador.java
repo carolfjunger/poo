@@ -232,7 +232,9 @@ public class JanelaJogador extends Janela implements Observer {
         		this.somaCartas.setSize(somaCartas.getPreferredSize());
     			
     			if (sumCarta < 21) {
-            		boolean podeSplit = this.cartas != null && this.cartas.size() == 2 && this.cartas.get(0).equals(this.cartas.get(1));
+            		boolean podeSplit = this.cartas != null 
+            							&& this.cartas.size() == 2 
+            							&& this.cartas.get(0).charAt(0) == this.cartas.get(0).charAt(0);
             		boolean podeDbl = this.fichas >= this.aposta;
             		
             		this.stand.setEnabled(true);
