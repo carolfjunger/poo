@@ -225,14 +225,14 @@ public class JanelaJogador extends Janela implements Observer {
     		int indMao = infoVez[3];
     		
     		if (vez == this.indJogador && this.indMao == indMao) {
-        		this.vezStatus.setText("É a sua vez de jogar...");
+        		this.vezStatus.setText("Eh a sua vez de jogar...");
         		this.vezStatus.setSize(160, 18);
         		this.somaCartas.setText("Somatorio das cartas:" + Integer.toString(sumCarta));
         		this.somaCartas.setSize(somaCartas.getPreferredSize());
     			
     			if (sumCarta < 21) {
             		boolean podeSplit = this.cartas != null && this.cartas.size() == 2 && this.cartas.get(0).equals(this.cartas.get(1));
-            		boolean podeDbl = this.fichas >= (this.aposta * 2);
+            		boolean podeDbl = this.fichas >= this.aposta;
             		
             		this.stand.setEnabled(true);
             		this.dbl.setEnabled(podeDbl);
