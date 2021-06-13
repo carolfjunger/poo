@@ -170,7 +170,8 @@ public class Main {
 				JanelaJogador jg = new JanelaJogador(vez, valFichas, indNova, null, at);
 				ger.registraObs(jg);
 				
-				Point p = new Point(400*indNova, 820);
+				int offset = ger.observers.size() - 2;
+				Point p = new Point(400*offset, 420);
 				jg.setLocation(p);
 				jg.setVisible(true);
 				
@@ -190,9 +191,15 @@ public class Main {
 				ger.notificaObs("FINALIZA_TURNO", jf);
 				break;
 			case "NOVA_RODADA":
-				
 				ger.notificaObs("LIMPAR_CARTAS", null);
 				ger.notificaObs("INIT", null);
+				break;
+			case "QUIT":
+				jbl.removeJogador((int) val);
+				ger.notificaObs("QUIT", val);
+				break;
+			case "ENCERRAR_JOGO":
+				System.exit(0);
 				break;
 			default:
 				System.out.println("Erro fatal! Tipo de evento '" + evento + "' nao reconhecido.");
@@ -201,18 +208,20 @@ public class Main {
 		}
 
 		@Override
-		public int getInd() {
-			return -1;
-		}
+		public int getInd() { return -1; }
+		@Override
+		public void setInd(int ind) {}
 	}
 	
 	private static class Gerenciador implements Observable {
-		private List<Observer> observers = new ArrayList<Observer>();
+		protected List<Observer> observers = new ArrayList<Observer>();
 
 		@Override
 		public void notificaObs(String evento, Object val) {
-			for (Observer o: observers) {
+			for (int io=0; io < this.observers.size(); io++) {
+				Observer o = this.observers.get(io);
 				int id = o.getInd();
+				
 				List<String> cartas = null;
 				switch(evento) {
 				case "INIT":
@@ -232,6 +241,9 @@ public class Main {
 
 					break;
 				case "DAR_CARTAS":
+					for (Observer ob: this.observers) {
+						System.out.println("OB ID:" + ob.getInd());
+					}
 					for (int i = 0; i < jbl.getQtdMaosJogador(id); i++) {
 						cartas = jbl.getCartasJogador(id, i);
 						int soma = jbl.getSomaCartasJogador(id, i);
@@ -286,11 +298,52 @@ public class Main {
 						o.update("ATUALIZA_FICHAS", new int[]{ fichas, ap, i });
 					}
 					break;
-				
+					
 				case "DEALER_OPEN":
 					List<String> cartasD = jbl.getCartasJogador(id, 0);
-					System.out.println("DEALER OPEN! 2");
 					o.update("DEALER_OPEN", cartasD);
+					break;
+				case "QUIT":
+					int iJog = (int) val;
+					if (id != iJog)
+						break;
+								
+					o.update("QUIT", iJog);
+
+					SwingUtilities.invokeLater( () -> {
+						// remover a janela cujo jogador apertou "QUIT"
+						for (int k=0; k<this.observers.size(); k++) {
+							int ind = this.observers.get(k).getInd();
+							if (ind == iJog) {
+								this.observers.remove(k);
+								break;
+							}
+						}
+						
+						// mover a banca pro final
+						// a banca representa o jogador dealer
+						// precisamos que esse jogador tenha maior indice (por convencao)
+						Observer rem = null;
+						for (int k=0; k<this.observers.size(); k++) {
+							Observer ob = this.observers.get(k);
+							if (ob.getInd() == jbl.getQtdJogadores())
+								rem = this.observers.remove(k);
+						}
+						this.observers.add(rem);
+						
+						// reajustar os indices dos observers
+						// para ficar sem buracos
+						for (int k=0; k<this.observers.size(); k++) {
+							Observer ob = this.observers.get(k);
+							ob.setInd(k);
+						}
+						
+//						for (Observer ob: this.observers) {
+//							int ind = ob.getInd();
+//							if (ind > iJog)
+//								ob.setInd(ind - 1);
+//						}
+					});
 					
 					break;
 				default:

@@ -127,6 +127,15 @@ public class JogoBlackjack {
 		this.jogadores = lj;
 	}
 	
+	public boolean removeJogador(int indJog) {
+		int tam = this.jogadores.size();
+		if (indJog >= tam - 1)
+			return false;
+					
+		this.jogadores.remove(indJog);
+		return true;
+	}
+	
 	public int getQtdJogadores() {
 		return this.jogadores.size();
 	}

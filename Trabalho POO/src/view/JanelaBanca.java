@@ -22,8 +22,8 @@ public class JanelaBanca extends Janela implements Observer {
 	
 	private HashMap<Integer, Point> fichasPosition = new HashMap<Integer, Point>();
 	private List<String> cartas = new ArrayList<String>();
-	private boolean praBaixo = false;
 	private int indJogador = 0;
+	private boolean praBaixo = true;
 	
 	final int size = 59; // tamanho da ficha
 	Observer obs;
@@ -63,7 +63,8 @@ public class JanelaBanca extends Janela implements Observer {
 				case "SALVAR":
 					obs.update(txt, null);
 					break;
-				case "ENCERRAR":
+				case "ENCERRAR_JOGO":
+					obs.update(txt, this.indJogador);
 					break;
 				default:
 					obs.update(txt, null);	
@@ -73,6 +74,7 @@ public class JanelaBanca extends Janela implements Observer {
 			panel.add(jb);
 		}
 		this.getContentPane().add(panel);
+		this.encerrar.setEnabled(true);
 		
 		// mouse
 		this.addMouseListener(new MouseAdapter() {
@@ -157,31 +159,25 @@ public class JanelaBanca extends Janela implements Observer {
     			if (img != null) {
     				int width = img.getWidth(this);
     				int height = img.getHeight(this);
-    				g.drawImage(img, padding + (wCarta * cInd), getHeight() - (hCarta + padding + 100), width, height, this);
+    				g.drawImage(img, padding + (wCarta * cInd), getHeight() - (hCarta + padding + 80), width, height, this);
     				cInd += 1;
     			}
     		}
 
         }
     }
-	
-	@Override
-	public int getInd() {
-		return this.indJogador;
-	}
 
 	@Override
 	public void update(String evento, Object val) {
 
     	switch (evento) {
 	    	case "INIT":
-	    		this.praBaixo = true;
-	    		break;
 	    	case "VEZ":
 	    	case "HIT":
 	    	case "FICHA_CLICK":
 	    	case "ATUALIZA_FICHAS":
 	    	case "PRE_APOSTA":
+	    	case "QUIT":
 	    		break;
 	    	case "DAR_CARTAS":
 	    		Object[] inf = (Object[]) val;
@@ -196,10 +192,10 @@ public class JanelaBanca extends Janela implements Observer {
 	    	case "DEALER_OPEN":
 	    		List<String> cartasFinal = (List<String>) val;
 	    		this.cartas = cartasFinal;
+	    		this.praBaixo = false;
    		
 	    		break;
 	    	case "FINALIZA_TURNO":
-	    		this.praBaixo = false;
 	    		this.novaRodada.setEnabled(true);
    		
 	    		break;
@@ -210,5 +206,15 @@ public class JanelaBanca extends Janela implements Observer {
     	}
     	this.repaint();
 		
+	}
+	
+	@Override
+	public int getInd() {
+		return this.indJogador;
+	}
+
+	@Override
+	public void setInd(int ind) {
+		this.indJogador = ind;
 	}
 }

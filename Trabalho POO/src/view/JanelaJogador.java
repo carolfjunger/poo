@@ -33,6 +33,7 @@ public class JanelaJogador extends Janela implements Observer {
 	private JButton dbl = new JButton("Double");
 	private JButton split = new JButton("Split");
 	private JButton surrender = new JButton("Surrender");
+	private JButton quit = new JButton("Quit");
 	
 	// textos informativos
 	private JLabel lFichas = new JLabel();
@@ -53,13 +54,18 @@ public class JanelaJogador extends Janela implements Observer {
 		
 		// botoes
 		
-		Dimension ps = stand.getPreferredSize();
+		Dimension ps = surrender.getPreferredSize();
 		int width = (int) ps.getWidth();
-		JButton btns[] = {deal, stand, hit, dbl, split, surrender};
+		JButton btns[] = {deal, stand, hit, dbl, split, surrender, quit};
 		for (int j = 0; j < btns.length; j++) {
 			JButton jb = btns[j];
 			jb.setSize(ps);
-			jb.setLocation(2 + (width * j), 32);
+			if (j < 3)
+				jb.setLocation(2 + (width * j), 32);
+			else if (j < 6)
+				jb.setLocation(2 + (width * (j - 3)), 64);
+			else
+				jb.setLocation(2 + (width * (j - 6)), 96);
 			jb.setEnabled(false);
 			
 			jb.addActionListener( (evt) -> {
@@ -87,6 +93,9 @@ public class JanelaJogador extends Janela implements Observer {
 				case "SPLIT":
 					obs.update(txt, this.indMao);
 					break;
+				case "QUIT":
+					obs.update(txt, this.indJogador);
+					break;
 				default:
 					obs.update(txt, null);
 				}
@@ -94,6 +103,8 @@ public class JanelaJogador extends Janela implements Observer {
 			});
 			panel.add(jb);
 		}
+		
+		this.quit.setEnabled(true);
 		
 		// Mostra a vez do jogador
 		this.vezStatus.setText("Aguarde sua vez");
@@ -262,6 +273,7 @@ public class JanelaJogador extends Janela implements Observer {
     		this.somaCartas.setText("Somatorio das cartas:");
     		break;
        	case "PRE_APOSTA":
+       		this.quit.setEnabled(false);
        		info = (int[]) val;
        		vez = info[0];
        		int iMao = info[1];
@@ -312,6 +324,12 @@ public class JanelaJogador extends Janela implements Observer {
     		this.lAposta.setSize(this.lAposta.getPreferredSize());
 
     		break;
+    	case "QUIT":
+    		vez = (int) val;
+    		if (this.indJogador == vez)
+    			this.dispose();
+
+    		break;
     	
     	default:
     		System.out.println("Erro fatal recebendo evento na janela jogador, evento nao reconhecido!" + evento);
@@ -320,4 +338,9 @@ public class JanelaJogador extends Janela implements Observer {
     	
     	this.repaint();
     }
+
+	@Override
+	public void setInd(int ind) {
+		this.indJogador = ind;
+	}
 }
