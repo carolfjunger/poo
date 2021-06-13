@@ -5,6 +5,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import java.awt.Point;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,26 +21,26 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-//		Janela ji = new JanelaInicial("Jogo de blackjack", () -> {
-//    		String input = "";
-//    		int numJogadores = 0;
-//    		while (numJogadores <= 0 || numJogadores > 4) {
-//    			input = JOptionPane.showInputDialog("Favor entrar com valor entre 1 e 4:");
-//    			try {
-//    				numJogadores = Integer.parseInt(input);
-//    			}
-//    			catch (NumberFormatException nfe) {
-//    				continue;
-//    			}
-//    		}
-//    		
-//    		iniciaJogo(numJogadores);
-//		});
+		Janela ji = new JanelaInicial("Jogo de blackjack", () -> {
+    		String input = "";
+    		int numJogadores = 0;
+    		while (numJogadores <= 0 || numJogadores > 4) {
+    			input = JOptionPane.showInputDialog("Favor entrar com valor entre 1 e 4:");
+    			try {
+    				numJogadores = Integer.parseInt(input);
+    			}
+    			catch (NumberFormatException nfe) {
+    				continue;
+    			}
+    		}
+    		
+    		iniciaJogo(numJogadores);
+		});
 		
 		iniciaJogo(2);
 		
-//		ji.setVisible(true);
-//		ji.setLocationRelativeTo(null);
+	    ji.setVisible(true);
+		ji.setLocationRelativeTo(null);
 	}
 	
 	public static void iniciaJogo(int numJogadores) {
@@ -188,6 +189,14 @@ public class Main {
 				ger.notificaObs("LIMPAR_CARTAS", null);
 				ger.notificaObs("INIT", null);
 //				ger.removeObs(3);
+				break;
+			case "SALVAR_JOGO":
+				try {
+					writer.salvamento();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 			default:
 				System.out.println("Erro fatal! Tipo de evento '" + evento + "' nao reconhecido.");

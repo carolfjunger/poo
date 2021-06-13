@@ -11,12 +11,15 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+
+import controller.writer;
 
 public class JanelaBanca extends Janela implements Observer {
 	
@@ -61,6 +64,12 @@ public class JanelaBanca extends Janela implements Observer {
 					obs.update(txt, null);
 					break;
 				case "SALVAR":
+					try {
+						writer.salvamento();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					obs.update(txt, null);
 					break;
 				case "ENCERRAR":
@@ -236,6 +245,7 @@ public class JanelaBanca extends Janela implements Observer {
 	    	case "FINALIZA_TURNO":
 	    		this.praBaixo = false;
 	    		this.novaRodada.setEnabled(true);
+	    		this.salvar.setEnabled(true);
    		
 	    		break;
 	    	default:
