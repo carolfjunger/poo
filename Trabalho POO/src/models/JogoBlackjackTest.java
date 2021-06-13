@@ -98,7 +98,7 @@ public class JogoBlackjackTest {
 
 	
 		this.jbl.colheAposta(0, aposta1);
-		this.jbl.colheAposta(0, aposta2);
+		this.jbl.colheAposta(1, aposta2);
 		int f = this.jbl.getFichasMesa();
 
 		assertEquals(40, f);
@@ -117,7 +117,7 @@ public class JogoBlackjackTest {
 		this.jbl.colheAposta(1, aposta2);
 		
 		// teste
-		this.jbl.darCartas();
+		this.jbl.darCartas(0);
 		
 		// cada jogador tem duas cartas viradas para cima
 		// dealer tem uma carta virada para baixo
@@ -152,7 +152,7 @@ public class JogoBlackjackTest {
 		this.jbl.colheAposta(0, aposta1);
 		this.jbl.colheAposta(1, aposta2);
 		
-		this.jbl.darCartas();
+		this.jbl.darCartas(0);
 		
 		// teste
 		this.jbl.finalizaRodada();
