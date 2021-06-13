@@ -7,7 +7,9 @@ import javax.swing.SwingUtilities;
 import java.awt.Point;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,11 +39,11 @@ public class Main {
     			}
     		}
     		
-    		iniciaJogo(numJogadores);
+    		iniciaJogo(numJogadores, null);
 		}, () -> {
 			HashMap<Integer, Integer> jogoSalvo = carregamento();
 			
-			iniciaJogoPorCarregamento(jogoSalvo.size(), jogoSalvo);
+			iniciaJogo(jogoSalvo.size(), jogoSalvo);
 		}) ;
 		
 //		iniciaJogo(2);
@@ -50,13 +52,18 @@ public class Main {
 		ji.setLocationRelativeTo(null);
 	}
 	
-	public static void iniciaJogo(int numJogadores) {
+	public static void iniciaJogo(int numJogadores, HashMap<Integer, Integer> jogadoresSave) {
 		at = new Atualizador();
 		ger = new Gerenciador();
 		
 		jbl = JogoBlackjack.getInstancia();
 		jbl.setJogadores(numJogadores);
-		jbl.inicializa(2);
+		if(jogadoresSave ==  null) {
+			jbl.inicializa(2);
+		} else {
+			jbl.inicializaBySalvamento(2, jogadoresSave);
+		}
+		
 		
 		List<Integer> jID = jbl.getIDJogadores();
 		List<Integer> jf = jbl.getFichasJogadores();
@@ -90,49 +97,6 @@ public class Main {
         	//ger.notificaObs("INIT", null);
 	    });
 	}
-	
-	public static void iniciaJogoPorCarregamento(int numJogadores, HashMap<Integer, Integer> jogadoresSave) {
-		at = new Atualizador();
-		ger = new Gerenciador();
-		
-		jbl = JogoBlackjack.getInstancia();
-		jbl.setJogadores(numJogadores);
-		jbl.inicializaBySalvamento(2, jogadoresSave);
-		
-		List<Integer> jID = jbl.getIDJogadores();
-		System.out.println(jID);
-		List<Integer> jf = jbl.getFichasJogadores();
-		int tam = jID.size();
-		
-		JanelaBanca jBanca = new JanelaBanca("Banca", jID.get(tam-1), at);
-    	ArrayList<Janela> jJogador = new ArrayList<Janela>();
-    	
-		ger.registraObs(jBanca);
-		
-		// tam-1 para excluir o dealer
-		for (int i=0; i< tam - 1; i++) {
-			int numFichas = jf.get(i);
-			int id = jID.get(i);
-			List<String> cartas = jbl.getCartasJogador(id, 0);
-			JanelaJogador jg = new JanelaJogador(id, numFichas, 0, cartas, at);
-			
-			// registrar janela jogador como observador
-			ger.registraObs(jg);
-			
-			Point p = new Point(i*400, 420);
-			jg.setLocation(p);
-			jJogador.add(jg);
-		}
-		
-	    SwingUtilities.invokeLater(() -> {
-        	jBanca.setVisible(true);
-        	for (Janela jg: jJogador) {
-        		jg.setVisible(true);
-        	}
-        	//ger.notificaObs("INIT", null);
-	    });
-	}
-	
 	
 	public static HashMap<Integer, Integer> carregamento()  {
         
@@ -158,14 +122,13 @@ public class Main {
         	id = s.nextInt();
         	ficha = s.nextInt();
         	jogadores.put(id, ficha);
-        }//listas de ids e fichas de jogador
+        } //listas de ids e fichas de jogador
         
 
 	
         
         
         /****/
-        //teste
 
         s.close();
         System.out.println("Jogadores = "+jqtd);
@@ -178,6 +141,58 @@ public class Main {
         
          return jogadores;
     }
+	
+	public static void salvamento()  {
+
+//		JogoBlackjack jbl = JogoBlackjack.getInstancia();
+
+		List<Integer> jID = jbl.getIDJogadores();//id jogadores
+		List<Integer> jf = jbl.getFichasJogadores();//ficha de cada jogador
+
+		int tam = jID.size() -1;
+
+
+
+
+		List<Integer> jval = jbl.pegaVal();//numero de jogadores,fichasmesa,vez,qtdCartasUsadas
+
+        /*****/
+        //forma de escrever
+        File  Save = new File("Save.txt");
+        FileWriter w = null;
+		try {
+			w = new FileWriter(Save);
+		} catch (IOException e) {
+			System.out.println("Erro ao salvar o jogo");
+			e.printStackTrace();
+			System.exit(0);
+		}
+        PrintWriter writer = new PrintWriter(w);
+
+
+
+
+
+        /******/
+        //escrever
+        for(int k = 0; k < 2 ;k++) {
+        	writer.write(jval.get(k) + "\n");
+
+        }//jogadores, cartas usadas
+
+        for(int i = 0; i < tam ;i++) {
+        	writer.write(jID.get(i) + " ");
+        	writer.write(jf.get(i) + "\n");
+
+
+        }//id, fichas jogador
+
+
+        System.out.println("Salvou");
+
+        writer.close();  
+    }
+	
 	
 	private static class Atualizador implements Observer {
 		@Override
@@ -327,12 +342,7 @@ public class Main {
 				System.exit(0);
 				break;
 			case "SALVAR_JOGO":
-				try {
-					Writer.salvamento();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				salvamento();
 				break;
 			default:
 				System.out.println("Erro fatal! Tipo de evento '" + evento + "' nao reconhecido.");

@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import controller.Reader;
+
 
 public class JanelaInicial extends Janela {
 	public JanelaInicial(String titulo, Runnable run, Runnable run2) {
