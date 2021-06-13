@@ -508,16 +508,17 @@ public class JogoBlackjack {
 	private int contaMao(List<Carta> mao) {
 		int valor = 0;
 		
-		boolean temAs = false;
+		int qtdAs = 0;
 		for (Carta c: mao) {
 			valor += c.getValor();
 			if (c.getCarta() == ValorCarta.AS) {
-				temAs = true;
+				qtdAs += 1;
 			}
 		}
 		
-		if (valor > 21 && temAs == true) {
+		while (valor > 21 && qtdAs > 0) {
 			valor -= 10;
+			qtdAs -= 1;
 		}
 		
 		return valor;
