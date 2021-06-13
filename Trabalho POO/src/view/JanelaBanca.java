@@ -200,6 +200,7 @@ public class JanelaBanca extends Janela implements Observer {
 	    	case "INIT":
 	    		this.init = true;
 	    		this.soma = 0;
+	    		this.praBaixo = true;
 	    		this.novaRodada.setEnabled(false);
 	    		break;
 	    	case "DAR_CARTAS":
