@@ -46,6 +46,10 @@ public class JogoBlackjack {
 		this.baralho = new Baralho();
 	}
 	
+	//
+	// getters 
+	//
+	
 	public List<Integer> getIDJogadores() {
 		List<Integer> ids = new ArrayList<Integer>();
 		
@@ -98,8 +102,6 @@ public class JogoBlackjack {
 	
 	public int getSomaCartasJogador(int indJog, int iMao) {
 		Jogador j = this.jogadores.get(indJog);
-//		System.out.println( "IND JOG:" + indJog);
-//		System.out.println( "IND MAO:" + iMao);
 		List<Carta> lc = j.getMao(iMao);
 		
 		return this.contaMao(lc);
@@ -112,6 +114,63 @@ public class JogoBlackjack {
 	public int getMaoCorrente() {
 		return this.maoCorrente;
 	}
+	
+	public int getQtdJogadores() {
+		return this.jogadores.size();
+	}
+	
+	public int getQtdMaosJogador(int indJog) {
+		return this.jogadores.get(indJog).qtdMaos();
+	}
+	
+	public int getTamMaoJogador(int indJog, int indMao) {
+		return this.jogadores.get(indJog).getMao(indMao).size();
+	}
+	
+	public List<Integer> getFichasJogadores() {
+		List<Integer> fs = new ArrayList<Integer>();
+		for (Jogador j: this.jogadores) {
+			fs.add(j.getFichas());
+		}
+		
+		return fs;
+	}
+	
+	public List<HashMap<Integer, Integer>> getApostasJogadores() {
+		List<HashMap<Integer, Integer>> fs = new ArrayList<HashMap<Integer, Integer>>();
+		for (int i = 0; i < this.jogadores.size() - 1; i++) {
+			Jogador j = this.jogadores.get(i);
+			
+			HashMap<Integer, Integer> apostaMao = new HashMap<Integer, Integer>();
+			for (int m = 0; m < j.qtdMaos(); m++) {
+				if (this.apostas.size() <= i)
+					continue;
+				
+				if (this.apostas.get(i) != null) {
+					apostaMao = this.apostas.get(i);
+				}
+			}
+			fs.add(apostaMao);
+		}
+		
+		return fs;
+	}
+	
+	public List<HashMap<Integer, Integer>> getApostas() {
+		return this.apostas;
+	}
+	
+	public List<Integer> getQtdCartasJog() {
+		List<Integer> val = new ArrayList<Integer>();
+		val.add(getQtdJogadores());
+		val.add(qtdCartasUsadas);
+
+		return val;
+	}
+	
+	//
+	// setters
+	//
 	
 	public void setVez(int vez) {
 		this.vez = vez;
@@ -139,51 +198,11 @@ public class JogoBlackjack {
 		this.jogadores.remove(indJog);
 		return true;
 	}
-	
-	public int getQtdJogadores() {
-		return this.jogadores.size();
-	}
-	
-	public int getQtdMaosJogador(int indJog) {
-		return this.jogadores.get(indJog).qtdMaos();
-	}
-	
-	public int getTamMaoJogador(int indJog, int indMao) {
-		return this.jogadores.get(indJog).getMao(indMao).size();
-	}
-	
-	public List<Integer> getFichasJogadores() {
-		List<Integer> fs = new ArrayList<Integer>();
-		for (Jogador j: this.jogadores) {
-			System.out.println(j.getID());
-			fs.add(j.getFichas());
-		}
-		
-		return fs;
-	}
-	
-	public List<HashMap<Integer, Integer>> getApostasJogadores() {
-		List<HashMap<Integer, Integer>> fs = new ArrayList<HashMap<Integer, Integer>>();
-		for (int i = 0; i < this.jogadores.size() - 1; i++) {
-			Jogador j = this.jogadores.get(i);
-			
-			HashMap<Integer, Integer> apostaMao = new HashMap<Integer, Integer>();
-			for (int m = 0; m < j.qtdMaos(); m++) {
-				if (this.apostas.size() <= i)
-					continue;
-				
-				if (this.apostas.get(i) != null) {
-					apostaMao = this.apostas.get(i);
-				}
-			}
-			fs.add(apostaMao);
-		}
-		
-		return fs;
-	}
 
-	// retorna `true` se deu certo
-	// ou `false` se a quantidade de jogadores ou decks for invalida
+	// inicializa o estado para um novo jogo de blackjack
+	// retorna
+	// -> true, se deu certo
+	// -> false, se a quantidade de jogadores ou decks for invalida
 	public boolean inicializa(int qtdDecks) {
 		this.qtdCartasUsadas = 0;
 		this.baralho.adicionaDeck(qtdDecks);
@@ -213,8 +232,10 @@ public class JogoBlackjack {
 		return true;
 	}
 	
-	// retorna `true` se deu certo
-	// ou `false` se a quantidade de jogadores ou decks for invalida
+	// inicializa o estado para um jogo de blackjack previamente salvo
+	// retorna
+	// -> true, se deu certo
+	// -> false, se a quantidade de jogadores ou decks for invalida
 	public boolean inicializaBySalvamento(int qtdDecks, HashMap<Integer, Integer> jogadoresSave) {
 		this.qtdCartasUsadas = 0;
 		this.baralho.adicionaDeck(qtdDecks);
@@ -244,7 +265,6 @@ public class JogoBlackjack {
 		return true;
 	}
 
-
 	public void colheAposta(int indJog, int indMao, int fichasAposta) {
 		Jogador j = this.jogadores.get(indJog);
 		
@@ -270,10 +290,6 @@ public class JogoBlackjack {
 		}
 	}
 	
-	public List<HashMap<Integer, Integer>> getApostas() {
-		return this.apostas;
-	}
-	
 	public void darCartas(int indMao) {
 		for (int i = 0; i < this.jogadores.size(); i++) {
 			Jogador j = this.jogadores.get(i);
@@ -285,32 +301,17 @@ public class JogoBlackjack {
 			j.compraCarta(this.baralho, indMao);
 			this.qtdCartasUsadas += 2;
 			
-			// PARA TESTE - BLACKJACK
-			if (i == 0 || i == 1) {
-				j.limpaMao();
-				j.novaMao();
-				Carta c1 = new Carta(Naipe.COPAS, ValorCarta.AS);
-				Carta c2 = new Carta(Naipe.COPAS, ValorCarta.AS);
-				j.adicionaCarta(c1, 0);
-				j.adicionaCarta(c2, 0);
-			}
-			
 			// dealer carta pra baixo
 			if (i == this.jogadores.size() - 1) {
 				j.getMao(0).get(1).setPraBaixo(true);
 			}
 			
 			List<Carta> cs = j.getMao(indMao);
-			System.out.println("Cartas do jogador: " + i);
-			for (Carta c: cs) {
-				System.out.print("Nome: " + c.getNome());
-				System.out.print(" - Naipe: " + c.getNaipe().Repr());
-				System.out.println("---");
-			}
-			
 		}
 	}
 	
+	// abre a mao do dealer do final da rodada
+	// e compra cartas ate a soma do dealer ficar >= 17
 	public void abreMaoDealer() {
 		Jogador dealer = this.jogadores.get(this.jogadores.size() - 1); // pega o dealer
 		List<Carta> maoDealer = dealer.getMao(0);
@@ -326,10 +327,10 @@ public class JogoBlackjack {
 		}
 	}
 	
-	// retorna
-	// 1 = 21
-	// -1 = quebrou
-	// 0 = nao quebrou
+	// compra uma carta, retorna
+	// -> 1, se a soma nova das cartas for 21
+	// -> -1, se o jogador quebrou
+	// -> 0, se o jogador nao quebrou
 	public int hit(int indJogador, int indMao) {
 		Jogador j = this.jogadores.get(indJogador);
 		
@@ -378,11 +379,11 @@ public class JogoBlackjack {
 		j.recebeFichas((int) Math.round(aposta/2.0));
 	}
 	
-	// retorna 
-	// 1 no caso de vitoria
-	// 0 no caso de empate
-	// -1 no caso de derrota
-	// -2 no caso de aposta zerada
+	// compara a mao de um jogador com a mao do dealer e retorna 
+	// -> 1, no caso de vitoria
+	// -> 0, no caso de empate
+	// -> -1, no caso de derrota
+	// -> -2, no caso de aposta zerada
 	public int finalizaTurnoJog(int indJogador, int indMao) {
 		int last = this.jogadores.size() - 1;
 		Jogador dealer = this.jogadores.get(last);
@@ -453,6 +454,9 @@ public class JogoBlackjack {
 		return -1;
 	}
 	
+	// finaliza a rodada, depois que todo mundo terminou de jogar
+	// computa os resultados de cada mao e atualiza as fichas de todos
+	// tambem limpa a mao dos jogadores e devolve as cartas pro baralho
 	public List<HashMap<Integer, Integer>> finalizaRodada() {
 		List<HashMap<Integer, Integer>> resultados = new ArrayList<HashMap<Integer, Integer>>();
 		
@@ -464,9 +468,6 @@ public class JogoBlackjack {
 				int resultado = this.finalizaTurnoJog(i, j);
 				apMao.put(j, resultado);
 				
-				if (resultado >= 0) {
-					System.out.println("Vencedor: " + resultado);
-				}
 				apostas.get(i).put(j, 0);
 			}
 			
@@ -474,11 +475,20 @@ public class JogoBlackjack {
 		}
 		
 		limpaMaos();
+		
+		// embaralhamento
+		int bTam = this.baralho.getQtdCartas();
+		if (this.qtdCartasUsadas > bTam/10) {
+			this.baralho.embaralha();
+			this.qtdCartasUsadas = 0;
+		}
+		
 		return resultados;
 	}
 	
+	// devolve as cartas de todos os jogadores
+	// e remove as maos de todos os jogadores
 	private void limpaMaos() {
-		//devolve as cartas de todos os jogadores
 		for (Jogador j: this.jogadores) {
 			for (int i = 0; i < j.qtdMaos(); i++) {
 				for (Carta c: j.getMao(i)) {
@@ -486,7 +496,7 @@ public class JogoBlackjack {
 				}	
 			}
 		}
-		
+	
 		for (Jogador j: this.jogadores) {
 			while (j.qtdMaos() > 0) {
 				j.removeMao(j.qtdMaos() - 1);
@@ -520,17 +530,7 @@ public class JogoBlackjack {
 			if(Objects.equals( j.getID(), idJog)) {
 				return j;
 			}
-		
 		}
 		return null;
 	}
-	
-	 public List<Integer> pegaVal() {
-	        List<Integer> val = new ArrayList<Integer>();
-	        val.add(getQtdJogadores());
-	        val.add(qtdCartasUsadas);
-
-	        return val;
-
-	    }
 }

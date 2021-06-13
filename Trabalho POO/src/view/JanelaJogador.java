@@ -141,7 +141,7 @@ public class JanelaJogador extends Janela implements Observer {
 		this.lAposta.setLocation(12, this.getHeight() - 180);
 		
 		// Mostra a soma das cartas do jogador
-		this.somaCartas.setText("Somatorio das cartas: 0");
+		this.somaCartas.setText("Somatorio das cartas: ");
 		this.somaCartas.setSize(somaCartas.getPreferredSize());
 		this.somaCartas.setLocation(12, this.getHeight() - 200);
 		
@@ -243,7 +243,6 @@ public class JanelaJogador extends Janela implements Observer {
     				this.vezStatus.setText("21!");
         			if (vezInicial == 1) {
         				this.vezStatus.setText("Blackjack!");
-        				//this.obs.update("STAND", null);
         			}
     			}
     		}    		
@@ -253,7 +252,6 @@ public class JanelaJogador extends Janela implements Observer {
     		int[] info = (int[]) val;
     		int resultado = info[0];
     		int mao = info[1];
-    		System.out.println("HIT NA JANELA:" + this.indJogador);
     		
     		// quebramos ou 21
     		if (resultado != 0 && this.indMao == mao) {
@@ -275,8 +273,8 @@ public class JanelaJogador extends Janela implements Observer {
     		cartas = (List<String>) inf[0];
     		sumCarta = (int) inf[1];
     		mao = (int) inf[2];
-    		this.somaCartas.setText("Somatorio das cartas:" + Integer.toString(sumCarta));
-    		this.somaCartas.setSize(somaCartas.getPreferredSize());
+    		//this.somaCartas.setText("Somatorio das cartas:" + Integer.toString(sumCarta));
+    		//this.somaCartas.setSize(somaCartas.getPreferredSize());
     		
     		if (this.indMao == mao)
     			this.cartas = cartas;
@@ -309,9 +307,6 @@ public class JanelaJogador extends Janela implements Observer {
        		ficha = info[0];
        		int aposta = info[1];
        		iMao = info[2];
-       		
-       		System.out.println("FICHAS: " + fichas);
-   			System.out.println("APOSTAS: " + aposta);
     		
     		if (this.indMao == iMao) {
     			this.aposta = aposta;

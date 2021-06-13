@@ -51,6 +51,7 @@ public abstract class Janela extends JFrame {
 		});
 	}
 	
+	// carrega todos os assets necessários para todas as janelas
 	public void carregarAssets() {
 		String imageURL;
 		Image image;

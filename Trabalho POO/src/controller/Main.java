@@ -4,7 +4,6 @@
 
 package controller;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -30,7 +29,12 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		Janela ji = new JanelaInicial("Jogo de blackjack", () -> {
+		// Registramos callbacks com a janela inicial
+		// para tratar a escolha da quantidade de jogadores
+		// e o carregamento / salvamento
+		Janela ji = new JanelaInicial("Jogo de blackjack", 
+		// Qtd jogadores
+		() -> {
     		String input = "";
     		int numJogadores = 0;
     		while (numJogadores <= 0 || numJogadores > 4) {
@@ -44,18 +48,22 @@ public class Main {
     		}
     		
     		iniciaJogo(numJogadores, null);
-		}, () -> {
+		}, 
+		// carregamento e salvamento
+		() -> {
 			HashMap<Integer, Integer> jogoSalvo = carregamento();
 			
 			iniciaJogo(jogoSalvo.size(), jogoSalvo);
 		}) ;
 		
-//		iniciaJogo(2);
 		
 		ji.setVisible(true);
 		ji.setLocationRelativeTo(null);
 	}
 	
+	// inicia o jogo de blackjack
+	// inicializa o singleton e garante que as informacoes iniciais sao carregadas
+	// cria as janelas necessarias e as registra como observer
 	public static void iniciaJogo(int numJogadores, HashMap<Integer, Integer> jogadoresSave) {
 		at = new Atualizador();
 		ger = new Gerenciador();
@@ -67,7 +75,6 @@ public class Main {
 		} else {
 			jbl.inicializaBySalvamento(2, jogadoresSave);
 		}
-		
 		
 		List<Integer> jID = jbl.getIDJogadores();
 		List<Integer> jf = jbl.getFichasJogadores();
@@ -98,7 +105,6 @@ public class Main {
         	for (Janela jg: jJogador) {
         		jg.setVisible(true);
         	}
-        	//ger.notificaObs("INIT", null);
 	    });
 	}
 	
@@ -108,96 +114,63 @@ public class Main {
         HashMap<Integer, Integer> jogadores = new HashMap<Integer, Integer>();
         
         File save = new File("Save.txt"); 
-        System.out.println(save);
         Scanner s = null;
 		try {
 			s = new Scanner(save);
 		} catch (FileNotFoundException e) {
-			System.out.println("Erro você não tem nenhum jogo salvo ainda");
+			System.out.println("Erro vocï¿½ nï¿½o tem nenhum jogo salvo ainda");
 			System.exit(0);
 		}
-       
-        
 
-        jqtd = s.nextInt();// o numero de jogadores
-        qtdCartasUsadas = s.nextInt();//cartas usadas
+        jqtd = s.nextInt(); // o numero de jogadores
+        qtdCartasUsadas = s.nextInt(); //cartas usadas
         
+      //listas de ids e fichas de jogador
         for(int i = 0;i < jqtd - 1;i++) {
         	id = s.nextInt();
         	ficha = s.nextInt();
         	jogadores.put(id, ficha);
-        } //listas de ids e fichas de jogador
-        
-
-	
-        
-        
-        /****/
-
+        } 
+       
         s.close();
-        System.out.println("Jogadores = "+jqtd);
-        System.out.println("jogs + fichas ="+jogadores);
-        System.out.println("cartas usadas = "+qtdCartasUsadas);
-        
-        
-        
-        /*******/
-        
-         return jogadores;
+        return jogadores;
     }
 	
 	public static void salvamento()  {
-
-//		JogoBlackjack jbl = JogoBlackjack.getInstancia();
-
-		List<Integer> jID = jbl.getIDJogadores();//id jogadores
-		List<Integer> jf = jbl.getFichasJogadores();//ficha de cada jogador
+		List<Integer> jID = jbl.getIDJogadores();
+		List<Integer> jf = jbl.getFichasJogadores();
 
 		int tam = jID.size() -1;
 
+		List<Integer> jval = jbl.getQtdCartasJog();
 
-
-
-		List<Integer> jval = jbl.pegaVal();//numero de jogadores,fichasmesa,vez,qtdCartasUsadas
-
-        /*****/
         //forma de escrever
         File  Save = new File("Save.txt");
         FileWriter w = null;
 		try {
 			w = new FileWriter(Save);
 		} catch (IOException e) {
-			System.out.println("Erro ao salvar o jogo");
 			e.printStackTrace();
-			System.exit(0);
+			System.exit(1);
 		}
         PrintWriter writer = new PrintWriter(w);
 
-
-
-
-
-        /******/
-        //escrever
+        //jogadores, cartas usadas
         for(int k = 0; k < 2 ;k++) {
         	writer.write(jval.get(k) + "\n");
+        }
 
-        }//jogadores, cartas usadas
-
+        //id, fichas jogador
         for(int i = 0; i < tam ;i++) {
         	writer.write(jID.get(i) + " ");
         	writer.write(jf.get(i) + "\n");
-
-
-        }//id, fichas jogador
-
-
-        System.out.println("Salvou");
+        }
 
         writer.close();  
     }
 	
-	
+	// a classe interna atualizador eh uma implementacao
+	// do padrao observer a ser usado apenas na main
 	private static class Atualizador implements Observer {
 		@Override
 		public void update(String evento, Object val) {
@@ -206,6 +179,9 @@ public class Main {
 			int totalDeJogadores = jbl.getIDJogadores().size();
 			List<HashMap<Integer, Integer>> aj;
 
+			// tratamos os eventos possiveis
+			// geralmente resultante de clicks de botoes
+			// nas janelas banca e jogador
 			switch(evento.toUpperCase()) {
 			case "DEAL":
 				int fichasApostadas = (int) val;
@@ -215,11 +191,9 @@ public class Main {
 					jbl.darCartas(0);
 					jbl.setMaoCorrente(0);
 					jbl.setVez(0);
-					System.out.println("DEAL: SETANDO PROX VEZ: 0");
 					ger.notificaObs("DAR_CARTAS", 0);
 				} else {
 					jbl.setVez(proxVez);
-					System.out.println("DEAL: SETANDO PROX VEZ:" + proxVez);
 					ger.notificaObs("INIT", null);
 				}
 				break;
@@ -247,7 +221,6 @@ public class Main {
 				int valFichas = 0;
 				if (aj.size() > vez && aj.get(vez).containsKey(indMao)) {
 					valFichas = aj.get(vez).get(indMao);
-					System.out.println("DOBRANDO:" + valFichas);
 				}
 					
 				jbl.colheAposta(vez, indMao, valFichas);
@@ -259,21 +232,17 @@ public class Main {
 				int mc = jbl.getMaoCorrente();
 				int qtdMao = jbl.getQtdMaosJogador(vez);
 				if ( mc < qtdMao - 1 ) {
-					System.out.println("SETANDO MAO CORRENTE:" + (mc + 1));
-					System.out.println("QTD MAO:" + qtdMao);
 					jbl.setMaoCorrente( mc + 1 );
 					ger.notificaObs("VEZ", null);
 					return;
 				}
 				
 				if(proxVez >= totalDeJogadores - 1) {
-					System.out.println("Stand: Finalizando turno");
 					jbl.abreMaoDealer();
 					
 					ger.notificaObs("DEALER_OPEN", null);
 					at.update("FINALIZA_TURNO", null);
 				} else {
-					System.out.println("STAND: SETANDO PROX VEZ:" + proxVez);
 					jbl.setMaoCorrente(0);
 					jbl.setVez(proxVez);
 					ger.notificaObs("VEZ", null);
@@ -287,16 +256,19 @@ public class Main {
 				
 				int indNova = jbl.split(vez, indMao);
 				
+				// criamos uma janela nova e registramos como obs
 				JanelaJogador jg = new JanelaJogador(vez, valFichas, indNova, null, at);
 				ger.registraObs(jg);
 				
+				// posicionamos a janela nova
 				int offset = ger.observers.size() - 2;
 				Point p = new Point(400*offset, 420);
 				jg.setLocation(p);
 				jg.setVisible(true);
 				
+				// mandando eventos para atualizar os dados da janela nova
+				// e da que originou o split
 				ger.notificaObs("DAR_CARTAS", null);
-				
 				valFichas = jbl.getApostasJogadores().get(vez).get(indMao);
 				jbl.colheAposta(vez, indNova, valFichas);				
 				ger.notificaObs("ATUALIZA_FICHAS", null);
@@ -360,6 +332,9 @@ public class Main {
 		public void setInd(int ind) {}
 	}
 	
+	// a classe interna gerenciado eh uma implementacao
+	// do padrao observable, serve para despachar eventos 
+	// para os observers da main
 	private static class Gerenciador implements Observable {
 		protected List<Observer> observers = new ArrayList<Observer>();
 		
@@ -368,7 +343,6 @@ public class Main {
 			for (int io=0; io < this.observers.size(); io++) {
 				Observer o = this.observers.get(io);
 				int id = o.getInd();
-				System.out.println(evento);
 				List<String> cartas = null;
 				switch(evento) {
 				case "INIT":
